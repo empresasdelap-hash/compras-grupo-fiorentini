@@ -12,29 +12,24 @@
 
   <meta
     name="theme-color"
-    content="#ffffff"
+    content="#19476b"
   >
 
-  <title>
-    Gestión de Compras · Grupo Fiorentini
-  </title>
-
+  <title>Gestión de Compras · Grupo Fiorentini</title>
 
   <style>
 
     :root {
-
       --bg: #f4f6f8;
       --card: #ffffff;
-
       --text: #182230;
       --muted: #667085;
-
       --border: #e4e7ec;
 
-      --primary: #1570ef;
-      --primary-dark: #175cd3;
+      --brand: #19476b;
+      --brand-soft: #e8f1f8;
 
+      --primary: #1570ef;
       --success: #12b76a;
       --success-dark: #039855;
 
@@ -60,7 +55,6 @@
         0 3px 12px rgba(16, 24, 40, 0.08);
 
       --radius: 16px;
-
     }
 
 
@@ -71,29 +65,19 @@
 
     html,
     body {
-
       margin: 0;
       padding: 0;
-
       min-height: 100%;
-
       background: var(--bg);
-
       color: var(--text);
 
       font-family:
+        Arial,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         Roboto,
-        Arial,
         sans-serif;
-
-    }
-
-
-    body {
-      min-height: 100vh;
     }
 
 
@@ -109,15 +93,10 @@
 
 
     .app-shell {
-
       width: 100%;
-
       max-width: 1440px;
-
       margin: 0 auto;
-
       padding: 18px;
-
     }
 
 
@@ -126,13 +105,9 @@
        ========================================================= */
 
     .topbar {
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       gap: 16px;
 
       padding: 16px 18px;
@@ -149,45 +124,31 @@
         var(--shadow);
 
       position: sticky;
-
       top: 10px;
-
       z-index: 20;
-
-    }
-
-
-    .brand-block {
-      min-width: 0;
     }
 
 
     .brand-title {
-
       margin: 0;
 
       font-size: 23px;
-
       font-weight: 900;
 
       letter-spacing: -0.4px;
-
     }
 
 
     .brand-subtitle {
-
       margin-top: 4px;
 
       color: var(--muted);
 
       font-size: 13px;
-
     }
 
 
     .btn-refresh {
-
       min-height: 44px;
 
       border: none;
@@ -203,13 +164,10 @@
 
       font-weight: 850;
 
-      display:
-        inline-flex;
-
+      display: inline-flex;
       align-items: center;
 
       gap: 8px;
-
     }
 
 
@@ -220,11 +178,8 @@
 
 
     .btn-refresh:disabled {
-
       opacity: 0.55;
-
       cursor: wait;
-
     }
 
 
@@ -233,7 +188,6 @@
        ========================================================= */
 
     .filters-card {
-
       margin-top: 16px;
 
       background: #ffffff;
@@ -248,12 +202,10 @@
         var(--shadow);
 
       padding: 14px;
-
     }
 
 
     .filters-grid {
-
       display: grid;
 
       grid-template-columns:
@@ -263,35 +215,27 @@
         );
 
       gap: 12px;
-
     }
 
 
     .filter-group label {
-
       display: block;
 
       margin-bottom: 6px;
 
       font-size: 12px;
-
       font-weight: 850;
 
-      text-transform:
-        uppercase;
+      text-transform: uppercase;
 
       color: #475467;
 
-      letter-spacing:
-        0.4px;
-
+      letter-spacing: 0.4px;
     }
 
 
     .filter-select {
-
       width: 100%;
-
       height: 44px;
 
       padding: 0 12px;
@@ -304,33 +248,11 @@
       background: #ffffff;
 
       color: var(--text);
-
-      outline: none;
-
-    }
-
-
-    .filter-select:focus {
-
-      border-color:
-        var(--primary);
-
-      box-shadow:
-        0 0 0 3px
-        rgba(
-          21,
-          112,
-          239,
-          0.10
-        );
-
     }
 
 
     .filters-footer {
-
       margin-top: 12px;
-
       padding-top: 12px;
 
       border-top:
@@ -338,34 +260,17 @@
 
       display: flex;
 
-      justify-content:
-        space-between;
-
-      align-items:
-        center;
+      justify-content: space-between;
+      align-items: center;
 
       gap: 12px;
-
     }
 
 
-    .result-count {
-
-      font-size: 13px;
-
-      color: var(--muted);
-
-    }
-
-
+    .result-count,
     .last-update {
-
       font-size: 12px;
-
       color: var(--muted);
-
-      text-align: right;
-
     }
 
 
@@ -376,7 +281,6 @@
     .loading-box,
     .empty-box,
     .error-box {
-
       margin-top: 18px;
 
       padding: 30px;
@@ -393,31 +297,19 @@
         var(--shadow);
 
       text-align: center;
-
-    }
-
-
-    .loading-box {
-      color: var(--muted);
     }
 
 
     .error-box {
+      color: var(--red-text);
 
-      color:
-        var(--red-text);
+      border-color: #fecdca;
 
-      background:
-        #fff6f5;
-
-      border-color:
-        #fecdca;
-
+      background: #fff6f5;
     }
 
 
     .spinner {
-
       width: 32px;
       height: 32px;
 
@@ -434,17 +326,14 @@
 
       animation:
         spin 0.8s linear infinite;
-
     }
 
 
     @keyframes spin {
-
       to {
         transform:
           rotate(360deg);
       }
-
     }
 
 
@@ -453,7 +342,6 @@
        ========================================================= */
 
     .cards-grid {
-
       margin-top: 18px;
 
       display: grid;
@@ -465,12 +353,10 @@
         );
 
       gap: 16px;
-
     }
 
 
     .oc-card {
-
       background:
         var(--card);
 
@@ -486,58 +372,37 @@
       padding: 15px;
 
       display: flex;
-
-      flex-direction:
-        column;
+      flex-direction: column;
 
       min-height: 260px;
-
     }
 
 
     .card-topline {
-
       display: flex;
 
       align-items:
         flex-start;
 
       gap: 10px;
-
-    }
-
-
-    .select-box {
-
-      flex: 0 0 auto;
-
-      padding-top: 3px;
-
     }
 
 
     .select-box input {
-
       width: 20px;
-
       height: 20px;
 
       cursor: pointer;
-
     }
 
 
     .oc-heading {
-
-      min-width: 0;
-
       flex: 1;
-
+      min-width: 0;
     }
 
 
     .oc-number-row {
-
       display: flex;
 
       align-items: center;
@@ -545,38 +410,26 @@
       gap: 8px;
 
       flex-wrap: wrap;
-
     }
 
 
     .oc-number {
-
       font-size: 17px;
-
       font-weight: 900;
-
     }
 
 
     .status-chip {
+      display: inline-flex;
 
-      display:
-        inline-flex;
+      align-items: center;
+      justify-content: center;
 
-      align-items:
-        center;
+      padding: 5px 9px;
 
-      justify-content:
-        center;
-
-      padding:
-        5px 9px;
-
-      border-radius:
-        999px;
+      border-radius: 999px;
 
       font-size: 10px;
-
       line-height: 1.1;
 
       font-weight: 900;
@@ -585,92 +438,56 @@
         uppercase;
 
       text-align: center;
-
     }
 
 
     .status-NARANJO {
-
-      background:
-        var(--orange-bg);
-
-      color:
-        var(--orange-text);
-
+      background: var(--orange-bg);
+      color: var(--orange-text);
     }
 
 
     .status-AMARILLO {
-
-      background:
-        var(--yellow-bg);
-
-      color:
-        var(--yellow-text);
-
+      background: var(--yellow-bg);
+      color: var(--yellow-text);
     }
 
 
     .status-AZUL {
-
-      background:
-        var(--blue-bg);
-
-      color:
-        var(--blue-text);
-
+      background: var(--blue-bg);
+      color: var(--blue-text);
     }
 
 
     .status-MORADO {
-
-      background:
-        var(--purple-bg);
-
-      color:
-        var(--purple-text);
-
+      background: var(--purple-bg);
+      color: var(--purple-text);
     }
 
 
     .status-ROJO {
-
-      background:
-        var(--red-bg);
-
-      color:
-        var(--red-text);
-
+      background: var(--red-bg);
+      color: var(--red-text);
     }
 
 
     .status-GRIS {
-
-      background:
-        var(--gray-bg);
-
-      color:
-        var(--gray-text);
-
+      background: var(--gray-bg);
+      color: var(--gray-text);
     }
 
 
     .provider-name {
-
       margin-top: 9px;
 
       font-size: 15px;
-
       font-weight: 900;
 
-      word-break:
-        break-word;
-
+      word-break: break-word;
     }
 
 
     .card-meta {
-
       margin-top: 10px;
 
       display: grid;
@@ -680,7 +497,6 @@
       font-size: 13px;
 
       color: #475467;
-
     }
 
 
@@ -690,7 +506,6 @@
 
 
     .amount-row {
-
       margin-top: 12px;
 
       display: flex;
@@ -701,33 +516,26 @@
       align-items: end;
 
       gap: 10px;
-
     }
 
 
     .line-count {
-
       font-size: 13px;
 
       color:
         var(--muted);
-
     }
 
 
     .total-amount {
-
       font-size: 20px;
-
       font-weight: 900;
 
       text-align: right;
-
     }
 
 
     .card-actions {
-
       margin-top: auto;
 
       padding-top: 16px;
@@ -738,66 +546,44 @@
         1fr 1.2fr;
 
       gap: 9px;
-
     }
 
 
     .btn {
-
       min-height: 44px;
 
       border: none;
 
       border-radius: 10px;
 
-      padding:
-        10px 12px;
+      padding: 10px 12px;
 
       font-weight: 850;
 
       display: flex;
 
-      align-items:
-        center;
-
-      justify-content:
-        center;
-
-      gap: 7px;
+      align-items: center;
+      justify-content: center;
 
       text-align: center;
-
     }
 
 
     .btn-view {
-
-      background:
-        #eff8ff;
-
-      color:
-        #175cd3;
-
+      background: #eff8ff;
+      color: #175cd3;
     }
 
 
     .btn-blue {
-
-      background:
-        var(--primary);
-
+      background: var(--primary);
       color: #ffffff;
-
     }
 
 
     .btn-whatsapp {
-
-      background:
-        var(--success);
-
+      background: var(--success);
       color: #ffffff;
-
     }
 
 
@@ -806,9 +592,7 @@
        ========================================================= */
 
     .modal-overlay {
-
       position: fixed;
-
       inset: 0;
 
       display: none;
@@ -826,7 +610,6 @@
         );
 
       z-index: 100;
-
     }
 
 
@@ -836,57 +619,44 @@
 
 
     .modal-container {
-
       width:
         min(
-          980px,
+          1000px,
           100%
         );
 
       margin:
         18px auto;
 
-      background:
-        #ffffff;
+      background: #ffffff;
 
-      border-radius:
-        18px;
+      border-radius: 18px;
 
       overflow: hidden;
-
     }
 
 
     .modal-header {
-
-      padding:
-        14px 18px;
+      padding: 14px 18px;
 
       display: flex;
 
-      align-items:
-        center;
-
-      justify-content:
-        space-between;
+      align-items: center;
+      justify-content: space-between;
 
       border-bottom:
         1px solid var(--border);
-
     }
 
 
     .modal-header h2 {
-
       margin: 0;
 
       font-size: 19px;
-
     }
 
 
     .btn-close {
-
       width: 40px;
       height: 40px;
 
@@ -894,286 +664,299 @@
 
       border-radius: 50%;
 
-      background:
-        #f2f4f7;
+      background: #f2f4f7;
 
       font-size: 24px;
-
     }
 
 
     .modal-body {
-
       padding: 18px;
 
-      background:
-        #f8fafc;
-
+      background: #f1f4f6;
     }
 
 
     .modal-footer {
-
-      padding:
-        14px 18px;
+      padding: 14px 18px;
 
       border-top:
         1px solid var(--border);
 
       display: flex;
 
-      justify-content:
-        flex-end;
+      justify-content: flex-end;
 
       gap: 10px;
 
-      background:
-        #ffffff;
-
+      background: #ffffff;
     }
 
 
     /* =========================================================
-       DOCUMENTO OC
+       OC DEFINITIVA
        ========================================================= */
 
-    .oc-document {
-
+    .purchase-order {
+      width: 100%;
       max-width: 820px;
 
       margin: 0 auto;
 
-      padding: 24px;
+      padding: 26px 30px;
 
-      background:
-        #ffffff;
+      background: #ffffff;
+
+      color: #111827;
 
       border:
         1px solid #d0d5dd;
 
-      color:
-        #101828;
-
+      box-shadow:
+        0 4px 18px
+        rgba(16, 24, 40, 0.08);
     }
 
 
-    .doc-header {
+    .po-title {
+      min-height: 58px;
 
-      display: grid;
+      display: flex;
 
-      grid-template-columns:
-        1fr auto;
+      align-items: center;
+      justify-content: center;
 
-      gap: 20px;
+      background:
+        var(--brand-soft);
 
-      align-items:
-        start;
-
-      padding-bottom: 14px;
-
-      border-bottom:
-        2px solid #101828;
-
-    }
-
-
-    .doc-brand {
+      color: var(--brand);
 
       font-size: 22px;
 
       font-weight: 900;
 
+      letter-spacing: 0.4px;
+
+      border-bottom:
+        4px solid var(--brand);
     }
 
 
-    .doc-brand-small {
+    .po-top {
+      display: grid;
 
-      margin-top: 4px;
+      grid-template-columns:
+        1.15fr 0.85fr;
 
-      font-size: 12px;
+      gap: 28px;
 
-      color:
-        #475467;
-
+      padding:
+        20px 0 16px;
     }
 
 
-    .doc-oc-info {
-      text-align: right;
-    }
-
-
-    .doc-label {
-
-      font-size: 11px;
-
-      font-weight: 800;
-
-      text-transform:
-        uppercase;
-
-      color:
-        #667085;
-
-    }
-
-
-    .doc-big {
-
-      margin-top: 3px;
-
+    .po-company-name {
       font-size: 17px;
 
       font-weight: 900;
 
+      color:
+        var(--brand);
+
+      margin-bottom: 8px;
     }
 
 
-    .doc-status {
+    .po-info-line {
+      margin-top: 4px;
 
-      margin:
-        14px 0;
+      font-size: 12px;
 
-      padding: 9px;
+      line-height: 1.4;
+    }
+
+
+    .po-right {
+      display: grid;
+
+      gap: 7px;
+    }
+
+
+    .po-field {
+      display: grid;
+
+      grid-template-columns:
+        145px 1fr;
+
+      align-items: center;
+
+      min-height: 30px;
+
+      font-size: 12px;
+    }
+
+
+    .po-field-label {
+      font-weight: 900;
+
+      color:
+        var(--brand);
+    }
+
+
+    .po-field-value {
+      font-weight: 700;
+    }
+
+
+    .po-status {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      min-height: 30px;
+
+      padding: 5px 10px;
+
+      background: #dcfae6;
 
       border:
         1px solid #abefc6;
 
-      border-radius: 8px;
+      color: #067647;
 
-      background:
-        #dcfae6;
-
-      color:
-        #067647;
-
-      text-align: center;
-
-      font-size: 13px;
+      border-radius: 6px;
 
       font-weight: 900;
 
+      text-align: center;
     }
 
 
-    .doc-info-grid {
+    .supplier-section {
+      margin-top: 5px;
 
       display: grid;
 
       grid-template-columns:
         1fr 1fr;
 
-      border:
-        1px solid #d0d5dd;
-
-      margin-bottom:
-        16px;
-
+      gap: 24px;
     }
 
 
-    .doc-info-box {
-      padding: 12px;
-    }
+    .supplier-title {
+      margin-bottom: 9px;
 
-
-    .doc-info-box +
-    .doc-info-box {
-
-      border-left:
-        1px solid #d0d5dd;
-
-    }
-
-
-    .doc-info-title {
-
-      margin-bottom: 7px;
-
-      font-size: 11px;
-
-      text-transform:
-        uppercase;
-
-      color:
-        #667085;
+      font-size: 13px;
 
       font-weight: 900;
 
+      color:
+        var(--brand);
     }
 
 
-    .doc-info-main {
+    .supplier-reminder {
+      padding: 12px 14px;
 
-      font-size: 14px;
+      border:
+        1px solid #d7e2ec;
 
-      font-weight: 850;
+      background:
+        #f8fbfd;
 
+      font-size: 12px;
+
+      line-height: 1.45;
     }
 
 
-    .doc-table-wrap {
+    .supplier-reminder-oc {
+      margin-top: 10px;
+
+      font-size: 17px;
+
+      font-weight: 900;
+
+      color:
+        var(--brand);
+
+      text-align: center;
+    }
+
+
+    .po-table-wrap {
+      margin-top: 22px;
+
       overflow-x: auto;
     }
 
 
-    .doc-table {
-
+    .po-table {
       width: 100%;
 
       border-collapse:
         collapse;
 
-      font-size: 12px;
-
+      font-size: 11px;
     }
 
 
-    .doc-table th,
-    .doc-table td {
-
-      padding:
-        8px 6px;
-
-      border:
-        1px solid #cfd4dc;
-
-      vertical-align: top;
-
-    }
-
-
-    .doc-table th {
+    .po-table th {
+      padding: 9px 6px;
 
       background:
-        #eaecf0;
+        var(--brand);
+
+      color: #ffffff;
+
+      text-align: center;
 
       font-weight: 900;
 
-      text-align: left;
-
+      border-right:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.25
+        );
     }
 
 
-    .align-right {
-      text-align:
-        right !important;
+    .po-table td {
+      padding: 9px 6px;
+
+      border-bottom:
+        1px solid #d6e2ed;
+
+      border-right:
+        1px solid #e0eaf2;
+
+      vertical-align: middle;
     }
 
 
-    .totals-wrap {
-
-      margin-top: 12px;
-
-      display: flex;
-
-      justify-content:
-        flex-end;
-
+    .po-table td.number {
+      text-align: center;
     }
 
 
-    .totals-table {
+    .po-table td.money {
+      text-align: right;
+
+      white-space: nowrap;
+    }
+
+
+    .totals-block {
+      margin-top: 14px;
+
+      margin-left: auto;
 
       width:
         min(
@@ -1183,70 +966,69 @@
 
       border-collapse:
         collapse;
-
-      font-size: 13px;
-
     }
 
 
-    .totals-table td {
+    .totals-block td {
+      padding: 8px 10px;
 
-      padding: 8px;
+      border-bottom:
+        1px solid #d6e2ed;
 
-      border:
-        1px solid #d0d5dd;
-
+      font-size: 12px;
     }
 
 
-    .totals-table td:last-child {
+    .totals-block td:first-child {
+      font-weight: 800;
+    }
 
+
+    .totals-block td:last-child {
       text-align: right;
 
-      font-weight: 850;
-
+      font-weight: 900;
     }
 
 
-    .totals-total {
+    .totals-block .grand-total {
+      background:
+        var(--brand-soft);
 
-      font-size: 16px;
+      color:
+        var(--brand);
+
+      font-size: 15px;
 
       font-weight: 900;
-
     }
 
 
-    .doc-conditions {
+    .po-footer {
+      margin-top: 26px;
 
-      margin-top: 22px;
-
-      padding-top: 14px;
+      padding-top: 15px;
 
       border-top:
-        1px solid #d0d5dd;
+        2px solid var(--brand);
 
-      font-size: 11px;
+      font-size: 10px;
 
       line-height: 1.45;
 
-      color:
-        #344054;
-
+      color: #475467;
     }
 
 
-    .doc-footer-text {
-
+    .po-thanks {
       margin-top: 18px;
 
       text-align: center;
 
-      font-size: 11px;
-
       color:
         #667085;
 
+      font-size: 10px;
     }
 
 
@@ -1255,11 +1037,9 @@
        ========================================================= */
 
     .toast {
-
       position: fixed;
 
       left: 50%;
-
       bottom: 24px;
 
       transform:
@@ -1268,16 +1048,16 @@
 
       opacity: 0;
 
-      padding:
-        13px 16px;
+      padding: 13px 16px;
 
       max-width:
-        calc(100vw - 30px);
+        calc(
+          100vw - 30px
+        );
 
       border-radius: 12px;
 
-      background:
-        #101828;
+      background: #101828;
 
       color: #ffffff;
 
@@ -1289,18 +1069,15 @@
 
       transition:
         all 0.22s ease;
-
     }
 
 
     .toast.visible {
-
       transform:
         translateX(-50%)
         translateY(0);
 
       opacity: 1;
-
     }
 
 
@@ -1312,13 +1089,11 @@
       (max-width: 1050px) {
 
       .cards-grid {
-
         grid-template-columns:
           repeat(
             2,
             minmax(0, 1fr)
           );
-
       }
 
     }
@@ -1337,11 +1112,9 @@
 
 
       .topbar {
-
         top: 6px;
 
         padding: 13px;
-
       }
 
 
@@ -1355,134 +1128,86 @@
       }
 
 
-      .filters-card {
-
-        margin-top: 10px;
-
-        padding: 12px;
-
-      }
-
-
       .filters-grid {
-
         grid-template-columns:
           1fr;
-
-        gap: 9px;
-
       }
 
 
       .filters-footer {
-
         flex-direction:
           column;
 
         align-items:
           flex-start;
-
-      }
-
-
-      .last-update {
-        text-align: left;
       }
 
 
       .cards-grid {
-
-        margin-top: 12px;
-
         grid-template-columns:
           1fr;
-
-        gap: 12px;
-
-      }
-
-
-      .oc-card {
-
-        min-height: auto;
-
-        padding: 13px;
-
       }
 
 
       .modal-overlay {
-
         padding: 0;
 
-        background:
-          #ffffff;
-
+        background: #ffffff;
       }
 
 
       .modal-container {
-
         margin: 0;
 
-        min-height:
-          100vh;
+        min-height: 100vh;
 
         border-radius: 0;
-
       }
 
 
       .modal-body {
-        padding: 10px;
+        padding: 6px;
       }
 
 
-      .oc-document {
+      .purchase-order {
+        padding: 16px 12px;
 
         border: none;
 
-        padding: 14px;
-
+        box-shadow: none;
       }
 
 
-      .doc-header {
+      .po-title {
+        min-height: 48px;
 
+        font-size: 18px;
+      }
+
+
+      .po-top {
         grid-template-columns:
           1fr;
 
+        gap: 15px;
       }
 
 
-      .doc-oc-info {
-        text-align: left;
-      }
-
-
-      .doc-info-grid {
-
+      .supplier-section {
         grid-template-columns:
           1fr;
-
       }
 
 
-      .doc-info-box +
-      .doc-info-box {
-
-        border-left: none;
-
-        border-top:
-          1px solid #d0d5dd;
-
+      .po-field {
+        grid-template-columns:
+          135px 1fr;
       }
 
 
       .modal-footer {
-
         position: sticky;
-
         bottom: 0;
 
         display: grid;
@@ -1499,15 +1224,6 @@
               safe-area-inset-bottom
             )
           );
-
-      }
-
-
-      .card-actions {
-
-        grid-template-columns:
-          1fr 1fr;
-
       }
 
     }
@@ -1522,18 +1238,14 @@
 
 
       .card-actions {
-
         grid-template-columns:
           1fr;
-
       }
 
 
       .modal-footer {
-
         grid-template-columns:
           1fr;
-
       }
 
     }
@@ -1551,7 +1263,7 @@
 
     <header class="topbar">
 
-      <div class="brand-block">
+      <div>
 
         <h1 class="brand-title">
           Gestión de Compras
@@ -1588,7 +1300,7 @@
 
         <div class="filter-group">
 
-          <label for="filtroEstado">
+          <label>
             Estado
           </label>
 
@@ -1609,7 +1321,7 @@
 
         <div class="filter-group">
 
-          <label for="filtroProveedor">
+          <label>
             Proveedor
           </label>
 
@@ -1630,7 +1342,7 @@
 
         <div class="filter-group">
 
-          <label for="filtroEmpresa">
+          <label>
             Empresa
           </label>
 
@@ -1713,10 +1425,6 @@
   </div>
 
 
-  <!-- ========================================================
-       MODAL VER OC
-       ======================================================== -->
-
   <div
     id="modalOC"
     class="modal-overlay"
@@ -1729,7 +1437,7 @@
       <div class="modal-header">
 
         <h2>
-          Ver OC
+          Vista previa OC
         </h2>
 
 
@@ -1747,7 +1455,6 @@
 
         <div
           id="documentoOC"
-          class="oc-document"
         ></div>
 
       </div>
@@ -1785,22 +1492,14 @@
   ></div>
 
 
-
   <script>
 
 
     /**********************************************************
-     * CONFIGURACIÓN
+     * CONFIG
      **********************************************************/
 
     const CONFIG = {
-
-      /*
-       * PEGA AQUÍ LA URL DE LA NUEVA
-       * IMPLEMENTACIÓN DE COMPRAS.
-       *
-       * Debe terminar en /exec
-       */
 
       API_BASE_URL:
         'https://script.google.com/macros/s/AKfycbyB-26Y-FVjiiD7-yVsQ8rKDZu81ZyVxdzcjd4oaj5fQgKi8MswBwdNR-zN7owVxwU84g/exec'
@@ -1808,29 +1507,19 @@
     };
 
 
-
-    /**********************************************************
-     * ESTADO LOCAL
-     **********************************************************/
-
     let PANEL = {
-
       actualizado: '',
-
       oc: [],
-
       proveedores: [],
-
       empresas: [],
-
       estados: []
-
     };
 
 
     let OC_VISIBLE = [];
 
-    let OC_MODAL_ACTUAL = null;
+    let OC_MODAL_ACTUAL =
+      null;
 
 
 
@@ -1850,7 +1539,7 @@
 
 
     /**********************************************************
-     * CARGAR DATOS
+     * API
      **********************************************************/
 
     async function cargarDatos() {
@@ -1866,7 +1555,8 @@
         );
 
 
-      boton.disabled = true;
+      boton.disabled =
+        true;
 
 
       try {
@@ -1893,7 +1583,9 @@
           throw new Error(
             respuesta &&
             respuesta.error
+
               ? respuesta.error
+
               : 'No fue posible cargar Compras.'
           );
 
@@ -1901,19 +1593,7 @@
 
 
         PANEL =
-          respuesta.data || {
-
-            actualizado: '',
-
-            oc: [],
-
-            proveedores: [],
-
-            empresas: [],
-
-            estados: []
-
-          };
+          respuesta.data;
 
 
         cargarSelects();
@@ -1926,30 +1606,33 @@
             'ultimaActualizacion'
           )
           .textContent =
-
-            PANEL.actualizado
-
-              ? 'Actualizado: '
-                +
-                PANEL.actualizado
-
-              : 'Actualizado';
+            'Actualizado: '
+            +
+            (
+              PANEL.actualizado ||
+              '-'
+            );
 
 
-      } catch (error) {
+      } catch (
+        error
+      ) {
 
         mostrarError(
-          error &&
-          error.message
-            ? error.message
-            : String(error)
+          error.message ||
+          String(
+            error
+          )
         );
 
       } finally {
 
-        mostrarCarga(false);
+        mostrarCarga(
+          false
+        );
 
-        boton.disabled = false;
+        boton.disabled =
+          false;
 
       }
 
@@ -1957,24 +1640,26 @@
 
 
 
-    /**********************************************************
-     * JSONP
-     *
-     * Permite que GitHub Pages consulte
-     * Apps Script sin depender de CORS.
-     **********************************************************/
-
-    function cargarJsonp(url) {
+    function cargarJsonp(
+      url
+    ) {
 
       return new Promise(
-        function(resolve, reject) {
+        function(
+          resolve,
+          reject
+        ) {
 
           const callback =
-            '__gfCompras_' +
-            Date.now() +
-            '_' +
+            '__gfCompras_'
+            +
+            Date.now()
+            +
+            '_'
+            +
             Math.floor(
-              Math.random() *
+              Math.random()
+              *
               100000
             );
 
@@ -1999,7 +1684,7 @@
 
                 reject(
                   new Error(
-                    'Tiempo de espera agotado al consultar MAESTRO.'
+                    'Tiempo de espera agotado consultando MAESTRO.'
                   )
                 );
 
@@ -2033,11 +1718,14 @@
                 callback
               ];
 
-            } catch (error) {
+            } catch (
+              error
+            ) {
 
               window[
                 callback
-              ] = undefined;
+              ] =
+                undefined;
 
             }
 
@@ -2047,7 +1735,9 @@
           window[
             callback
           ] =
-            function(respuesta) {
+            function(
+              respuesta
+            ) {
 
               limpiar();
 
@@ -2065,7 +1755,7 @@
 
               reject(
                 new Error(
-                  'No fue posible conectar con la API de Compras.'
+                  'No fue posible conectar con la API.'
                 )
               );
 
@@ -2128,7 +1818,7 @@
     function llenarSelect(
       id,
       valores,
-      etiquetaTodos
+      todos
     ) {
 
       const select =
@@ -2137,7 +1827,7 @@
         );
 
 
-      const valorActual =
+      const actual =
         select.value;
 
 
@@ -2145,70 +1835,71 @@
         '';
 
 
-      const optionTodos =
+      const option =
         document.createElement(
           'option'
         );
 
 
-      optionTodos.value =
+      option.value =
         '';
 
-      optionTodos.textContent =
-        etiquetaTodos;
+      option.textContent =
+        todos;
 
 
       select.appendChild(
-        optionTodos
+        option
       );
 
 
       valores.forEach(
-        function(valor) {
+        function(
+          valor
+        ) {
 
-          const option =
+          const op =
             document.createElement(
               'option'
             );
 
 
-          option.value =
+          op.value =
             valor;
 
-
-          option.textContent =
+          op.textContent =
             valor;
 
 
           select.appendChild(
-            option
+            op
           );
 
         }
       );
 
 
-      const existe =
+      if (
         Array
           .from(
             select.options
           )
           .some(
-            function(option) {
+            function(
+              op
+            ) {
 
               return (
-                option.value ===
-                valorActual
+                op.value ===
+                actual
               );
 
             }
-          );
-
-
-      if (existe) {
+          )
+      ) {
 
         select.value =
-          valorActual;
+          actual;
 
       }
 
@@ -2243,36 +1934,37 @@
 
 
       OC_VISIBLE =
-        (PANEL.oc || [])
-          .filter(
-            function(item) {
+        (
+          PANEL.oc ||
+          []
+        )
+        .filter(
+          function(
+            item
+          ) {
 
-              const cumpleEstado =
+            return (
+              (
                 !estado ||
                 item.estado ===
-                  estado;
-
-
-              const cumpleProveedor =
+                  estado
+              )
+              &&
+              (
                 !proveedor ||
                 item.proveedor ===
-                  proveedor;
-
-
-              const cumpleEmpresa =
+                  proveedor
+              )
+              &&
+              (
                 !empresa ||
                 item.empresa ===
-                  empresa;
+                  empresa
+              )
+            );
 
-
-              return (
-                cumpleEstado &&
-                cumpleProveedor &&
-                cumpleEmpresa
-              );
-
-            }
-          );
+          }
+        );
 
 
       renderTarjetas(
@@ -2287,7 +1979,9 @@
      * TARJETAS
      **********************************************************/
 
-    function renderTarjetas(lista) {
+    function renderTarjetas(
+      lista
+    ) {
 
       const contenedor =
         document.getElementById(
@@ -2295,7 +1989,7 @@
         );
 
 
-      const emptyBox =
+      const empty =
         document.getElementById(
           'emptyBox'
         );
@@ -2310,13 +2004,16 @@
           'contadorResultados'
         )
         .textContent =
-          lista.length +
+          lista.length
+          +
           ' OC';
 
 
-      if (!lista.length) {
+      if (
+        !lista.length
+      ) {
 
-        emptyBox.style.display =
+        empty.style.display =
           'block';
 
         return;
@@ -2324,12 +2021,14 @@
       }
 
 
-      emptyBox.style.display =
+      empty.style.display =
         'none';
 
 
       lista.forEach(
-        function(item) {
+        function(
+          item
+        ) {
 
           const card =
             document.createElement(
@@ -2356,6 +2055,7 @@
 
 
               <div class="oc-heading">
+
 
                 <div class="oc-number-row">
 
@@ -2423,9 +2123,7 @@
                       Number(
                         item.cantidadLineas
                       ) === 1
-
                         ? 'producto'
-
                         : 'productos'
                     }
 
@@ -2447,6 +2145,7 @@
 
             <div class="card-actions">
 
+
               <button
                 class="btn btn-view"
                 onclick="
@@ -2456,7 +2155,7 @@
                 "
               >
 
-                👁 Ver OC
+                Ver OC
 
               </button>
 
@@ -2466,6 +2165,7 @@
                   item
                 )
               }
+
 
             </div>
 
@@ -2482,10 +2182,6 @@
     }
 
 
-
-    /**********************************************************
-     * BOTÓN SEGÚN ESTADO
-     **********************************************************/
 
     function botonAccionHTML(
       item
@@ -2512,9 +2208,7 @@
               )
             "
           >
-
             WhatsApp
-
           </button>
 
         `;
@@ -2537,9 +2231,7 @@
               )
             "
           >
-
             Registrar respuesta
-
           </button>
 
         `;
@@ -2550,29 +2242,7 @@
       if (
         estado ===
         'HABILITADA PARA RECEPCION'
-      ) {
-
-        return `
-
-          <button
-            class="btn btn-blue"
-            onclick="
-              avisoMVP(
-                'OC habilitada para Recepción. Continúa visible hasta Pagos.'
-              )
-            "
-          >
-
-            Seguimiento
-
-          </button>
-
-        `;
-
-      }
-
-
-      if (
+        ||
         estado ===
         'RECEPCIONADA'
       ) {
@@ -2583,13 +2253,11 @@
             class="btn btn-blue"
             onclick="
               avisoMVP(
-                'OC recepcionada. Continúa pendiente hasta entrega documental a Pagos.'
+                'Esta OC continúa visible hasta que Pagos confirme RECIBIDO.'
               )
             "
           >
-
             Seguimiento
-
           </button>
 
         `;
@@ -2612,9 +2280,7 @@
               )
             "
           >
-
             Gestionar detalle
-
           </button>
 
         `;
@@ -2637,20 +2303,27 @@
     ) {
 
       const item =
-        (PANEL.oc || [])
-          .find(
-            function(oc) {
+        (
+          PANEL.oc ||
+          []
+        )
+        .find(
+          function(
+            oc
+          ) {
 
-              return (
-                oc.clave ===
-                clave
-              );
+            return (
+              oc.clave ===
+              clave
+            );
 
-            }
-          );
+          }
+        );
 
 
-      if (!item) {
+      if (
+        !item
+      ) {
 
         avisoMVP(
           'No se pudo localizar la OC.'
@@ -2675,21 +2348,21 @@
           );
 
 
-      const botonEnviar =
-        document.getElementById(
+      document
+        .getElementById(
           'btnEnviarModal'
-        );
+        )
+        .style
+        .display =
 
+          normalizar(
+            item.estado
+          ) ===
+          'PENDIENTE DE ENVIO'
 
-      botonEnviar.style.display =
-        normalizar(
-          item.estado
-        ) ===
-        'PENDIENTE DE ENVIO'
+            ? 'flex'
 
-          ? 'flex'
-
-          : 'none';
+            : 'none';
 
 
       document
@@ -2709,218 +2382,324 @@
 
 
 
-    /**********************************************************
-     * DOCUMENTO OC
-     **********************************************************/
-
     function construirDocumentoOC(
       item
     ) {
 
       const filas =
-        (item.lineas || [])
-          .map(
-            function(linea) {
+        (
+          item.lineas ||
+          []
+        )
+        .map(
+          function(
+            linea,
+            index
+          ) {
 
-              return `
+            return `
 
-                <tr>
+              <tr>
 
-                  <td>
-                    ${escapeHtml(linea.codigo)}
-                  </td>
+                <td class="number">
+                  ${index + 1}
+                </td>
 
-                  <td>
-                    ${escapeHtml(linea.producto)}
-                  </td>
+                <td class="number">
+                  ${escapeHtml(linea.codigo || '')}
+                </td>
 
-                  <td class="align-right">
-                    ${formatoNumero(linea.cantidad)}
-                  </td>
+                <td>
+                  ${escapeHtml(linea.producto)}
+                </td>
 
-                  <td>
-                    ${escapeHtml(linea.unidad)}
-                  </td>
+                <td class="number">
+                  ${formatoNumero(linea.cantidad)}
+                </td>
 
-                  <td class="align-right">
-                    ${formatoMoneda(linea.precio)}
-                  </td>
+                <td class="number">
+                  ${escapeHtml(linea.unidad)}
+                </td>
 
-                  <td class="align-right">
-                    ${formatoMoneda(linea.total)}
-                  </td>
+                <td class="money">
+                  ${formatoMoneda(linea.precio)}
+                </td>
 
-                </tr>
+                <td class="money">
+                  ${formatoMoneda(linea.total)}
+                </td>
 
-              `;
+              </tr>
 
-            }
+            `;
+
+          }
+        )
+        .join('');
+
+
+      const datosProveedor =
+        [
+          campoDocumento(
+            'RUT',
+            item.rutProveedor
+          ),
+
+          campoDocumento(
+            'Contacto',
+            item.contactoProveedor
+          ),
+
+          campoDocumento(
+            'Correo',
+            item.correoProveedor
+          ),
+
+          campoDocumento(
+            'Teléfono',
+            item.telefonoProveedor
           )
-          .join('');
+        ]
+        .filter(Boolean)
+        .join('');
+
+
+      const jefatura =
+        construirJefatura(
+          item
+        );
 
 
       return `
 
-        <div class="doc-header">
+        <div class="purchase-order">
 
-          <div>
 
-            <div class="doc-brand">
-              GRUPO FIORENTINI
+          <div class="po-title">
+            ORDEN DE COMPRA
+          </div>
+
+
+          <div class="po-top">
+
+
+            <div>
+
+              <div class="po-company-name">
+
+                ${escapeHtml(
+                  item.empresaDocumento ||
+                  item.empresa
+                )}
+
+              </div>
+
+
+              ${campoDocumento(
+                'RUT',
+                item.rutEmpresa
+              )}
+
+
+              ${campoDocumento(
+                'Dirección',
+                item.direccionEmpresa
+              )}
+
+
+              ${campoDocumento(
+                'Correo',
+                item.correoEmpresa
+              )}
+
+
+              ${jefatura}
+
             </div>
 
-            <div class="doc-brand-small">
-              Orden de Compra
+
+            <div class="po-right">
+
+
+              <div class="po-field">
+
+                <div class="po-field-label">
+                  N° OC:
+                </div>
+
+                <div class="po-field-value">
+                  ${escapeHtml(item.oc)}
+                </div>
+
+              </div>
+
+
+              ${
+                item.lote
+
+                  ? `
+
+                    <div class="po-field">
+
+                      <div class="po-field-label">
+                        LOTE:
+                      </div>
+
+                      <div class="po-field-value">
+                        ${escapeHtml(item.lote)}
+                      </div>
+
+                    </div>
+
+                  `
+
+                  : ''
+              }
+
+
+              <div class="po-field">
+
+                <div class="po-field-label">
+                  FECHA DE EMISIÓN:
+                </div>
+
+                <div class="po-field-value">
+                  ${escapeHtml(item.fechaEmision || '-')}
+                </div>
+
+              </div>
+
+
+              ${
+                item.fechaEntrega
+
+                  ? `
+
+                    <div class="po-field">
+
+                      <div class="po-field-label">
+                        FECHA DE ENTREGA:
+                      </div>
+
+                      <div class="po-field-value">
+                        ${escapeHtml(item.fechaEntrega)}
+                      </div>
+
+                    </div>
+
+                  `
+
+                  : ''
+              }
+
+
+              <div class="po-field">
+
+                <div class="po-field-label">
+                  ESTADO:
+                </div>
+
+                <div class="po-status">
+                  APROBADO POR JEFATURA
+                </div>
+
+              </div>
+
+
             </div>
+
 
           </div>
 
 
-          <div class="doc-oc-info">
+          <div class="supplier-section">
 
-            <div class="doc-label">
-              Orden de Compra
-            </div>
 
-            <div class="doc-big">
-              ${escapeHtml(item.oc)}
-            </div>
+            <div>
 
-            <div
-              style="
-                margin-top:6px;
-                font-size:12px;
-                color:#475467;
-              "
-            >
+              <div class="supplier-title">
+                DATOS DEL PROVEEDOR
+              </div>
 
-              Fecha:
-              ${escapeHtml(item.fechaEmision || '-')}
 
-            </div>
+              <div class="po-company-name">
 
-            <div
-              style="
-                margin-top:2px;
-                font-size:12px;
-                color:#475467;
-              "
-            >
+                ${escapeHtml(item.proveedor || '-')}
 
-              Lote:
-              ${escapeHtml(item.lote || '-')}
+              </div>
+
+
+              ${datosProveedor}
+
 
             </div>
 
-          </div>
 
-        </div>
+            <div class="supplier-reminder">
 
+              Por favor, en todas sus facturas,
+              guías de despacho y documentos tributarios,
+              indique el número de esta Orden de Compra:
 
-        <div class="doc-status">
+              <div class="supplier-reminder-oc">
 
-          ESTADO: APROBADO POR JEFATURA
+                ${escapeHtml(item.oc)}
 
-        </div>
-
-
-        <div class="doc-info-grid">
-
-          <div class="doc-info-box">
-
-            <div class="doc-info-title">
-              Empresa Emisora
-            </div>
-
-            <div class="doc-info-main">
-              ${escapeHtml(item.empresa)}
-            </div>
-
-            <div
-              style="
-                margin-top:5px;
-                font-size:12px;
-                color:#475467;
-              "
-            >
-
-              RUT:
-              ${escapeHtml(item.rutEmpresa || '-')}
+              </div>
 
             </div>
+
 
           </div>
 
 
-          <div class="doc-info-box">
+          <div class="po-table-wrap">
 
-            <div class="doc-info-title">
-              Proveedor
-            </div>
 
-            <div class="doc-info-main">
-              ${escapeHtml(item.proveedor || '-')}
-            </div>
+            <table class="po-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>N°</th>
+
+                  <th>CÓDIGO</th>
+
+                  <th>PRODUCTO</th>
+
+                  <th>CANTIDAD</th>
+
+                  <th>UND. DE MEDIDA</th>
+
+                  <th>PRECIO UNITARIO</th>
+
+                  <th>TOTAL</th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                ${filas}
+
+              </tbody>
+
+            </table>
+
 
           </div>
 
-        </div>
 
+          <table class="totals-block">
 
-        <div class="doc-table-wrap">
-
-          <table class="doc-table">
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  Código
-                </th>
-
-                <th>
-                  Producto
-                </th>
-
-                <th class="align-right">
-                  Cant.
-                </th>
-
-                <th>
-                  U.M.
-                </th>
-
-                <th class="align-right">
-                  P. Unitario
-                </th>
-
-                <th class="align-right">
-                  Total
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-              ${filas}
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        <div class="totals-wrap">
-
-          <table class="totals-table">
 
             <tr>
 
               <td>
-                Neto
+                NETO
               </td>
 
               <td>
@@ -2943,7 +2722,7 @@
             </tr>
 
 
-            <tr class="totals-total">
+            <tr class="grand-total">
 
               <td>
                 TOTAL
@@ -2955,35 +2734,125 @@
 
             </tr>
 
+
           </table>
 
+
+          <div class="po-footer">
+
+            <strong>
+              CONDICIONES GENERALES
+            </strong>
+
+            <br><br>
+
+            Esta Orden de Compra corresponde a las
+            cantidades y condiciones autorizadas vigentes.
+
+            <br><br>
+
+            Los estados internos de Gestión de Compras,
+            incidencias, reautorizaciones, Recepción y Pagos
+            no forman parte del documento remitido al proveedor.
+
+          </div>
+
+
+          <div class="po-thanks">
+
+            Gracias por ser parte de Grupo Fiorentini.
+
+          </div>
+
+
         </div>
 
+      `;
 
-        <div class="doc-conditions">
+    }
+
+
+
+    function construirJefatura(
+      item
+    ) {
+
+      if (
+        !item.autorizadoPorJefatura
+        &&
+        !item.fechaAutorizacionJefatura
+      ) {
+
+        return '';
+
+      }
+
+
+      let texto =
+        'Jefatura:';
+
+
+      if (
+        item.autorizadoPorJefatura
+      ) {
+
+        texto +=
+          ' '
+          +
+          item.autorizadoPorJefatura;
+
+      }
+
+
+      if (
+        item.fechaAutorizacionJefatura
+      ) {
+
+        texto +=
+          ' · '
+          +
+          item.fechaAutorizacionJefatura;
+
+      }
+
+
+      return `
+
+        <div class="po-info-line">
+
+          ${escapeHtml(texto)}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function campoDocumento(
+      etiqueta,
+      valor
+    ) {
+
+      if (
+        !valor
+      ) {
+
+        return '';
+
+      }
+
+
+      return `
+
+        <div class="po-info-line">
 
           <strong>
-            Condiciones generales
+            ${escapeHtml(etiqueta)}:
           </strong>
 
-          <br><br>
-
-          Esta es la vista previa de la Orden de Compra que será enviada al proveedor.
-
-          <br><br>
-
-          El único estado visible para el proveedor es:
-
-          <strong>
-            APROBADO POR JEFATURA
-          </strong>.
-
-        </div>
-
-
-        <div class="doc-footer-text">
-
-          Gracias por ser parte de Grupo Fiorentini.
+          ${escapeHtml(valor)}
 
         </div>
 
@@ -2994,7 +2863,7 @@
 
 
     /**********************************************************
-     * CERRAR OC
+     * CERRAR
      **********************************************************/
 
     function cerrarOC() {
@@ -3037,7 +2906,7 @@
 
 
     /**********************************************************
-     * ENVÍO SIMULADO
+     * WHATSAPP TODAVÍA SIMULADO
      **********************************************************/
 
     function simularEnvio(
@@ -3045,24 +2914,27 @@
     ) {
 
       const item =
-        (PANEL.oc || [])
-          .find(
-            function(oc) {
+        (
+          PANEL.oc ||
+          []
+        )
+        .find(
+          function(
+            oc
+          ) {
 
-              return (
-                oc.clave ===
-                clave
-              );
+            return (
+              oc.clave ===
+              clave
+            );
 
-            }
-          );
-
-
-      if (!item) {
-
-        avisoMVP(
-          'No se pudo localizar la OC.'
+          }
         );
+
+
+      if (
+        !item
+      ) {
 
         return;
 
@@ -3070,11 +2942,13 @@
 
 
       avisoMVP(
+
         item.oc
         +
         ' está lista para WhatsApp Empresa. '
         +
-        'Esta versión todavía NO envía ni modifica MAESTRO.'
+        'Todavía NO se registra envío en MAESTRO.'
+
       );
 
     }
@@ -3083,17 +2957,14 @@
     function simularEnvioDesdeModal() {
 
       if (
-        !OC_MODAL_ACTUAL
+        OC_MODAL_ACTUAL
       ) {
 
-        return;
+        simularEnvio(
+          OC_MODAL_ACTUAL.clave
+        );
 
       }
-
-
-      simularEnvio(
-        OC_MODAL_ACTUAL.clave
-      );
 
     }
 
@@ -3206,19 +3077,15 @@
         .NumberFormat(
           'es-CL',
           {
-            style:
-              'currency',
-
-            currency:
-              'CLP',
-
-            maximumFractionDigits:
-              0
+            style: 'currency',
+            currency: 'CLP',
+            maximumFractionDigits: 0
           }
         )
         .format(
           Number(
-            valor || 0
+            valor ||
+            0
           )
         );
 
@@ -3239,7 +3106,8 @@
         )
         .format(
           Number(
-            valor || 0
+            valor ||
+            0
           )
         );
 
@@ -3258,7 +3126,9 @@
       return String(
         valor === null ||
         valor === undefined
+
           ? ''
+
           : valor
       )
       .replace(
@@ -3292,7 +3162,9 @@
       return String(
         valor === null ||
         valor === undefined
+
           ? ''
+
           : valor
       )
       .replace(
@@ -3320,7 +3192,8 @@
     ) {
 
       return String(
-        valor || ''
+        valor ||
+        ''
       )
       .normalize(
         'NFD'
