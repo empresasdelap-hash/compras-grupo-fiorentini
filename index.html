@@ -10,51 +10,50 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta
-    name="theme-color"
-    content="#19476b"
-  >
+  <meta name="theme-color" content="#184f78">
 
   <title>Gestión de Compras · Grupo Fiorentini</title>
 
   <style>
 
     :root {
-      --bg: #f4f6f8;
-      --card: #ffffff;
-      --text: #182230;
+      --fondo: #f4f6f8;
+      --blanco: #ffffff;
+
+      --azul: #184f78;
+      --azul-2: #24638f;
+      --azul-claro: #eaf3f9;
+      --azul-linea: #c8dcea;
+
+      --texto: #182230;
       --muted: #667085;
-      --border: #e4e7ec;
+      --borde: #dbe3ea;
 
-      --brand: #19476b;
-      --brand-soft: #e8f1f8;
+      --verde: #079455;
+      --verde-claro: #dcfae6;
 
-      --primary: #1570ef;
-      --success: #12b76a;
-      --success-dark: #039855;
+      --naranjo-bg: #fff1e8;
+      --naranjo-text: #c4320a;
 
-      --orange-bg: #fff1e8;
-      --orange-text: #c4320a;
+      --amarillo-bg: #fffaeb;
+      --amarillo-text: #b54708;
 
-      --yellow-bg: #fffaeb;
-      --yellow-text: #b54708;
+      --azul-bg: #eff8ff;
+      --azul-text: #175cd3;
 
-      --blue-bg: #eff8ff;
-      --blue-text: #175cd3;
+      --morado-bg: #f4f3ff;
+      --morado-text: #5925dc;
 
-      --purple-bg: #f4f3ff;
-      --purple-text: #5925dc;
+      --rojo-bg: #fef3f2;
+      --rojo-text: #b42318;
 
-      --red-bg: #fef3f2;
-      --red-text: #b42318;
+      --gris-bg: #f2f4f7;
+      --gris-text: #475467;
 
-      --gray-bg: #f2f4f7;
-      --gray-text: #475467;
+      --radio: 16px;
 
-      --shadow:
-        0 3px 12px rgba(16, 24, 40, 0.08);
-
-      --radius: 16px;
+      --sombra:
+        0 4px 15px rgba(16, 24, 40, 0.08);
     }
 
 
@@ -66,18 +65,15 @@
     html,
     body {
       margin: 0;
-      padding: 0;
       min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
 
       font-family:
         Arial,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
+        Helvetica,
         sans-serif;
+
+      background: var(--fondo);
+      color: var(--texto);
     }
 
 
@@ -92,54 +88,58 @@
     }
 
 
+    /* =========================================================
+       APP
+       ========================================================= */
+
     .app-shell {
       width: 100%;
-      max-width: 1440px;
-      margin: 0 auto;
+      max-width: 1450px;
+
+      margin: auto;
       padding: 18px;
     }
 
 
-    /* =========================================================
-       ENCABEZADO
-       ========================================================= */
-
     .topbar {
       display: flex;
+
+      justify-content:
+        space-between;
+
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+
+      gap: 15px;
 
       padding: 16px 18px;
 
-      background: #ffffff;
+      background: #fff;
 
       border:
-        1px solid var(--border);
+        1px solid var(--borde);
 
       border-radius:
-        var(--radius);
+        var(--radio);
 
       box-shadow:
-        var(--shadow);
+        var(--sombra);
 
       position: sticky;
       top: 10px;
+
       z-index: 20;
     }
 
 
-    .brand-title {
+    .topbar h1 {
       margin: 0;
 
       font-size: 23px;
       font-weight: 900;
-
-      letter-spacing: -0.4px;
     }
 
 
-    .brand-subtitle {
+    .topbar-sub {
       margin-top: 4px;
 
       color: var(--muted);
@@ -153,33 +153,20 @@
 
       border: none;
 
-      border-radius: 11px;
+      border-radius: 10px;
 
-      padding: 10px 16px;
+      padding: 10px 17px;
 
-      background:
-        var(--success);
+      background: #12b76a;
 
-      color: #ffffff;
+      color: #fff;
 
-      font-weight: 850;
-
-      display: inline-flex;
-      align-items: center;
-
-      gap: 8px;
-    }
-
-
-    .btn-refresh:hover {
-      background:
-        var(--success-dark);
+      font-weight: 900;
     }
 
 
     .btn-refresh:disabled {
-      opacity: 0.55;
-      cursor: wait;
+      opacity: .5;
     }
 
 
@@ -187,21 +174,21 @@
        FILTROS
        ========================================================= */
 
-    .filters-card {
+    .filters {
       margin-top: 16px;
 
-      background: #ffffff;
+      background: #fff;
 
       border:
-        1px solid var(--border);
+        1px solid var(--borde);
 
       border-radius:
-        var(--radius);
-
-      box-shadow:
-        var(--shadow);
+        var(--radio);
 
       padding: 14px;
+
+      box-shadow:
+        var(--sombra);
     }
 
 
@@ -209,103 +196,92 @@
       display: grid;
 
       grid-template-columns:
-        repeat(
-          3,
-          minmax(180px, 1fr)
-        );
+        repeat(3, minmax(180px, 1fr));
 
       gap: 12px;
     }
 
 
-    .filter-group label {
+    .filter label {
       display: block;
 
       margin-bottom: 6px;
 
       font-size: 12px;
-      font-weight: 850;
-
-      text-transform: uppercase;
 
       color: #475467;
 
-      letter-spacing: 0.4px;
+      font-weight: 900;
+
+      text-transform:
+        uppercase;
     }
 
 
-    .filter-select {
+    .filter select {
       width: 100%;
       height: 44px;
-
-      padding: 0 12px;
 
       border:
         1px solid #d0d5dd;
 
       border-radius: 10px;
 
-      background: #ffffff;
+      padding: 0 12px;
 
-      color: var(--text);
+      background: #fff;
     }
 
 
-    .filters-footer {
+    .filters-bottom {
       margin-top: 12px;
       padding-top: 12px;
 
       border-top:
-        1px solid var(--border);
+        1px solid var(--borde);
 
       display: flex;
 
-      justify-content: space-between;
-      align-items: center;
+      justify-content:
+        space-between;
 
       gap: 12px;
-    }
 
-
-    .result-count,
-    .last-update {
-      font-size: 12px;
       color: var(--muted);
+
+      font-size: 12px;
     }
 
 
     /* =========================================================
-       MENSAJES
+       ESTADOS
        ========================================================= */
 
-    .loading-box,
-    .empty-box,
-    .error-box {
+    .loading,
+    .empty,
+    .error {
       margin-top: 18px;
 
       padding: 30px;
 
-      border-radius:
-        var(--radius);
-
-      background: #ffffff;
+      background: #fff;
 
       border:
-        1px solid var(--border);
+        1px solid var(--borde);
+
+      border-radius:
+        var(--radio);
 
       box-shadow:
-        var(--shadow);
+        var(--sombra);
 
       text-align: center;
     }
 
 
-    .error-box {
-      color: var(--red-text);
-
-      border-color: #fecdca;
-
-      background: #fff6f5;
+    .error {
+      color:
+        var(--rojo-text);
     }
 
 
@@ -313,27 +289,29 @@
       width: 32px;
       height: 32px;
 
-      margin:
-        0 auto 12px;
-
       border:
         4px solid #e4e7ec;
 
       border-top-color:
-        var(--primary);
+        #1570ef;
 
       border-radius: 50%;
 
+      margin:
+        0 auto 12px;
+
       animation:
-        spin 0.8s linear infinite;
+        spin .8s linear infinite;
     }
 
 
     @keyframes spin {
+
       to {
         transform:
           rotate(360deg);
       }
+
     }
 
 
@@ -341,68 +319,62 @@
        TARJETAS
        ========================================================= */
 
-    .cards-grid {
+    .cards {
       margin-top: 18px;
 
       display: grid;
 
       grid-template-columns:
-        repeat(
-          3,
-          minmax(0, 1fr)
-        );
+        repeat(3, minmax(0, 1fr));
 
       gap: 16px;
     }
 
 
     .oc-card {
-      background:
-        var(--card);
+      padding: 15px;
+
+      min-height: 260px;
+
+      background: #fff;
 
       border:
-        1px solid var(--border);
+        1px solid var(--borde);
 
       border-radius:
-        var(--radius);
+        var(--radio);
 
       box-shadow:
-        var(--shadow);
-
-      padding: 15px;
+        var(--sombra);
 
       display: flex;
       flex-direction: column;
-
-      min-height: 260px;
     }
 
 
-    .card-topline {
+    .card-head {
       display: flex;
+
+      gap: 10px;
 
       align-items:
         flex-start;
-
-      gap: 10px;
     }
 
 
-    .select-box input {
+    .card-check input {
       width: 20px;
       height: 20px;
-
-      cursor: pointer;
     }
 
 
-    .oc-heading {
-      flex: 1;
+    .card-main {
       min-width: 0;
+      flex: 1;
     }
 
 
-    .oc-number-row {
+    .card-title-row {
       display: flex;
 
       align-items: center;
@@ -419,79 +391,86 @@
     }
 
 
-    .status-chip {
-      display: inline-flex;
-
-      align-items: center;
-      justify-content: center;
-
+    .status {
       padding: 5px 9px;
 
-      border-radius: 999px;
+      border-radius:
+        999px;
 
       font-size: 10px;
-      line-height: 1.1;
-
       font-weight: 900;
 
       text-transform:
         uppercase;
-
-      text-align: center;
     }
 
 
     .status-NARANJO {
-      background: var(--orange-bg);
-      color: var(--orange-text);
+      background:
+        var(--naranjo-bg);
+
+      color:
+        var(--naranjo-text);
     }
 
 
     .status-AMARILLO {
-      background: var(--yellow-bg);
-      color: var(--yellow-text);
+      background:
+        var(--amarillo-bg);
+
+      color:
+        var(--amarillo-text);
     }
 
 
     .status-AZUL {
-      background: var(--blue-bg);
-      color: var(--blue-text);
+      background:
+        var(--azul-bg);
+
+      color:
+        var(--azul-text);
     }
 
 
     .status-MORADO {
-      background: var(--purple-bg);
-      color: var(--purple-text);
+      background:
+        var(--morado-bg);
+
+      color:
+        var(--morado-text);
     }
 
 
     .status-ROJO {
-      background: var(--red-bg);
-      color: var(--red-text);
+      background:
+        var(--rojo-bg);
+
+      color:
+        var(--rojo-text);
     }
 
 
     .status-GRIS {
-      background: var(--gray-bg);
-      color: var(--gray-text);
+      background:
+        var(--gris-bg);
+
+      color:
+        var(--gris-text);
     }
 
 
-    .provider-name {
+    .provider {
       margin-top: 9px;
 
       font-size: 15px;
       font-weight: 900;
-
-      word-break: break-word;
     }
 
 
-    .card-meta {
+    .meta {
       margin-top: 10px;
 
       display: grid;
-
       gap: 5px;
 
       font-size: 13px;
@@ -500,22 +479,23 @@
     }
 
 
-    .card-meta strong {
+    .meta strong {
       color: #344054;
     }
 
 
     .amount-row {
-      margin-top: 12px;
+      margin-top: 14px;
 
       display: flex;
 
       justify-content:
         space-between;
 
-      align-items: end;
+      align-items:
+        flex-end;
 
-      gap: 10px;
+      gap: 12px;
     }
 
 
@@ -527,15 +507,14 @@
     }
 
 
-    .total-amount {
+    .amount {
       font-size: 20px;
-      font-weight: 900;
 
-      text-align: right;
+      font-weight: 900;
     }
 
 
-    .card-actions {
+    .actions {
       margin-top: auto;
 
       padding-top: 16px;
@@ -556,34 +535,30 @@
 
       border-radius: 10px;
 
-      padding: 10px 12px;
+      padding: 10px;
 
-      font-weight: 850;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      text-align: center;
+      font-weight: 900;
     }
 
 
     .btn-view {
       background: #eff8ff;
+
       color: #175cd3;
     }
 
 
     .btn-blue {
-      background: var(--primary);
-      color: #ffffff;
+      background: #1570ef;
+
+      color: #fff;
     }
 
 
     .btn-whatsapp {
-      background: var(--success);
-      color: #ffffff;
+      background: #12b76a;
+
+      color: #fff;
     }
 
 
@@ -602,12 +577,7 @@
       padding: 18px;
 
       background:
-        rgba(
-          16,
-          24,
-          40,
-          0.72
-        );
+        rgba(16, 24, 40, .72);
 
       z-index: 100;
     }
@@ -618,45 +588,46 @@
     }
 
 
-    .modal-container {
+    .modal {
       width:
-        min(
-          1000px,
-          100%
-        );
+        min(1050px, 100%);
 
       margin:
         18px auto;
 
-      background: #ffffff;
+      border-radius: 16px;
 
-      border-radius: 18px;
+      background: #fff;
 
       overflow: hidden;
     }
 
 
-    .modal-header {
-      padding: 14px 18px;
+    .modal-head {
+      min-height: 62px;
 
       display: flex;
 
+      justify-content:
+        space-between;
+
       align-items: center;
-      justify-content: space-between;
+
+      padding: 12px 18px;
 
       border-bottom:
-        1px solid var(--border);
+        1px solid var(--borde);
     }
 
 
-    .modal-header h2 {
+    .modal-head h2 {
       margin: 0;
 
       font-size: 19px;
     }
 
 
-    .btn-close {
+    .modal-close {
       width: 40px;
       height: 40px;
 
@@ -664,232 +635,298 @@
 
       border-radius: 50%;
 
-      background: #f2f4f7;
+      background:
+        #f2f4f7;
 
-      font-size: 24px;
+      font-size: 23px;
     }
 
 
     .modal-body {
-      padding: 18px;
+      background:
+        #edf1f4;
 
-      background: #f1f4f6;
+      padding: 18px;
     }
 
 
     .modal-footer {
-      padding: 14px 18px;
+      padding: 12px 18px;
+
+      background: #fff;
 
       border-top:
-        1px solid var(--border);
+        1px solid var(--borde);
 
       display: flex;
 
-      justify-content: flex-end;
+      justify-content:
+        flex-end;
 
       gap: 10px;
-
-      background: #ffffff;
     }
 
 
     /* =========================================================
-       OC DEFINITIVA
+       OC
        ========================================================= */
 
     .purchase-order {
       width: 100%;
-      max-width: 820px;
+      max-width: 900px;
 
-      margin: 0 auto;
+      margin: auto;
 
-      padding: 26px 30px;
+      padding: 22px 24px 0;
 
-      background: #ffffff;
-
-      color: #111827;
-
-      border:
-        1px solid #d0d5dd;
+      background: #fff;
 
       box-shadow:
-        0 4px 18px
-        rgba(16, 24, 40, 0.08);
+        0 3px 13px
+        rgba(16, 24, 40, .10);
     }
 
 
-    .po-title {
-      min-height: 58px;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      background:
-        var(--brand-soft);
-
-      color: var(--brand);
-
-      font-size: 22px;
-
-      font-weight: 900;
-
-      letter-spacing: 0.4px;
-
-      border-bottom:
-        4px solid var(--brand);
-    }
-
-
-    .po-top {
+    .po-header-top {
       display: grid;
 
       grid-template-columns:
-        1.15fr 0.85fr;
+        1fr 1.45fr;
 
-      gap: 28px;
+      gap: 24px;
 
-      padding:
-        20px 0 16px;
+      align-items: start;
+    }
+
+
+    .po-brand {
+      padding-top: 3px;
+    }
+
+
+    /* LOGO REAL */
+
+    .po-logo-real {
+      display: block;
+
+      width: 170px;
+      max-width: 100%;
+
+      height: auto;
+
+      object-fit: contain;
+
+      margin-bottom: 10px;
     }
 
 
     .po-company-name {
+      margin-top: 5px;
+
+      font-size: 12px;
+
+      font-weight: 800;
+    }
+
+
+    .po-company-line {
+      margin-top: 4px;
+
+      font-size: 10px;
+
+      line-height: 1.35;
+    }
+
+
+    .po-right-header {
+      width: 100%;
+    }
+
+
+    .po-title {
+      min-height: 35px;
+
+      background:
+        var(--azul-claro);
+
+      color: #111;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 14px;
+
+      font-weight: 900;
+    }
+
+
+    .po-number-bar {
+      min-height: 34px;
+
+      background:
+        var(--azul);
+
+      color: #fff;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
       font-size: 17px;
 
       font-weight: 900;
-
-      color:
-        var(--brand);
 
       margin-bottom: 8px;
     }
 
 
-    .po-info-line {
-      margin-top: 4px;
-
-      font-size: 12px;
-
-      line-height: 1.4;
-    }
-
-
-    .po-right {
-      display: grid;
-
-      gap: 7px;
-    }
-
-
-    .po-field {
+    .po-meta-row {
       display: grid;
 
       grid-template-columns:
         145px 1fr;
 
-      align-items: center;
-
-      min-height: 30px;
-
-      font-size: 12px;
-    }
-
-
-    .po-field-label {
-      font-weight: 900;
-
-      color:
-        var(--brand);
-    }
-
-
-    .po-field-value {
-      font-weight: 700;
-    }
-
-
-    .po-status {
-      display: inline-flex;
+      min-height: 22px;
 
       align-items: center;
-      justify-content: center;
 
-      min-height: 30px;
+      font-size: 10px;
+    }
 
-      padding: 5px 10px;
 
-      background: #dcfae6;
+    .po-meta-label {
+      color: #153d5c;
 
-      border:
-        1px solid #abefc6;
+      font-weight: 800;
+    }
 
-      color: #067647;
 
-      border-radius: 6px;
+    .po-meta-value {
+      text-align: right;
+    }
+
+
+    .po-state {
+      background:
+        #e9f9e8;
+
+      color: #08783f;
 
       font-weight: 900;
 
       text-align: center;
+
+      padding: 5px 6px;
     }
 
 
-    .supplier-section {
-      margin-top: 5px;
+    /* =========================================================
+       PROVEEDOR
+       ========================================================= */
+
+    .po-supplier-row {
+      margin-top: 16px;
 
       display: grid;
 
       grid-template-columns:
-        1fr 1fr;
+        1fr 1.38fr;
 
-      gap: 24px;
+      gap: 10px;
     }
 
 
-    .supplier-title {
-      margin-bottom: 9px;
-
-      font-size: 13px;
-
-      font-weight: 900;
-
-      color:
-        var(--brand);
-    }
-
-
-    .supplier-reminder {
-      padding: 12px 14px;
-
-      border:
-        1px solid #d7e2ec;
+    .po-section-title {
+      padding: 5px 7px;
 
       background:
-        #f8fbfd;
+        var(--azul-claro);
 
-      font-size: 12px;
+      color: #153d5c;
 
-      line-height: 1.45;
-    }
-
-
-    .supplier-reminder-oc {
-      margin-top: 10px;
-
-      font-size: 17px;
+      font-size: 10px;
 
       font-weight: 900;
-
-      color:
-        var(--brand);
-
-      text-align: center;
     }
 
 
+    .po-provider-name {
+      margin-top: 5px;
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+
+    .po-provider-line {
+      margin-top: 3px;
+
+      font-size: 9px;
+
+      line-height: 1.3;
+    }
+
+
+    .po-oc-reminder {
+      border:
+        1px solid
+        var(--azul-linea);
+    }
+
+
+    .po-reminder-text {
+      min-height: 56px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 8px 15px;
+
+      font-size: 9px;
+
+      font-weight: 700;
+
+      text-align: center;
+
+      line-height: 1.25;
+    }
+
+
+    .po-reminder-number {
+      min-height: 34px;
+
+      background:
+        var(--azul);
+
+      color: #fff;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 15px;
+
+      font-weight: 900;
+    }
+
+
+    /* =========================================================
+       TABLA
+       ========================================================= */
+
     .po-table-wrap {
-      margin-top: 22px;
+      margin-top: 12px;
 
       overflow-x: auto;
     }
@@ -901,134 +938,224 @@
       border-collapse:
         collapse;
 
-      font-size: 11px;
+      table-layout: fixed;
+
+      font-size: 8px;
     }
 
 
     .po-table th {
-      padding: 9px 6px;
+      height: 30px;
+
+      padding: 5px 3px;
+
+      color: #fff;
 
       background:
-        var(--brand);
-
-      color: #ffffff;
-
-      text-align: center;
+        #4a7da2;
 
       font-weight: 900;
 
+      text-align: center;
+
       border-right:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.25
-        );
+        1px solid #acc4d5;
     }
 
 
     .po-table td {
-      padding: 9px 6px;
+      min-height: 23px;
 
-      border-bottom:
-        1px solid #d6e2ed;
+      padding: 5px 4px;
 
       border-right:
-        1px solid #e0eaf2;
+        1px solid #d2e2ed;
+
+      border-bottom:
+        1px solid #d2e2ed;
 
       vertical-align: middle;
     }
 
 
-    .po-table td.number {
+    .po-table td.center {
       text-align: center;
     }
 
 
     .po-table td.money {
       text-align: right;
-
-      white-space: nowrap;
     }
 
 
-    .totals-block {
-      margin-top: 14px;
+    .col-num {
+      width: 7%;
+    }
 
-      margin-left: auto;
 
-      width:
-        min(
-          330px,
-          100%
-        );
+    .col-codigo {
+      width: 13%;
+    }
+
+
+    .col-producto {
+      width: 27%;
+    }
+
+
+    .col-cantidad {
+      width: 13%;
+    }
+
+
+    .col-unidad {
+      width: 15%;
+    }
+
+
+    .col-precio {
+      width: 14%;
+    }
+
+
+    .col-total {
+      width: 11%;
+    }
+
+
+    .po-empty-row td {
+      height: 18px;
+    }
+
+
+    /* =========================================================
+       TOTALES
+       ========================================================= */
+
+    .po-totals-area {
+      display: flex;
+
+      justify-content:
+        flex-end;
+
+      margin-top: 2px;
+    }
+
+
+    .po-totals {
+      width: 44%;
 
       border-collapse:
         collapse;
+
+      font-size: 9px;
     }
 
 
-    .totals-block td {
-      padding: 8px 10px;
-
-      border-bottom:
-        1px solid #d6e2ed;
-
-      font-size: 12px;
+    .po-totals td {
+      padding: 4px 6px;
     }
 
 
-    .totals-block td:first-child {
-      font-weight: 800;
+    .po-totals td:first-child {
+      font-weight: 900;
     }
 
 
-    .totals-block td:last-child {
+    .po-totals td:last-child {
       text-align: right;
 
       font-weight: 900;
     }
 
 
-    .totals-block .grand-total {
+    .po-total-final {
       background:
-        var(--brand-soft);
+        #4a7da2;
 
-      color:
-        var(--brand);
-
-      font-size: 15px;
+      color: #fff;
 
       font-weight: 900;
     }
 
 
-    .po-footer {
-      margin-top: 26px;
+    /* =========================================================
+       CONDICIONES
+       ========================================================= */
 
-      padding-top: 15px;
-
-      border-top:
-        2px solid var(--brand);
-
-      font-size: 10px;
-
-      line-height: 1.45;
-
-      color: #475467;
+    .po-conditions {
+      margin-top: 9px;
     }
 
 
-    .po-thanks {
-      margin-top: 18px;
+    .po-conditions-title {
+      padding: 5px 7px;
+
+      background:
+        var(--azul-claro);
+
+      color: #153d5c;
+
+      font-size: 9px;
+
+      font-weight: 900;
+    }
+
+
+    .po-conditions ol {
+      margin:
+        5px 0 8px 17px;
+
+      padding: 0;
+
+      font-size: 7px;
+
+      line-height: 1.35;
+    }
+
+
+    /* =========================================================
+       PIE
+       ========================================================= */
+
+    .po-footer-bar {
+      margin:
+        10px -24px 0;
+
+      min-height: 42px;
+
+      padding: 6px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      align-items: center;
+
+      background:
+        var(--azul);
+
+      color: #fff;
 
       text-align: center;
+    }
 
-      color:
-        #667085;
 
-      font-size: 10px;
+    .po-footer-message {
+      font-size: 8px;
+
+      font-weight: 700;
+    }
+
+
+    .po-footer-company {
+      margin-top: 3px;
+
+      font-size: 8px;
+
+      font-weight: 900;
     }
 
 
@@ -1040,212 +1167,177 @@
       position: fixed;
 
       left: 50%;
-      bottom: 24px;
+      bottom: 25px;
 
       transform:
-        translateX(-50%)
-        translateY(100px);
+        translate(-50%, 100px);
 
       opacity: 0;
 
+      max-width:
+        calc(100vw - 30px);
+
       padding: 13px 16px;
 
-      max-width:
-        calc(
-          100vw - 30px
-        );
-
-      border-radius: 12px;
+      border-radius: 10px;
 
       background: #101828;
 
-      color: #ffffff;
+      color: #fff;
 
       font-size: 13px;
 
-      font-weight: 700;
+      z-index: 300;
 
-      z-index: 200;
-
-      transition:
-        all 0.22s ease;
+      transition: .2s;
     }
 
 
     .toast.visible {
       transform:
-        translateX(-50%)
-        translateY(0);
+        translate(-50%, 0);
 
       opacity: 1;
     }
 
 
     /* =========================================================
-       TABLET
+       RESPONSIVE
        ========================================================= */
 
     @media
       (max-width: 1050px) {
 
-      .cards-grid {
+      .cards {
         grid-template-columns:
-          repeat(
-            2,
-            minmax(0, 1fr)
-          );
+          repeat(2, minmax(0, 1fr));
       }
 
     }
 
 
-    /* =========================================================
-       CELULAR
-       ========================================================= */
-
     @media
       (max-width: 720px) {
 
       .app-shell {
-        padding: 10px;
-      }
-
-
-      .topbar {
-        top: 6px;
-
-        padding: 13px;
-      }
-
-
-      .brand-title {
-        font-size: 18px;
-      }
-
-
-      .brand-subtitle {
-        display: none;
+        padding: 9px;
       }
 
 
       .filters-grid {
-        grid-template-columns:
-          1fr;
+        grid-template-columns: 1fr;
       }
 
 
-      .filters-footer {
-        flex-direction:
-          column;
-
-        align-items:
-          flex-start;
+      .filters-bottom {
+        flex-direction: column;
       }
 
 
-      .cards-grid {
-        grid-template-columns:
-          1fr;
+      .cards {
+        grid-template-columns: 1fr;
       }
 
 
       .modal-overlay {
         padding: 0;
-
-        background: #ffffff;
       }
 
 
-      .modal-container {
-        margin: 0;
-
+      .modal {
         min-height: 100vh;
+
+        margin: 0;
 
         border-radius: 0;
       }
 
 
       .modal-body {
-        padding: 6px;
+        padding: 5px;
       }
 
 
       .purchase-order {
-        padding: 16px 12px;
-
-        border: none;
+        padding:
+          13px 9px 0;
 
         box-shadow: none;
       }
 
 
-      .po-title {
-        min-height: 48px;
+      .po-header-top {
+        grid-template-columns: 1fr;
 
-        font-size: 18px;
+        gap: 10px;
       }
 
 
-      .po-top {
-        grid-template-columns:
-          1fr;
-
-        gap: 15px;
+      .po-supplier-row {
+        grid-template-columns: 1fr;
       }
 
 
-      .supplier-section {
-        grid-template-columns:
-          1fr;
+      .po-logo-real {
+        width: 150px;
       }
 
 
-      .po-field {
+      .po-meta-row {
         grid-template-columns:
-          135px 1fr;
+          130px 1fr;
+      }
+
+
+      .po-footer-bar {
+        margin:
+          10px -9px 0;
       }
 
 
       .modal-footer {
         position: sticky;
+
         bottom: 0;
 
         display: grid;
 
         grid-template-columns:
           1fr 1fr;
-
-        padding:
-          10px
-          10px
-          calc(
-            10px +
-            env(
-              safe-area-inset-bottom
-            )
-          );
       }
 
     }
 
 
-    @media
-      (max-width: 390px) {
+    @media print {
 
-      .btn-refresh-text {
-        display: none;
+      body * {
+        visibility: hidden;
       }
 
 
-      .card-actions {
-        grid-template-columns:
-          1fr;
+      #documentoOC,
+      #documentoOC * {
+        visibility: visible;
       }
 
 
-      .modal-footer {
-        grid-template-columns:
-          1fr;
+      #documentoOC {
+        position: absolute;
+
+        left: 0;
+        top: 0;
+
+        width: 100%;
+      }
+
+
+      .purchase-order {
+        width: 100%;
+
+        max-width: none;
+
+        box-shadow: none;
       }
 
     }
@@ -1265,11 +1357,11 @@
 
       <div>
 
-        <h1 class="brand-title">
+        <h1>
           Gestión de Compras
         </h1>
 
-        <div class="brand-subtitle">
+        <div class="topbar-sub">
           Grupo Fiorentini · Panel operativo
         </div>
 
@@ -1281,24 +1373,19 @@
         class="btn-refresh"
         onclick="cargarDatos()"
       >
-
-        <span>↻</span>
-
-        <span class="btn-refresh-text">
-          Actualizar
-        </span>
-
+        ↻ Actualizar
       </button>
 
     </header>
 
 
-    <section class="filters-card">
+    <section class="filters">
+
 
       <div class="filters-grid">
 
 
-        <div class="filter-group">
+        <div class="filter">
 
           <label>
             Estado
@@ -1306,7 +1393,6 @@
 
           <select
             id="filtroEstado"
-            class="filter-select"
             onchange="aplicarFiltros()"
           >
 
@@ -1319,7 +1405,7 @@
         </div>
 
 
-        <div class="filter-group">
+        <div class="filter">
 
           <label>
             Proveedor
@@ -1327,7 +1413,6 @@
 
           <select
             id="filtroProveedor"
-            class="filter-select"
             onchange="aplicarFiltros()"
           >
 
@@ -1340,7 +1425,7 @@
         </div>
 
 
-        <div class="filter-group">
+        <div class="filter">
 
           <label>
             Empresa
@@ -1348,7 +1433,6 @@
 
           <select
             id="filtroEmpresa"
-            class="filter-select"
             onchange="aplicarFiltros()"
           >
 
@@ -1364,31 +1448,26 @@
       </div>
 
 
-      <div class="filters-footer">
+      <div class="filters-bottom">
 
-        <div
-          id="contadorResultados"
-          class="result-count"
-        >
+        <span id="contadorResultados">
           0 OC
-        </div>
+        </span>
 
 
-        <div
-          id="ultimaActualizacion"
-          class="last-update"
-        >
+        <span id="ultimaActualizacion">
           Sin actualizar
-        </div>
+        </span>
 
       </div>
+
 
     </section>
 
 
     <div
       id="loading"
-      class="loading-box"
+      class="loading"
     >
 
       <div class="spinner"></div>
@@ -1400,30 +1479,32 @@
 
     <div
       id="errorBox"
-      class="error-box"
+      class="error"
       style="display:none;"
     ></div>
 
 
     <div
       id="emptyBox"
-      class="empty-box"
+      class="empty"
       style="display:none;"
     >
-
-      No existen órdenes de compra para los filtros seleccionados.
-
+      No existen órdenes de compra para estos filtros.
     </div>
 
 
     <main
       id="cardsContainer"
-      class="cards-grid"
+      class="cards"
     ></main>
 
 
   </div>
 
+
+  <!-- =======================================================
+       MODAL OC
+       ======================================================= -->
 
   <div
     id="modalOC"
@@ -1431,10 +1512,11 @@
     onclick="cerrarModalPorFondo(event)"
   >
 
-    <div class="modal-container">
+
+    <div class="modal">
 
 
-      <div class="modal-header">
+      <div class="modal-head">
 
         <h2>
           Vista previa OC
@@ -1442,7 +1524,7 @@
 
 
         <button
-          class="btn-close"
+          class="modal-close"
           onclick="cerrarOC()"
         >
           ×
@@ -1453,14 +1535,21 @@
 
       <div class="modal-body">
 
-        <div
-          id="documentoOC"
-        ></div>
+        <div id="documentoOC"></div>
 
       </div>
 
 
       <div class="modal-footer">
+
+
+        <button
+          class="btn btn-view"
+          onclick="window.print()"
+        >
+          Imprimir
+        </button>
+
 
         <button
           class="btn btn-view"
@@ -1475,13 +1564,15 @@
           class="btn btn-whatsapp"
           onclick="simularEnvioDesdeModal()"
         >
-          Enviar por WhatsApp
+          WhatsApp
         </button>
+
 
       </div>
 
 
     </div>
+
 
   </div>
 
@@ -1495,9 +1586,9 @@
   <script>
 
 
-    /**********************************************************
-     * CONFIG
-     **********************************************************/
+    /* =========================================================
+       CONFIG
+       ========================================================= */
 
     const CONFIG = {
 
@@ -1508,11 +1599,17 @@
 
 
     let PANEL = {
+
       actualizado: '',
+
       oc: [],
+
       proveedores: [],
+
       empresas: [],
+
       estados: []
+
     };
 
 
@@ -1523,24 +1620,20 @@
 
 
 
-    /**********************************************************
-     * INICIO
-     **********************************************************/
+    /* =========================================================
+       INICIO
+       ========================================================= */
 
     document.addEventListener(
       'DOMContentLoaded',
-      function() {
-
-        cargarDatos();
-
-      }
+      cargarDatos
     );
 
 
 
-    /**********************************************************
-     * API
-     **********************************************************/
+    /* =========================================================
+       API
+       ========================================================= */
 
     async function cargarDatos() {
 
@@ -1564,9 +1657,7 @@
         const url =
           CONFIG.API_BASE_URL
           +
-          '?api=compras'
-          +
-          '&accion=listar';
+          '?api=compras&accion=listar';
 
 
         const respuesta =
@@ -1581,12 +1672,14 @@
         ) {
 
           throw new Error(
+
             respuesta &&
             respuesta.error
 
               ? respuesta.error
 
               : 'No fue posible cargar Compras.'
+
           );
 
         }
@@ -1620,16 +1713,12 @@
 
         mostrarError(
           error.message ||
-          String(
-            error
-          )
+          String(error)
         );
 
       } finally {
 
-        mostrarCarga(
-          false
-        );
+        mostrarCarga(false);
 
         boton.disabled =
           false;
@@ -1704,7 +1793,8 @@
               script.parentNode
             ) {
 
-              script.parentNode
+              script
+                .parentNode
                 .removeChild(
                   script
                 );
@@ -1774,7 +1864,8 @@
             );
 
 
-          document.head
+          document
+            .head
             .appendChild(
               script
             );
@@ -1786,9 +1877,9 @@
 
 
 
-    /**********************************************************
-     * FILTROS
-     **********************************************************/
+    /* =========================================================
+       FILTROS
+       ========================================================= */
 
     function cargarSelects() {
 
@@ -1815,10 +1906,11 @@
     }
 
 
+
     function llenarSelect(
       id,
       valores,
-      todos
+      textoTodos
     ) {
 
       const select =
@@ -1835,21 +1927,21 @@
         '';
 
 
-      const option =
+      const primero =
         document.createElement(
           'option'
         );
 
 
-      option.value =
+      primero.value =
         '';
 
-      option.textContent =
-        todos;
+      primero.textContent =
+        textoTodos;
 
 
       select.appendChild(
-        option
+        primero
       );
 
 
@@ -1858,21 +1950,21 @@
           valor
         ) {
 
-          const op =
+          const option =
             document.createElement(
               'option'
             );
 
 
-          op.value =
+          option.value =
             valor;
 
-          op.textContent =
+          option.textContent =
             valor;
 
 
           select.appendChild(
-            op
+            option
           );
 
         }
@@ -1886,11 +1978,11 @@
           )
           .some(
             function(
-              op
+              option
             ) {
 
               return (
-                op.value ===
+                option.value ===
                 actual
               );
 
@@ -1975,24 +2067,26 @@
 
 
 
-    /**********************************************************
-     * TARJETAS
-     **********************************************************/
+    /* =========================================================
+       TARJETAS
+       ========================================================= */
 
     function renderTarjetas(
       lista
     ) {
 
       const contenedor =
-        document.getElementById(
-          'cardsContainer'
-        );
+        document
+          .getElementById(
+            'cardsContainer'
+          );
 
 
       const empty =
-        document.getElementById(
-          'emptyBox'
-        );
+        document
+          .getElementById(
+            'emptyBox'
+          );
 
 
       contenedor.innerHTML =
@@ -2042,22 +2136,23 @@
 
           card.innerHTML = `
 
-            <div class="card-topline">
+            <div class="card-head">
 
-              <div class="select-box">
+
+              <div class="card-check">
 
                 <input
                   type="checkbox"
-                  data-clave="${escapeHtml(item.clave)}"
                 >
 
               </div>
 
 
-              <div class="oc-heading">
+              <div class="card-main">
 
 
-                <div class="oc-number-row">
+                <div class="card-title-row">
+
 
                   <div class="oc-number">
 
@@ -2068,7 +2163,7 @@
 
                   <span
                     class="
-                      status-chip
+                      status
                       status-${escapeHtml(item.color || 'GRIS')}
                     "
                   >
@@ -2077,17 +2172,22 @@
 
                   </span>
 
-                </div>
-
-
-                <div class="provider-name">
-
-                  ${escapeHtml(item.proveedor || 'SIN PROVEEDOR')}
 
                 </div>
 
 
-                <div class="card-meta">
+                <div class="provider">
+
+                  ${escapeHtml(
+                    item.proveedor ||
+                    'SIN PROVEEDOR'
+                  )}
+
+                </div>
+
+
+                <div class="meta">
+
 
                   <div>
 
@@ -2110,10 +2210,12 @@
 
                   </div>
 
+
                 </div>
 
 
                 <div class="amount-row">
+
 
                   <div class="line-count">
 
@@ -2123,27 +2225,32 @@
                       Number(
                         item.cantidadLineas
                       ) === 1
+
                         ? 'producto'
+
                         : 'productos'
                     }
 
                   </div>
 
 
-                  <div class="total-amount">
+                  <div class="amount">
 
                     ${formatoMoneda(item.bruto)}
 
                   </div>
 
+
                 </div>
 
+
               </div>
+
 
             </div>
 
 
-            <div class="card-actions">
+            <div class="actions">
 
 
               <button
@@ -2160,11 +2267,7 @@
               </button>
 
 
-              ${
-                botonAccionHTML(
-                  item
-                )
-              }
+              ${botonAccionHTML(item)}
 
 
             </div>
@@ -2231,33 +2334,9 @@
               )
             "
           >
+
             Registrar respuesta
-          </button>
 
-        `;
-
-      }
-
-
-      if (
-        estado ===
-        'HABILITADA PARA RECEPCION'
-        ||
-        estado ===
-        'RECEPCIONADA'
-      ) {
-
-        return `
-
-          <button
-            class="btn btn-blue"
-            onclick="
-              avisoMVP(
-                'Esta OC continúa visible hasta que Pagos confirme RECIBIDO.'
-              )
-            "
-          >
-            Seguimiento
           </button>
 
         `;
@@ -2280,7 +2359,9 @@
               )
             "
           >
-            Gestionar detalle
+
+            Gestionar
+
           </button>
 
         `;
@@ -2288,15 +2369,30 @@
       }
 
 
-      return '';
+      return `
+
+        <button
+          class="btn btn-blue"
+          onclick="
+            avisoMVP(
+              'La OC continúa en seguimiento.'
+            )
+          "
+        >
+
+          Seguimiento
+
+        </button>
+
+      `;
 
     }
 
 
 
-    /**********************************************************
-     * VER OC
-     **********************************************************/
+    /* =========================================================
+       VER OC
+       ========================================================= */
 
     function verOC(
       clave
@@ -2360,7 +2456,7 @@
           ) ===
           'PENDIENTE DE ENVIO'
 
-            ? 'flex'
+            ? 'block'
 
             : 'none';
 
@@ -2382,92 +2478,130 @@
 
 
 
+    /* =========================================================
+       DOCUMENTO OC
+       ========================================================= */
+
     function construirDocumentoOC(
       item
     ) {
 
+      const lineas =
+        item.lineas ||
+        [];
+
+
       const filas =
-        (
-          item.lineas ||
-          []
-        )
-        .map(
-          function(
-            linea,
-            index
-          ) {
+        lineas
+          .map(
+            function(
+              linea,
+              index
+            ) {
 
-            return `
+              return `
 
-              <tr>
-
-                <td class="number">
-                  ${index + 1}
-                </td>
-
-                <td class="number">
-                  ${escapeHtml(linea.codigo || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(linea.producto)}
-                </td>
-
-                <td class="number">
-                  ${formatoNumero(linea.cantidad)}
-                </td>
-
-                <td class="number">
-                  ${escapeHtml(linea.unidad)}
-                </td>
-
-                <td class="money">
-                  ${formatoMoneda(linea.precio)}
-                </td>
-
-                <td class="money">
-                  ${formatoMoneda(linea.total)}
-                </td>
-
-              </tr>
-
-            `;
-
-          }
-        )
-        .join('');
+                <tr>
 
 
-      const datosProveedor =
-        [
-          campoDocumento(
-            'RUT',
-            item.rutProveedor
-          ),
+                  <td class="center">
 
-          campoDocumento(
-            'Contacto',
-            item.contactoProveedor
-          ),
+                    ${index + 1}
 
-          campoDocumento(
-            'Correo',
-            item.correoProveedor
-          ),
+                  </td>
 
-          campoDocumento(
-            'Teléfono',
-            item.telefonoProveedor
+
+                  <td class="center">
+
+                    ${escapeHtml(linea.codigo || '')}
+
+                  </td>
+
+
+                  <td>
+
+                    ${escapeHtml(linea.producto)}
+
+                  </td>
+
+
+                  <td class="center">
+
+                    ${formatoNumero(linea.cantidad)}
+
+                  </td>
+
+
+                  <td class="center">
+
+                    ${escapeHtml(linea.unidad)}
+
+                  </td>
+
+
+                  <td class="money">
+
+                    ${formatoMoneda(linea.precio)}
+
+                  </td>
+
+
+                  <td class="money">
+
+                    ${formatoMoneda(linea.total)}
+
+                  </td>
+
+
+                </tr>
+
+              `;
+
+            }
           )
-        ]
-        .filter(Boolean)
-        .join('');
+          .join('');
 
 
-      const jefatura =
-        construirJefatura(
-          item
+      const cantidadFilasVacias =
+        Math.max(
+          0,
+          9 - lineas.length
         );
+
+
+      let filasVacias =
+        '';
+
+
+      for (
+        let i = 0;
+        i < cantidadFilasVacias;
+        i++
+      ) {
+
+        filasVacias += `
+
+          <tr class="po-empty-row">
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+            <td></td>
+
+          </tr>
+
+        `;
+
+      }
 
 
       return `
@@ -2475,15 +2609,18 @@
         <div class="purchase-order">
 
 
-          <div class="po-title">
-            ORDEN DE COMPRA
-          </div>
+          <div class="po-header-top">
 
 
-          <div class="po-top">
+            <div class="po-brand">
 
 
-            <div>
+              <img
+                src="Logo-Cafe-de-la-P.jpeg"
+                alt="Café de la P"
+                class="po-logo-real"
+              >
+
 
               <div class="po-company-name">
 
@@ -2495,41 +2632,40 @@
               </div>
 
 
-              ${campoDocumento(
+              ${lineaEmpresa(
                 'RUT',
                 item.rutEmpresa
               )}
 
 
-              ${campoDocumento(
+              ${lineaEmpresa(
                 'Dirección',
                 item.direccionEmpresa
               )}
 
 
-              ${campoDocumento(
+              ${lineaEmpresa(
                 'Correo',
                 item.correoEmpresa
               )}
 
 
-              ${jefatura}
-
             </div>
 
 
-            <div class="po-right">
+            <div class="po-right-header">
 
 
-              <div class="po-field">
+              <div class="po-title">
 
-                <div class="po-field-label">
-                  N° OC:
-                </div>
+                ORDEN DE COMPRA
 
-                <div class="po-field-value">
-                  ${escapeHtml(item.oc)}
-                </div>
+              </div>
+
+
+              <div class="po-number-bar">
+
+                N° ${escapeHtml(item.oc)}
 
               </div>
 
@@ -2537,71 +2673,42 @@
               ${
                 item.lote
 
-                  ? `
-
-                    <div class="po-field">
-
-                      <div class="po-field-label">
-                        LOTE:
-                      </div>
-
-                      <div class="po-field-value">
-                        ${escapeHtml(item.lote)}
-                      </div>
-
-                    </div>
-
-                  `
+                  ? campoMeta(
+                      'LOTE:',
+                      item.lote
+                    )
 
                   : ''
               }
 
 
-              <div class="po-field">
-
-                <div class="po-field-label">
-                  FECHA DE EMISIÓN:
-                </div>
-
-                <div class="po-field-value">
-                  ${escapeHtml(item.fechaEmision || '-')}
-                </div>
-
-              </div>
+              ${campoMeta(
+                'FECHA DE EMISIÓN:',
+                item.fechaEmision || '-'
+              )}
 
 
-              ${
-                item.fechaEntrega
-
-                  ? `
-
-                    <div class="po-field">
-
-                      <div class="po-field-label">
-                        FECHA DE ENTREGA:
-                      </div>
-
-                      <div class="po-field-value">
-                        ${escapeHtml(item.fechaEntrega)}
-                      </div>
-
-                    </div>
-
-                  `
-
-                  : ''
-              }
+              ${campoMeta(
+                'FECHA DE ENTREGA:',
+                item.fechaEntrega || ''
+              )}
 
 
-              <div class="po-field">
+              <div class="po-meta-row">
 
-                <div class="po-field-label">
+                <div class="po-meta-label">
+
                   ESTADO:
+
                 </div>
 
-                <div class="po-status">
+
+                <div class="po-state">
+
                   APROBADO POR JEFATURA
+
                 </div>
+
 
               </div>
 
@@ -2612,40 +2719,75 @@
           </div>
 
 
-          <div class="supplier-section">
+          <div class="po-supplier-row">
 
 
             <div>
 
-              <div class="supplier-title">
+
+              <div class="po-section-title">
+
                 DATOS DEL PROVEEDOR
-              </div>
-
-
-              <div class="po-company-name">
-
-                ${escapeHtml(item.proveedor || '-')}
 
               </div>
 
 
-              ${datosProveedor}
+              <div class="po-provider-name">
+
+                ${escapeHtml(
+                  item.proveedor ||
+                  '-'
+                )}
+
+              </div>
+
+
+              ${lineaProveedor(
+                'RUT',
+                item.rutProveedor
+              )}
+
+
+              ${lineaProveedor(
+                'Contacto',
+                item.contactoProveedor
+              )}
+
+
+              ${lineaProveedor(
+                'Correo',
+                item.correoProveedor
+              )}
+
+
+              ${lineaProveedor(
+                'Teléfono',
+                item.telefonoProveedor
+              )}
 
 
             </div>
 
 
-            <div class="supplier-reminder">
+            <div class="po-oc-reminder">
 
-              Por favor, en todas sus facturas,
-              guías de despacho y documentos tributarios,
-              indique el número de esta Orden de Compra:
 
-              <div class="supplier-reminder-oc">
+              <div class="po-reminder-text">
+
+                Por favor, en todas sus facturas,
+                guías de despacho y demás documentos
+                tributarios, indique el número de esta
+                Orden de Compra:
+
+              </div>
+
+
+              <div class="po-reminder-number">
 
                 ${escapeHtml(item.oc)}
 
               </div>
+
 
             </div>
 
@@ -2658,25 +2800,64 @@
 
             <table class="po-table">
 
+
               <thead>
+
 
                 <tr>
 
-                  <th>N°</th>
 
-                  <th>CÓDIGO</th>
+                  <th class="col-num">
 
-                  <th>PRODUCTO</th>
+                    N°
 
-                  <th>CANTIDAD</th>
+                  </th>
 
-                  <th>UND. DE MEDIDA</th>
 
-                  <th>PRECIO UNITARIO</th>
+                  <th class="col-codigo">
 
-                  <th>TOTAL</th>
+                    CÓDIGO
+
+                  </th>
+
+
+                  <th class="col-producto">
+
+                    PRODUCTO
+
+                  </th>
+
+
+                  <th class="col-cantidad">
+
+                    CANTIDAD
+
+                  </th>
+
+
+                  <th class="col-unidad">
+
+                    UND. DE MEDIDA
+
+                  </th>
+
+
+                  <th class="col-precio">
+
+                    PRECIO UNITARIO
+
+                  </th>
+
+
+                  <th class="col-total">
+
+                    TOTAL
+
+                  </th>
+
 
                 </tr>
+
 
               </thead>
 
@@ -2685,7 +2866,10 @@
 
                 ${filas}
 
+                ${filasVacias}
+
               </tbody>
+
 
             </table>
 
@@ -2693,74 +2877,191 @@
           </div>
 
 
-          <table class="totals-block">
+          <div class="po-totals-area">
 
 
-            <tr>
-
-              <td>
-                NETO
-              </td>
-
-              <td>
-                ${formatoMoneda(item.neto)}
-              </td>
-
-            </tr>
+            <table class="po-totals">
 
 
-            <tr>
-
-              <td>
-                IVA 19%
-              </td>
-
-              <td>
-                ${formatoMoneda(item.iva)}
-              </td>
-
-            </tr>
+              <tr>
 
 
-            <tr class="grand-total">
+                <td>
 
-              <td>
-                TOTAL
-              </td>
+                  SUBTOTAL NETO
 
-              <td>
-                ${formatoMoneda(item.bruto)}
-              </td>
-
-            </tr>
+                </td>
 
 
-          </table>
+                <td>
+
+                  ${formatoMoneda(item.neto)}
+
+                </td>
 
 
-          <div class="po-footer">
+              </tr>
 
-            <strong>
-              CONDICIONES GENERALES
-            </strong>
 
-            <br><br>
+              <tr>
 
-            Esta Orden de Compra corresponde a las
-            cantidades y condiciones autorizadas vigentes.
 
-            <br><br>
+                <td>
 
-            Los estados internos de Gestión de Compras,
-            incidencias, reautorizaciones, Recepción y Pagos
-            no forman parte del documento remitido al proveedor.
+                  IVA (19%)
+
+                </td>
+
+
+                <td>
+
+                  ${formatoMoneda(item.iva)}
+
+                </td>
+
+
+              </tr>
+
+
+              <tr class="po-total-final">
+
+
+                <td>
+
+                  TOTAL FINAL
+
+                </td>
+
+
+                <td>
+
+                  ${formatoMoneda(item.bruto)}
+
+                </td>
+
+
+              </tr>
+
+
+            </table>
+
 
           </div>
 
 
-          <div class="po-thanks">
+          <div class="po-conditions">
 
-            Gracias por ser parte de Grupo Fiorentini.
+
+            <div class="po-conditions-title">
+
+              CONDICIONES DE COMPRA
+
+            </div>
+
+
+            <ol>
+
+
+              <li>
+                Entrega de los productos en la dirección
+                indicada por la empresa emisora, en la fecha
+                y horario acordados.
+              </li>
+
+
+              <li>
+                Los productos deben ser de la calidad,
+                marca y presentación solicitada.
+              </li>
+
+
+              <li>
+                Cualquier cambio o sustitución debe ser
+                previamente autorizado por el área de compras.
+              </li>
+
+
+              <li>
+                Factura electrónica, guía de despacho y demás
+                documentos tributarios deben hacer referencia
+                al número de esta Orden de Compra (OC).
+              </li>
+
+
+              <li>
+                En caso de diferencias entre lo facturado y lo
+                recibido, éstas serán comunicadas al proveedor
+                para su regularización.
+              </li>
+
+
+              <li>
+                El incumplimiento de las condiciones acordadas
+                podrá derivar en la no recepción de la mercadería
+                y/o anulación de la Orden de Compra.
+              </li>
+
+
+              <li>
+                Los precios indicados en esta OC son fijos y no
+                podrán ser modificados sin autorización previa.
+              </li>
+
+
+              <li>
+                Cualquier duda respecto a esta OC debe ser
+                canalizada a través del área de compras.
+              </li>
+
+
+              <li>
+                Plazos de entrega y condiciones logísticas según
+                lo acordado con el proveedor.
+              </li>
+
+
+              <li>
+                El proveedor debe cumplir con toda la normativa
+                legal y sanitaria vigente aplicable a los
+                productos suministrados.
+              </li>
+
+
+              <li>
+                En caso de incumplimiento, la empresa emisora
+                podrá rechazar la mercadería y/o aplicar las
+                medidas correspondientes.
+              </li>
+
+
+              <li>
+                Esta Orden de Compra constituye un compromiso
+                formal de compra una vez aprobada.
+              </li>
+
+
+            </ol>
+
+
+          </div>
+
+
+          <div class="po-footer-bar">
+
+
+            <div class="po-footer-message">
+
+              Gracias por ser parte de nuestro camino
+
+            </div>
+
+
+            <div class="po-footer-company">
+
+              GRUPO FIORENTINI
+
+            </div>
+
 
           </div>
 
@@ -2773,54 +3074,29 @@
 
 
 
-    function construirJefatura(
-      item
+    function campoMeta(
+      etiqueta,
+      valor
     ) {
-
-      if (
-        !item.autorizadoPorJefatura
-        &&
-        !item.fechaAutorizacionJefatura
-      ) {
-
-        return '';
-
-      }
-
-
-      let texto =
-        'Jefatura:';
-
-
-      if (
-        item.autorizadoPorJefatura
-      ) {
-
-        texto +=
-          ' '
-          +
-          item.autorizadoPorJefatura;
-
-      }
-
-
-      if (
-        item.fechaAutorizacionJefatura
-      ) {
-
-        texto +=
-          ' · '
-          +
-          item.fechaAutorizacionJefatura;
-
-      }
-
 
       return `
 
-        <div class="po-info-line">
+        <div class="po-meta-row">
 
-          ${escapeHtml(texto)}
+
+          <div class="po-meta-label">
+
+            ${escapeHtml(etiqueta)}
+
+          </div>
+
+
+          <div class="po-meta-value">
+
+            ${escapeHtml(valor || '')}
+
+          </div>
+
 
         </div>
 
@@ -2830,7 +3106,7 @@
 
 
 
-    function campoDocumento(
+    function lineaEmpresa(
       etiqueta,
       valor
     ) {
@@ -2846,10 +3122,12 @@
 
       return `
 
-        <div class="po-info-line">
+        <div class="po-company-line">
 
           <strong>
+
             ${escapeHtml(etiqueta)}:
+
           </strong>
 
           ${escapeHtml(valor)}
@@ -2862,9 +3140,43 @@
 
 
 
-    /**********************************************************
-     * CERRAR
-     **********************************************************/
+    function lineaProveedor(
+      etiqueta,
+      valor
+    ) {
+
+      if (
+        !valor
+      ) {
+
+        return '';
+
+      }
+
+
+      return `
+
+        <div class="po-provider-line">
+
+          <strong>
+
+            ${escapeHtml(etiqueta)}:
+
+          </strong>
+
+          ${escapeHtml(valor)}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    /* =========================================================
+       MODAL
+       ========================================================= */
 
     function cerrarOC() {
 
@@ -2888,6 +3200,7 @@
     }
 
 
+
     function cerrarModalPorFondo(
       event
     ) {
@@ -2905,9 +3218,9 @@
 
 
 
-    /**********************************************************
-     * WHATSAPP TODAVÍA SIMULADO
-     **********************************************************/
+    /* =========================================================
+       WHATSAPP
+       ========================================================= */
 
     function simularEnvio(
       clave
@@ -2942,16 +3255,15 @@
 
 
       avisoMVP(
-
         item.oc
         +
         ' está lista para WhatsApp Empresa. '
         +
-        'Todavía NO se registra envío en MAESTRO.'
-
+        'Todavía no se registra envío en MAESTRO.'
       );
 
     }
+
 
 
     function simularEnvioDesdeModal() {
@@ -2970,9 +3282,9 @@
 
 
 
-    /**********************************************************
-     * UI
-     **********************************************************/
+    /* =========================================================
+       UI
+       ========================================================= */
 
     function mostrarCarga(
       mostrar
@@ -2992,14 +3304,16 @@
     }
 
 
+
     function mostrarError(
       mensaje
     ) {
 
       const box =
-        document.getElementById(
-          'errorBox'
-        );
+        document
+          .getElementById(
+            'errorBox'
+          );
 
 
       box.textContent =
@@ -3010,6 +3324,7 @@
         'block';
 
     }
+
 
 
     function ocultarError() {
@@ -3025,23 +3340,27 @@
     }
 
 
+
     function avisoMVP(
       mensaje
     ) {
 
       const toast =
-        document.getElementById(
-          'toast'
-        );
+        document
+          .getElementById(
+            'toast'
+          );
 
 
       toast.textContent =
         mensaje;
 
 
-      toast.classList.add(
-        'visible'
-      );
+      toast
+        .classList
+        .add(
+          'visible'
+        );
 
 
       window.clearTimeout(
@@ -3053,21 +3372,23 @@
         window.setTimeout(
           function() {
 
-            toast.classList.remove(
-              'visible'
-            );
+            toast
+              .classList
+              .remove(
+                'visible'
+              );
 
           },
-          4200
+          4000
         );
 
     }
 
 
 
-    /**********************************************************
-     * FORMATOS
-     **********************************************************/
+    /* =========================================================
+       FORMATO
+       ========================================================= */
 
     function formatoMoneda(
       valor
@@ -3077,9 +3398,14 @@
         .NumberFormat(
           'es-CL',
           {
-            style: 'currency',
-            currency: 'CLP',
-            maximumFractionDigits: 0
+            style:
+              'currency',
+
+            currency:
+              'CLP',
+
+            maximumFractionDigits:
+              0
           }
         )
         .format(
@@ -3090,6 +3416,7 @@
         );
 
     }
+
 
 
     function formatoNumero(
@@ -3115,9 +3442,9 @@
 
 
 
-    /**********************************************************
-     * SEGURIDAD
-     **********************************************************/
+    /* =========================================================
+       SEGURIDAD
+       ========================================================= */
 
     function escapeHtml(
       valor
@@ -3155,6 +3482,7 @@
     }
 
 
+
     function jsString(
       valor
     ) {
@@ -3185,6 +3513,7 @@
       );
 
     }
+
 
 
     function normalizar(
