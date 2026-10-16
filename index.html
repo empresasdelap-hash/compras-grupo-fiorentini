@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -3767,314 +3767,188 @@
           []
         )
         .find(
-          function(
-            oc
-          ) {
-
-            return (
-              oc.clave ===
-              clave
-            );
-
+          function(oc) {
+            return oc.clave === clave;
           }
         );
 
-
-      if (
-        !item
-      ) {
-
-        avisoMVP(
-          'No se pudo localizar la OC.'
-        );
-
-
+      if (!item) {
+        avisoMVP('No se pudo localizar la OC.');
         return;
-
       }
 
-
       if (
-        normalizar(
-          item.estado
-        ) !==
+        normalizar(item.estado) !==
         'ESPERANDO RESPUESTA'
       ) {
-
         avisoMVP(
           'Esta OC ya no está esperando respuesta del proveedor.'
         );
-
-
         await cargarDatos();
-
-
         return;
-
       }
-
 
       if (
-        CONFIRMACION_RESPUESTA_EN_CURSO.has(
-          clave
-        )
+        CONFIRMACION_RESPUESTA_EN_CURSO.has(clave)
       ) {
-
         return;
-
       }
 
+      const elegida = window.prompt(
+        'RESPUESTA DEL PROVEEDOR\n\n' +
+        item.oc + ' · ' + (item.proveedor || '') + '\n\n' +
+        'Escribe una de estas opciones:\n' +
+        'CONFIRMO\n' +
+        'RECHAZO'
+      );
+
+      if (elegida === null) {
+        return;
+      }
+
+      const respuestaElegida = normalizar(elegida);
+
+      if (
+        respuestaElegida !== 'CONFIRMO' &&
+        respuestaElegida !== 'RECHAZO'
+      ) {
+        avisoMVP(
+          'Respuesta no válida. Debe escribir CONFIRMO o RECHAZO.'
+        );
+        return;
+      }
+
+      let motivo = '';
+
+      if (respuestaElegida === 'RECHAZO') {
+        const motivoIngresado = window.prompt(
+          'MOTIVO DEL RECHAZO\n\n' +
+          'Escribe una de estas opciones:\n' +
+          'SIN STOCK\n' +
+          'BLOQUEO\n' +
+          'CAMBIO RAZON SOCIAL'
+        );
+
+        if (motivoIngresado === null) {
+          return;
+        }
+
+        motivo = normalizar(motivoIngresado);
+
+        if (motivo === 'BLOQUEO') {
+          motivo = 'BLOQUEO POR PAGO';
+        }
+
+        if (
+          ['SIN STOCK', 'BLOQUEO POR PAGO', 'CAMBIO RAZON SOCIAL'].indexOf(motivo) < 0
+        ) {
+          avisoMVP(
+            'Motivo no válido. Use SIN STOCK, BLOQUEO o CAMBIO RAZON SOCIAL.'
+          );
+          return;
+        }
+      }
 
       const etapaProveedor =
         item.usaProveedorAlternativo === true
           ? 'proveedor alternativo'
           : 'proveedor original';
 
+      const textoConfirmacion =
+        respuestaElegida === 'CONFIRMO'
+          ? (
+              '¿Confirmas que el ' +
+              etapaProveedor +
+              ' ' +
+              (item.proveedor || '') +
+              ' CONFIRMÓ la ' +
+              item.oc +
+              '?'
+            )
+          : (
+              '¿Confirmas que el ' +
+              etapaProveedor +
+              ' ' +
+              (item.proveedor || '') +
+              ' RECHAZÓ la ' +
+              item.oc +
+              ' por ' +
+              motivo +
+              '?'
+            );
 
-      const confirmado =
-        window.confirm(
-          '¿Confirmas que el '
-          +
-          etapaProveedor
-          +
-          ' '
-          +
-          (
-            item.proveedor ||
-            ''
-          )
-          +
-          ' CONFIRMÓ la recepción y disponibilidad de la '
-          +
-          item.oc
-          +
-          '?\n\n'
-          +
-          'Al confirmar, MAESTRO registrará la respuesta CONFIRMO en la etapa vigente.'
-        );
-
-
-      if (
-        !confirmado
-      ) {
-
+      if (!window.confirm(textoConfirmacion)) {
         return;
-
       }
 
-
-      CONFIRMACION_RESPUESTA_EN_CURSO.add(
-        clave
-      );
-
-
-      actualizarEstadoBotonesRespuesta(
-        clave,
-        true
-      );
-
+      CONFIRMACION_RESPUESTA_EN_CURSO.add(clave);
+      actualizarEstadoBotonesRespuesta(clave, true);
 
       try {
-
         const accionRespuesta =
           item.usaProveedorAlternativo === true
             ? 'confirmarRespuestaAlternativo'
             : 'confirmarRespuesta';
 
-
-        const url =
-          CONFIG.API_BASE_URL
-          +
-          '?api=compras'
-          +
-          '&accion='
-          +
-          accionRespuesta
-          +
-          '&empresa='
-          +
-          encodeURIComponent(
-            item.empresa
-          )
-          +
-          '&oc='
-          +
-          encodeURIComponent(
-            item.oc
-          )
-          +
-          '&respuesta=CONFIRMO'
-          +
+        let url =
+          CONFIG.API_BASE_URL +
+          '?api=compras' +
+          '&accion=' + accionRespuesta +
+          '&empresa=' + encodeURIComponent(item.empresa) +
+          '&oc=' + encodeURIComponent(item.oc) +
+          '&respuesta=' + encodeURIComponent(respuestaElegida) +
           '&confirmar=SI';
 
-
-        const respuesta =
-          await cargarJsonp(
-            url
-          );
-
-
-        if (
-          !respuesta ||
-          respuesta.ok !== true
-        ) {
-
-          throw new Error(
-
-            respuesta &&
-            respuesta.error
-
-              ? respuesta.error
-
-              : 'No fue posible registrar la respuesta en MAESTRO.'
-
-          );
-
+        if (motivo) {
+          url += '&motivo=' + encodeURIComponent(motivo);
         }
 
+        const respuestaApi = await cargarJsonp(url);
 
-        const data =
-          respuesta.data ||
-          {};
+        if (!respuestaApi || respuestaApi.ok !== true) {
+          throw new Error(
+            respuestaApi && respuestaApi.error
+              ? respuestaApi.error
+              : 'No fue posible registrar la respuesta en MAESTRO.'
+          );
+        }
 
-
-        avisoMVP(
-          data.yaConfirmada
-
-            ? item.oc
-              +
-              ' ya tenía registrada la respuesta CONFIRMO.'
-
-            : item.oc
-              +
-              ' registrada como CONFIRMO. '
-              +
-              'Ahora queda HABILITADA PARA RECEPCIÓN.'
-        );
-
+        if (respuestaElegida === 'CONFIRMO') {
+          avisoMVP(
+            item.oc +
+            ' registrada como CONFIRMO. Ahora queda HABILITADA PARA RECEPCIÓN.'
+          );
+        } else {
+          avisoMVP(
+            item.oc +
+            ' registrada como RECHAZO por ' +
+            motivo +
+            '. La OC queda en EXCEPCIÓN.'
+          );
+        }
 
         if (
           OC_MODAL_ACTUAL &&
-          OC_MODAL_ACTUAL.clave ===
-            clave
+          OC_MODAL_ACTUAL.clave === clave
         ) {
-
           cerrarOC();
-
         }
-
 
         await cargarDatos();
 
-
-      } catch (
-        error
-      ) {
-
+      } catch (error) {
         avisoMVP(
-          error &&
-          error.message
-
+          error && error.message
             ? error.message
-
-            : String(
-                error
-              )
+            : String(error)
         );
-
 
       } finally {
-
-        CONFIRMACION_RESPUESTA_EN_CURSO.delete(
-          clave
-        );
-
-
-        actualizarEstadoBotonesRespuesta(
-          clave,
-          false
-        );
-
+        CONFIRMACION_RESPUESTA_EN_CURSO.delete(clave);
+        actualizarEstadoBotonesRespuesta(clave, false);
       }
-
     }
 
-
-
-    /* =========================================================
-       ESTADO BOTÓN CONFIRMAR ENVÍO
-       ========================================================= */
-
-    function actualizarEstadoBotonesConfirmacion(
-      clave,
-      cargando
-    ) {
-
-      const botones =
-        document.querySelectorAll(
-          '[data-confirmar-envio="'
-          +
-          cssEscapeSeguro(
-            clave
-          )
-          +
-          '"]'
-        );
-
-
-      botones.forEach(
-        function(
-          boton
-        ) {
-
-          boton.disabled =
-            cargando;
-
-
-          boton.textContent =
-            cargando
-
-              ? 'Confirmando...'
-
-              : 'Confirmar envío';
-
-        }
-      );
-
-
-      const botonModal =
-        document.getElementById(
-          'btnConfirmarEnvioModal'
-        );
-
-
-      if (
-        botonModal &&
-        OC_MODAL_ACTUAL &&
-        OC_MODAL_ACTUAL.clave ===
-          clave
-      ) {
-
-        botonModal.disabled =
-          cargando;
-
-
-        botonModal.textContent =
-          cargando
-
-            ? 'Confirmando...'
-
-            : 'Confirmar envío';
-
-      }
-
-    }
-
-
-
-    /* =========================================================
-       ESTADO BOTÓN RESPUESTA
-       ========================================================= */
 
     function actualizarEstadoBotonesRespuesta(
       clave,
