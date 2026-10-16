@@ -4045,7 +4045,7 @@
                 <td>${escapeHtml(linea.producto || '')}</td>
                 <td>${escapeHtml(linea.unidad || '')}</td>
                 <td class="gestion-num">${escapeHtml(String(linea.cantidad || 0))}</td>
-                <td class="gestion-num">$${formatearNumero(precio)}</td>
+                <td class="gestion-num">$${formatoNumero(precio)}</td>
                 <td class="gestion-num">
                   <input
                     type="number"
@@ -4158,7 +4158,7 @@
           if (difCelda) {
             difCelda.textContent =
               (diferencia < 0 ? '-$' : '$') +
-              formatearNumero(
+              formatoNumero(
                 Math.abs(diferencia)
               );
 
@@ -4176,7 +4176,7 @@
           if (totalCelda) {
             totalCelda.textContent =
               '$' +
-              formatearNumero(
+              formatoNumero(
                 totalNuevo
               );
           }
@@ -4191,10 +4191,10 @@
         netoPropuesto * 1.19;
 
       document.getElementById('gxNetoAutorizado').textContent =
-        '$' + formatearNumero(netoAutorizado);
+        '$' + formatoNumero(netoAutorizado);
 
       document.getElementById('gxNetoPropuesto').textContent =
-        '$' + formatearNumero(netoPropuesto);
+        '$' + formatoNumero(netoPropuesto);
 
       const difResumen =
         document.getElementById(
@@ -4203,7 +4203,7 @@
 
       difResumen.textContent =
         (diferenciaNeta < 0 ? '-$' : '$') +
-        formatearNumero(
+        formatoNumero(
           Math.abs(diferenciaNeta)
         );
 
@@ -4215,7 +4215,7 @@
             : '';
 
       document.getElementById('gxTotalPropuesto').textContent =
-        '$' + formatearNumero(totalConIva);
+        '$' + formatoNumero(totalConIva);
 
     }
 
