@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -3573,13 +3573,23 @@
       }
 
 
+      const etapaProveedor =
+        item.usaProveedorAlternativo === true
+          ? 'proveedor alternativo'
+          : 'proveedor original';
+
+
       const confirmado =
         window.confirm(
           '¿Confirmas que la '
           +
           item.oc
           +
-          ' fue enviada realmente al proveedor '
+          ' fue enviada realmente al '
+          +
+          etapaProveedor
+          +
+          ' '
           +
           (
             item.proveedor ||
@@ -3588,7 +3598,7 @@
           +
           ' por WhatsApp?\n\n'
           +
-          'Al confirmar, MAESTRO registrará el envío.'
+          'Al confirmar, MAESTRO registrará este envío sin sobrescribir el histórico anterior.'
         );
 
 
@@ -3614,12 +3624,20 @@
 
       try {
 
+        const accionEnvio =
+          item.usaProveedorAlternativo === true
+            ? 'confirmarEnvioAlternativo'
+            : 'confirmarEnvio';
+
+
         const url =
           CONFIG.API_BASE_URL
           +
           '?api=compras'
           +
-          '&accion=confirmarEnvio'
+          '&accion='
+          +
+          accionEnvio
           +
           '&empresa='
           +
@@ -3807,9 +3825,19 @@
       }
 
 
+      const etapaProveedor =
+        item.usaProveedorAlternativo === true
+          ? 'proveedor alternativo'
+          : 'proveedor original';
+
+
       const confirmado =
         window.confirm(
-          '¿Confirmas que el proveedor '
+          '¿Confirmas que el '
+          +
+          etapaProveedor
+          +
+          ' '
           +
           (
             item.proveedor ||
@@ -3822,7 +3850,7 @@
           +
           '?\n\n'
           +
-          'Al confirmar, MAESTRO registrará la respuesta CONFIRMO.'
+          'Al confirmar, MAESTRO registrará la respuesta CONFIRMO en la etapa vigente.'
         );
 
 
@@ -3848,12 +3876,20 @@
 
       try {
 
+        const accionRespuesta =
+          item.usaProveedorAlternativo === true
+            ? 'confirmarRespuestaAlternativo'
+            : 'confirmarRespuesta';
+
+
         const url =
           CONFIG.API_BASE_URL
           +
           '?api=compras'
           +
-          '&accion=confirmarRespuesta'
+          '&accion='
+          +
+          accionRespuesta
           +
           '&empresa='
           +
