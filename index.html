@@ -2594,8 +2594,8 @@
           <button
             class="btn btn-blue"
             onclick="
-              avisoMVP(
-                'Gestión de excepción todavía no habilitada.'
+              gestionarExcepcion(
+                '${jsString(item.clave)}'
               )
             "
           >
@@ -3398,6 +3398,256 @@
     /* =========================================================
        WHATSAPP
        ========================================================= */
+
+    async function gestionarExcepcion(
+      clave
+    ) {
+
+      const item =
+        (
+          PANEL.oc ||
+          []
+        ).find(
+          function(oc) {
+            return oc.clave === clave;
+          }
+        );
+
+      if (!item) {
+        avisoMVP(
+          'No se pudo localizar la OC.'
+        );
+        return;
+      }
+
+      const respuestaVigente =
+        normalizar(
+          item.usaProveedorAlternativo === true
+            ? item.respuestaAlternativo
+            : item.respuestaOriginal
+        );
+
+      const incidenciaVigente =
+        normalizar(
+          item.usaProveedorAlternativo === true
+            ? item.incidenciaAlternativo
+            : item.incidenciaOriginal
+        );
+
+      if (
+        respuestaVigente !== 'RECHAZO' &&
+        respuestaVigente !== 'INCOMPLETO' &&
+        !incidenciaVigente
+      ) {
+        avisoMVP(
+          'Esta OC no tiene una excepción elegible para proponer proveedor alternativo.'
+        );
+        return;
+      }
+
+      if (
+        item.usaProveedorAlternativo === true
+      ) {
+        avisoMVP(
+          'Esta OC ya está operando con proveedor alternativo. La segunda alternativa se validará en el siguiente hito.'
+        );
+        return;
+      }
+
+      const proveedorAlternativo =
+        window.prompt(
+          'PROVEEDOR ALTERNATIVO\n\n' +
+          item.oc + ' · Proveedor original: ' +
+          (item.proveedor || '') +
+          '\n\nEscribe el nombre del nuevo proveedor:'
+        );
+
+      if (proveedorAlternativo === null) {
+        return;
+      }
+
+      if (!proveedorAlternativo.trim()) {
+        avisoMVP(
+          'Debe indicar el proveedor alternativo.'
+        );
+        return;
+      }
+
+      const responsable =
+        window.prompt(
+          'RESPONSABLE DE LA PROPUESTA\n\n' +
+          'Escribe el nombre del responsable:'
+        );
+
+      if (responsable === null) {
+        return;
+      }
+
+      if (!responsable.trim()) {
+        avisoMVP(
+          'Debe indicar el responsable.'
+        );
+        return;
+      }
+
+      const lineas =
+        Array.isArray(item.lineas)
+          ? item.lineas
+          : [];
+
+      if (!lineas.length) {
+        avisoMVP(
+          'La OC no tiene líneas disponibles para registrar precios propuestos.'
+        );
+        return;
+      }
+
+      const preciosPorLinea = {};
+
+      for (
+        let i = 0;
+        i < lineas.length;
+        i++
+      ) {
+
+        const linea = lineas[i] || {};
+        const idLinea = String(linea.idLinea || '').trim();
+
+        if (!idLinea) {
+          avisoMVP(
+            'Una línea de la OC no tiene ID de origen. No se registró la propuesta.'
+          );
+          return;
+        }
+
+        const precioActual =
+          Number(linea.precio || 0);
+
+        const precioTexto =
+          window.prompt(
+            'PRECIO PROPUESTO · LÍNEA ' +
+            (i + 1) +
+            ' DE ' +
+            lineas.length +
+            '\n\nProducto: ' +
+            (linea.producto || '') +
+            '\nCódigo: ' +
+            (linea.codigo || '') +
+            '\nPrecio autorizado actual: $' +
+            formatearNumero(precioActual) +
+            '\n\nEscribe el NUEVO PRECIO UNITARIO:',
+            precioActual > 0
+              ? String(precioActual)
+              : ''
+          );
+
+        if (precioTexto === null) {
+          return;
+        }
+
+        const precio =
+          Number(
+            String(precioTexto)
+              .replace(/\$/g, '')
+              .replace(/\./g, '')
+              .replace(',', '.')
+              .trim()
+          );
+
+        if (!(precio > 0)) {
+          avisoMVP(
+            'El precio propuesto debe ser mayor que cero.'
+          );
+          return;
+        }
+
+        preciosPorLinea[idLinea] = precio;
+      }
+
+      const incidencia =
+        incidenciaVigente ||
+        'EXCEPCION DE COMPRA';
+
+      const confirmado =
+        window.confirm(
+          '¿Confirmas la propuesta alternativa para ' +
+          item.oc +
+          '?\n\nProveedor original: ' +
+          (item.proveedor || '') +
+          '\nProveedor alternativo: ' +
+          proveedorAlternativo.trim() +
+          '\nMotivo: ' +
+          incidencia +
+          '\nLíneas con precio propuesto: ' +
+          lineas.length +
+          '\n\nLa propuesta será enviada a MAESTRO y deberá ser reautorizada por Jefatura.'
+        );
+
+      if (!confirmado) {
+        return;
+      }
+
+      try {
+
+        avisoMVP(
+          'Registrando propuesta alternativa...'
+        );
+
+        const url =
+          CONFIG.API_BASE_URL +
+          '?api=compras' +
+          '&accion=proponerAlternativa' +
+          '&empresa=' +
+          encodeURIComponent(item.empresa) +
+          '&oc=' +
+          encodeURIComponent(item.oc) +
+          '&proveedorAlternativo=' +
+          encodeURIComponent(proveedorAlternativo.trim()) +
+          '&preciosPorLinea=' +
+          encodeURIComponent(JSON.stringify(preciosPorLinea)) +
+          '&responsable=' +
+          encodeURIComponent(responsable.trim()) +
+          '&incidencia=' +
+          encodeURIComponent(incidencia) +
+          '&confirmar=SI';
+
+        const respuesta =
+          await cargarJsonp(url);
+
+        if (
+          !respuesta ||
+          respuesta.ok !== true
+        ) {
+          throw new Error(
+            respuesta && respuesta.error
+              ? respuesta.error
+              : 'No fue posible registrar la propuesta alternativa en MAESTRO.'
+          );
+        }
+
+        const data =
+          respuesta.data || {};
+
+        avisoMVP(
+          data.yaRegistrada
+            ? item.oc +
+              ' ya tenía esta propuesta registrada. Queda PENDIENTE DE REAUTORIZACIÓN.'
+            : item.oc +
+              ' enviada a Jefatura. Queda PENDIENTE DE REAUTORIZACIÓN.'
+        );
+
+        await cargarDatos();
+
+      } catch (error) {
+        avisoMVP(
+          error && error.message
+            ? error.message
+            : String(error)
+        );
+      }
+
+    }
+
 
     function abrirWhatsApp(
       clave
