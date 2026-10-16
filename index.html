@@ -562,6 +562,18 @@
     }
 
 
+    .btn-confirmar-envio {
+      background: #184f78;
+      color: #fff;
+    }
+
+
+    .btn-confirmar-envio:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+
     /* =========================================================
        MODAL
        ========================================================= */
@@ -1567,9 +1579,19 @@
         <button
           id="btnEnviarModal"
           class="btn btn-whatsapp"
-          onclick="simularEnvioDesdeModal()"
+          onclick="abrirWhatsAppDesdeModal()"
         >
           WhatsApp
+        </button>
+
+
+        <button
+          id="btnConfirmarEnvioModal"
+          class="btn btn-confirmar-envio"
+          onclick="confirmarEnvioDesdeModal()"
+          style="display:none;"
+        >
+          Confirmar envío
         </button>
 
 
@@ -1622,6 +1644,23 @@
 
     let OC_MODAL_ACTUAL =
       null;
+
+
+    /*
+     * Guarda solamente en esta sesión qué OC
+     * ya fueron abiertas en WhatsApp.
+     *
+     * IMPORTANTE:
+     * esto NO es trazabilidad oficial.
+     * MAESTRO sigue siendo la fuente de verdad.
+     */
+
+    const WHATSAPP_ABIERTO =
+      new Set();
+
+
+    const CONFIRMACION_ENVIO_EN_CURSO =
+      new Set();
 
 
 
@@ -2301,28 +2340,69 @@
         );
 
 
+      /*
+       * PENDIENTE DE ENVÍO
+       */
+
       if (
         estado ===
         'PENDIENTE DE ENVIO'
       ) {
+
+        const yaAbrioWhatsApp =
+          WHATSAPP_ABIERTO.has(
+            item.clave
+          );
+
+
+        if (
+          yaAbrioWhatsApp
+        ) {
+
+          return `
+
+            <button
+              class="btn btn-confirmar-envio"
+              data-confirmar-envio="${escapeHtml(item.clave)}"
+              onclick="
+                confirmarEnvio(
+                  '${jsString(item.clave)}'
+                )
+              "
+            >
+
+              Confirmar envío
+
+            </button>
+
+          `;
+
+        }
+
 
         return `
 
           <button
             class="btn btn-whatsapp"
             onclick="
-              simularEnvio(
+              abrirWhatsApp(
                 '${jsString(item.clave)}'
               )
             "
           >
+
             WhatsApp
+
           </button>
 
         `;
 
       }
 
+
+      /*
+       * ESPERANDO RESPUESTA
+       */
 
       if (
         estado ===
@@ -2348,6 +2428,10 @@
 
       }
 
+
+      /*
+       * EXCEPCIÓN
+       */
 
       if (
         estado ===
@@ -2449,21 +2533,9 @@
           );
 
 
-      document
-        .getElementById(
-          'btnEnviarModal'
-        )
-        .style
-        .display =
-
-          normalizar(
-            item.estado
-          ) ===
-          'PENDIENTE DE ENVIO'
-
-            ? 'block'
-
-            : 'none';
+      actualizarBotonesModalEnvio(
+        item
+      );
 
 
       document
@@ -3172,10 +3244,21 @@
 
 
     /* =========================================================
-       WHATSAPP
+       WHATSAPP + CONFIRMACIÓN DE ENVÍO
        ========================================================= */
 
-    function simularEnvio(
+
+    /*
+     * ABRIR WHATSAPP
+     *
+     * IMPORTANTE:
+     *
+     * - Abrir WhatsApp NO modifica MAESTRO.
+     * - La OC solamente cambia a ENVIADA
+     *   después de presionar CONFIRMAR ENVÍO.
+     */
+
+    function abrirWhatsApp(
       clave
     ) {
 
@@ -3202,6 +3285,95 @@
         !item
       ) {
 
+        avisoMVP(
+          'No se pudo localizar la OC.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Por ahora todavía no tenemos
+       * teléfono oficial del proveedor
+       * conectado al módulo Proveedores.
+       *
+       * Por eso abrimos WhatsApp con
+       * el mensaje preparado, pero sin
+       * inventar un destinatario.
+       */
+
+      const mensaje =
+        construirMensajeWhatsApp(
+          item
+        );
+
+
+      const urlWhatsApp =
+        'https://wa.me/?text='
+        +
+        encodeURIComponent(
+          mensaje
+        );
+
+
+      const ventana =
+        window.open(
+          urlWhatsApp,
+          '_blank',
+          'noopener,noreferrer'
+        );
+
+
+      /*
+       * Marcamos solamente en memoria
+       * del navegador que WhatsApp fue abierto.
+       *
+       * ESTO NO ES MAESTRO.
+       */
+
+      WHATSAPP_ABIERTO.add(
+        clave
+      );
+
+
+      /*
+       * Volvemos a dibujar las tarjetas
+       * para mostrar CONFIRMAR ENVÍO.
+       */
+
+      aplicarFiltros();
+
+
+      /*
+       * Si estamos dentro de VER OC,
+       * actualizamos también sus botones.
+       */
+
+      if (
+        OC_MODAL_ACTUAL &&
+        OC_MODAL_ACTUAL.clave ===
+          clave
+      ) {
+
+        actualizarBotonesModalEnvio(
+          OC_MODAL_ACTUAL
+        );
+
+      }
+
+
+      if (
+        !ventana
+      ) {
+
+        avisoMVP(
+          'El navegador pudo bloquear la apertura de WhatsApp. '
+          +
+          'Habilita las ventanas emergentes e inténtalo nuevamente.'
+        );
+
         return;
 
       }
@@ -3210,26 +3382,596 @@
       avisoMVP(
         item.oc
         +
-        ' está lista para WhatsApp Empresa. '
+        ' abierta en WhatsApp. '
         +
-        'Todavía no se registra envío en MAESTRO.'
+        'Después de enviarla realmente, vuelve y presiona CONFIRMAR ENVÍO.'
       );
 
     }
 
 
 
-    function simularEnvioDesdeModal() {
+    /*
+     * MENSAJE PREPARADO PARA WHATSAPP
+     */
+
+    function construirMensajeWhatsApp(
+      item
+    ) {
+
+      const partes = [];
+
+
+      partes.push(
+        'Hola.'
+      );
+
+
+      partes.push(
+        ''
+      );
+
+
+      partes.push(
+        'Compartimos la Orden de Compra '
+        +
+        item.oc
+        +
+        ' de Grupo Fiorentini.'
+      );
+
 
       if (
-        OC_MODAL_ACTUAL
+        item.proveedor
       ) {
 
-        simularEnvio(
-          OC_MODAL_ACTUAL.clave
+        partes.push(
+          'Proveedor: '
+          +
+          item.proveedor
+          +
+          '.'
         );
 
       }
+
+
+      if (
+        item.lote
+      ) {
+
+        partes.push(
+          'Lote: '
+          +
+          item.lote
+          +
+          '.'
+        );
+
+      }
+
+
+      partes.push(
+        'Total: '
+        +
+        formatoMoneda(
+          item.bruto
+        )
+        +
+        '.'
+      );
+
+
+      partes.push(
+        ''
+      );
+
+
+      partes.push(
+        'Por favor confirmar recepción y disponibilidad del pedido.'
+      );
+
+
+      partes.push(
+        ''
+      );
+
+
+      partes.push(
+        'Gracias.'
+      );
+
+
+      partes.push(
+        'Grupo Fiorentini'
+      );
+
+
+      return partes.join(
+        '\n'
+      );
+
+    }
+
+
+
+    /*
+     * CONFIRMAR ENVÍO
+     *
+     * Esta acción SÍ escribe en MAESTRO.
+     *
+     * Backend ya validado:
+     *
+     * AM = ENVIADA
+     * AN = fecha/hora
+     */
+
+    async function confirmarEnvio(
+      clave
+    ) {
+
+      const item =
+        (
+          PANEL.oc ||
+          []
+        )
+        .find(
+          function(
+            oc
+          ) {
+
+            return (
+              oc.clave ===
+              clave
+            );
+
+          }
+        );
+
+
+      if (
+        !item
+      ) {
+
+        avisoMVP(
+          'No se pudo localizar la OC.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * No permitimos confirmar directamente
+       * si WhatsApp no fue abierto primero
+       * durante esta sesión.
+       */
+
+      if (
+        !WHATSAPP_ABIERTO.has(
+          clave
+        )
+      ) {
+
+        avisoMVP(
+          'Primero abre WhatsApp para esta OC.'
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Evita doble clic / llamadas duplicadas.
+       */
+
+      if (
+        CONFIRMACION_ENVIO_EN_CURSO.has(
+          clave
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const confirmado =
+        window.confirm(
+          '¿Confirmas que la '
+          +
+          item.oc
+          +
+          ' fue enviada realmente al proveedor '
+          +
+          (
+            item.proveedor ||
+            ''
+          )
+          +
+          ' por WhatsApp?\n\n'
+          +
+          'Al confirmar, MAESTRO registrará el envío.'
+        );
+
+
+      if (
+        !confirmado
+      ) {
+
+        return;
+
+      }
+
+
+      CONFIRMACION_ENVIO_EN_CURSO.add(
+        clave
+      );
+
+
+      actualizarEstadoBotonesConfirmacion(
+        clave,
+        true
+      );
+
+
+      try {
+
+        const url =
+          CONFIG.API_BASE_URL
+          +
+          '?api=compras'
+          +
+          '&accion=confirmarEnvio'
+          +
+          '&empresa='
+          +
+          encodeURIComponent(
+            item.empresa
+          )
+          +
+          '&oc='
+          +
+          encodeURIComponent(
+            item.oc
+          )
+          +
+          '&confirmar=SI';
+
+
+        const respuesta =
+          await cargarJsonp(
+            url
+          );
+
+
+        if (
+          !respuesta ||
+          respuesta.ok !== true
+        ) {
+
+          throw new Error(
+
+            respuesta &&
+            respuesta.error
+
+              ? respuesta.error
+
+              : 'No fue posible confirmar el envío en MAESTRO.'
+
+          );
+
+        }
+
+
+        const data =
+          respuesta.data ||
+          {};
+
+
+        WHATSAPP_ABIERTO.delete(
+          clave
+        );
+
+
+        avisoMVP(
+          data.yaConfirmada
+
+            ? item.oc
+              +
+              ' ya estaba registrada como ENVIADA.'
+
+            : item.oc
+              +
+              ' confirmada como ENVIADA. '
+              +
+              'Ahora queda ESPERANDO RESPUESTA.'
+        );
+
+
+        if (
+          OC_MODAL_ACTUAL &&
+          OC_MODAL_ACTUAL.clave ===
+            clave
+        ) {
+
+          cerrarOC();
+
+        }
+
+
+        await cargarDatos();
+
+
+      } catch (
+        error
+      ) {
+
+        avisoMVP(
+          error &&
+          error.message
+
+            ? error.message
+
+            : String(
+                error
+              )
+        );
+
+
+      } finally {
+
+        CONFIRMACION_ENVIO_EN_CURSO.delete(
+          clave
+        );
+
+
+        actualizarEstadoBotonesConfirmacion(
+          clave,
+          false
+        );
+
+      }
+
+    }
+
+
+
+    /*
+     * ESTADO VISUAL DE BOTONES
+     * DURANTE LA ESCRITURA
+     */
+
+    function actualizarEstadoBotonesConfirmacion(
+      clave,
+      cargando
+    ) {
+
+      const botones =
+        document.querySelectorAll(
+          '[data-confirmar-envio="'
+          +
+          cssEscapeSeguro(
+            clave
+          )
+          +
+          '"]'
+        );
+
+
+      botones.forEach(
+        function(
+          boton
+        ) {
+
+          boton.disabled =
+            cargando;
+
+
+          boton.textContent =
+            cargando
+
+              ? 'Confirmando...'
+
+              : 'Confirmar envío';
+
+        }
+      );
+
+
+      const botonModal =
+        document.getElementById(
+          'btnConfirmarEnvioModal'
+        );
+
+
+      if (
+        botonModal &&
+        OC_MODAL_ACTUAL &&
+        OC_MODAL_ACTUAL.clave ===
+          clave
+      ) {
+
+        botonModal.disabled =
+          cargando;
+
+
+        botonModal.textContent =
+          cargando
+
+            ? 'Confirmando...'
+
+            : 'Confirmar envío';
+
+      }
+
+    }
+
+
+
+    /*
+     * WHATSAPP DESDE VER OC
+     */
+
+    function abrirWhatsAppDesdeModal() {
+
+      if (
+        !OC_MODAL_ACTUAL
+      ) {
+
+        return;
+
+      }
+
+
+      abrirWhatsApp(
+        OC_MODAL_ACTUAL.clave
+      );
+
+    }
+
+
+
+    /*
+     * CONFIRMAR DESDE VER OC
+     */
+
+    function confirmarEnvioDesdeModal() {
+
+      if (
+        !OC_MODAL_ACTUAL
+      ) {
+
+        return;
+
+      }
+
+
+      confirmarEnvio(
+        OC_MODAL_ACTUAL.clave
+      );
+
+    }
+
+
+
+    /*
+     * ACTUALIZAR BOTONES DEL MODAL
+     */
+
+    function actualizarBotonesModalEnvio(
+      item
+    ) {
+
+      const botonWhatsApp =
+        document.getElementById(
+          'btnEnviarModal'
+        );
+
+
+      const botonConfirmar =
+        document.getElementById(
+          'btnConfirmarEnvioModal'
+        );
+
+
+      if (
+        !botonWhatsApp ||
+        !botonConfirmar
+      ) {
+
+        return;
+
+      }
+
+
+      const pendiente =
+        normalizar(
+          item.estado
+        ) ===
+        'PENDIENTE DE ENVIO';
+
+
+      if (
+        !pendiente
+      ) {
+
+        botonWhatsApp.style.display =
+          'none';
+
+
+        botonConfirmar.style.display =
+          'none';
+
+
+        return;
+
+      }
+
+
+      const yaAbrioWhatsApp =
+        WHATSAPP_ABIERTO.has(
+          item.clave
+        );
+
+
+      botonWhatsApp.style.display =
+        yaAbrioWhatsApp
+
+          ? 'none'
+
+          : 'block';
+
+
+      botonConfirmar.style.display =
+        yaAbrioWhatsApp
+
+          ? 'block'
+
+          : 'none';
+
+    }
+
+
+
+    /*
+     * ESCAPE MUY SIMPLE PARA SELECTORES CSS
+     */
+
+    function cssEscapeSeguro(
+      valor
+    ) {
+
+      if (
+        window.CSS &&
+        typeof window.CSS.escape ===
+          'function'
+      ) {
+
+        return window.CSS.escape(
+          String(
+            valor ||
+            ''
+          )
+        );
+
+      }
+
+
+      return String(
+        valor ||
+        ''
+      )
+      .replace(
+        /\\/g,
+        '\\\\'
+      )
+      .replace(
+        /"/g,
+        '\\"'
+      );
 
     }
 
