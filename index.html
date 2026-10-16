@@ -677,7 +677,7 @@
 
       margin: auto;
 
-      padding: 22px 24px 0;
+      padding: 18px 24px 0;
 
       background: #fff;
 
@@ -693,14 +693,14 @@
       grid-template-columns:
         1fr 1.45fr;
 
-      gap: 24px;
+      gap: 20px;
 
       align-items: start;
     }
 
 
     .po-brand {
-      padding-top: 3px;
+      padding-top: 0;
     }
 
 
@@ -709,19 +709,19 @@
     .po-logo-real {
       display: block;
 
-      width: 170px;
+      width: 150px;
       max-width: 100%;
 
       height: auto;
 
       object-fit: contain;
 
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
 
     .po-company-name {
-      margin-top: 5px;
+      margin-top: 2px;
 
       font-size: 12px;
 
@@ -730,11 +730,11 @@
 
 
     .po-company-line {
-      margin-top: 4px;
+      margin-top: 3px;
 
       font-size: 10px;
 
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
 
@@ -744,7 +744,7 @@
 
 
     .po-title {
-      min-height: 35px;
+      min-height: 32px;
 
       background:
         var(--azul-claro);
@@ -764,7 +764,7 @@
 
 
     .po-number-bar {
-      min-height: 34px;
+      min-height: 32px;
 
       background:
         var(--azul);
@@ -781,7 +781,7 @@
 
       font-weight: 900;
 
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
 
@@ -791,7 +791,7 @@
       grid-template-columns:
         145px 1fr;
 
-      min-height: 22px;
+      min-height: 21px;
 
       align-items: center;
 
@@ -830,7 +830,7 @@
        ========================================================= */
 
     .po-supplier-row {
-      margin-top: 16px;
+      margin-top: 13px;
 
       display: grid;
 
@@ -881,7 +881,7 @@
 
 
     .po-reminder-text {
-      min-height: 56px;
+      min-height: 50px;
 
       display: flex;
 
@@ -889,7 +889,7 @@
 
       justify-content: center;
 
-      padding: 8px 15px;
+      padding: 7px 15px;
 
       font-size: 9px;
 
@@ -902,7 +902,7 @@
 
 
     .po-reminder-number {
-      min-height: 34px;
+      min-height: 32px;
 
       background:
         var(--azul);
@@ -926,7 +926,7 @@
        ========================================================= */
 
     .po-table-wrap {
-      margin-top: 12px;
+      margin-top: 10px;
 
       overflow-x: auto;
     }
@@ -1084,12 +1084,12 @@
        ========================================================= */
 
     .po-conditions {
-      margin-top: 9px;
+      margin-top: 8px;
     }
 
 
     .po-conditions-title {
-      padding: 5px 7px;
+      padding: 6px 7px;
 
       background:
         var(--azul-claro);
@@ -1104,13 +1104,18 @@
 
     .po-conditions ol {
       margin:
-        5px 0 8px 17px;
+        7px 0 10px 18px;
 
       padding: 0;
 
-      font-size: 7px;
+      font-size: 8px;
 
-      line-height: 1.35;
+      line-height: 1.45;
+    }
+
+
+    .po-conditions li {
+      margin-bottom: 1px;
     }
 
 
@@ -1122,9 +1127,9 @@
       margin:
         10px -24px 0;
 
-      min-height: 42px;
+      min-height: 48px;
 
-      padding: 6px;
+      padding: 8px;
 
       display: flex;
 
@@ -1151,7 +1156,7 @@
 
 
     .po-footer-company {
-      margin-top: 3px;
+      margin-top: 4px;
 
       font-size: 8px;
 
@@ -1279,7 +1284,7 @@
 
 
       .po-logo-real {
-        width: 150px;
+        width: 140px;
       }
 
 
@@ -2808,51 +2813,37 @@
 
 
                   <th class="col-num">
-
                     N°
-
                   </th>
 
 
                   <th class="col-codigo">
-
                     CÓDIGO
-
                   </th>
 
 
                   <th class="col-producto">
-
                     PRODUCTO
-
                   </th>
 
 
                   <th class="col-cantidad">
-
                     CANTIDAD
-
                   </th>
 
 
                   <th class="col-unidad">
-
                     UND. DE MEDIDA
-
                   </th>
 
 
                   <th class="col-precio">
-
                     PRECIO UNITARIO
-
                   </th>
 
 
                   <th class="col-total">
-
                     TOTAL
-
                   </th>
 
 
@@ -2885,60 +2876,39 @@
 
               <tr>
 
-
                 <td>
-
                   SUBTOTAL NETO
-
                 </td>
-
 
                 <td>
-
                   ${formatoMoneda(item.neto)}
-
                 </td>
-
 
               </tr>
 
 
               <tr>
 
-
                 <td>
-
                   IVA (19%)
-
                 </td>
-
 
                 <td>
-
                   ${formatoMoneda(item.iva)}
-
                 </td>
-
 
               </tr>
 
 
               <tr class="po-total-final">
 
-
                 <td>
-
                   TOTAL FINAL
-
                 </td>
-
 
                 <td>
-
                   ${formatoMoneda(item.bruto)}
-
                 </td>
-
 
               </tr>
 
@@ -2961,25 +2931,21 @@
 
             <ol>
 
-
               <li>
                 Entrega de los productos en la dirección
                 indicada por la empresa emisora, en la fecha
                 y horario acordados.
               </li>
 
-
               <li>
                 Los productos deben ser de la calidad,
                 marca y presentación solicitada.
               </li>
 
-
               <li>
                 Cualquier cambio o sustitución debe ser
                 previamente autorizado por el área de compras.
               </li>
-
 
               <li>
                 Factura electrónica, guía de despacho y demás
@@ -2987,13 +2953,11 @@
                 al número de esta Orden de Compra (OC).
               </li>
 
-
               <li>
                 En caso de diferencias entre lo facturado y lo
                 recibido, éstas serán comunicadas al proveedor
                 para su regularización.
               </li>
-
 
               <li>
                 El incumplimiento de las condiciones acordadas
@@ -3001,24 +2965,20 @@
                 y/o anulación de la Orden de Compra.
               </li>
 
-
               <li>
                 Los precios indicados en esta OC son fijos y no
                 podrán ser modificados sin autorización previa.
               </li>
-
 
               <li>
                 Cualquier duda respecto a esta OC debe ser
                 canalizada a través del área de compras.
               </li>
 
-
               <li>
                 Plazos de entrega y condiciones logísticas según
                 lo acordado con el proveedor.
               </li>
-
 
               <li>
                 El proveedor debe cumplir con toda la normativa
@@ -3026,19 +2986,16 @@
                 productos suministrados.
               </li>
 
-
               <li>
                 En caso de incumplimiento, la empresa emisora
                 podrá rechazar la mercadería y/o aplicar las
                 medidas correspondientes.
               </li>
 
-
               <li>
                 Esta Orden de Compra constituye un compromiso
                 formal de compra una vez aprobada.
               </li>
-
 
             </ol>
 
@@ -3125,9 +3082,7 @@
         <div class="po-company-line">
 
           <strong>
-
             ${escapeHtml(etiqueta)}:
-
           </strong>
 
           ${escapeHtml(valor)}
@@ -3159,9 +3114,7 @@
         <div class="po-provider-line">
 
           <strong>
-
             ${escapeHtml(etiqueta)}:
-
           </strong>
 
           ${escapeHtml(valor)}
