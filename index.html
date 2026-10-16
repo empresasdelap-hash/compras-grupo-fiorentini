@@ -1,4240 +1,2004 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <meta name="theme-color" content="#184f78">
-
-  <title>Gestión de Compras · Grupo Fiorentini</title>
-
-  <style>
-
-    :root {
-      --fondo: #f4f6f8;
-      --blanco: #ffffff;
-
-      --azul: #184f78;
-      --azul-2: #24638f;
-      --azul-claro: #eaf3f9;
-      --azul-linea: #c8dcea;
-
-      --texto: #182230;
-      --muted: #667085;
-      --borde: #dbe3ea;
-
-      --verde: #079455;
-      --verde-claro: #dcfae6;
-
-      --naranjo-bg: #fff1e8;
-      --naranjo-text: #c4320a;
-
-      --amarillo-bg: #fffaeb;
-      --amarillo-text: #b54708;
-
-      --azul-bg: #eff8ff;
-      --azul-text: #175cd3;
-
-      --morado-bg: #f4f3ff;
-      --morado-text: #5925dc;
-
-      --rojo-bg: #fef3f2;
-      --rojo-text: #b42318;
-
-      --gris-bg: #f2f4f7;
-      --gris-text: #475467;
-
-      --radio: 16px;
-
-      --sombra:
-        0 4px 15px rgba(16, 24, 40, 0.08);
-    }
-
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-      background: var(--fondo);
-      color: var(--texto);
-    }
-
-
-    button,
-    select {
-      font: inherit;
-    }
-
-
-    button {
-      cursor: pointer;
-    }
-
-
-    /* =========================================================
-       APP
-       ========================================================= */
-
-    .app-shell {
-      width: 100%;
-      max-width: 1450px;
-
-      margin: auto;
-      padding: 18px;
-    }
-
-
-    .topbar {
-      display: flex;
-
-      justify-content:
-        space-between;
-
-      align-items: center;
-
-      gap: 15px;
-
-      padding: 16px 18px;
-
-      background: #fff;
-
-      border:
-        1px solid var(--borde);
-
-      border-radius:
-        var(--radio);
-
-      box-shadow:
-        var(--sombra);
-
-      position: sticky;
-      top: 10px;
-
-      z-index: 20;
-    }
-
-
-    .topbar h1 {
-      margin: 0;
-
-      font-size: 23px;
-      font-weight: 900;
-    }
-
-
-    .topbar-sub {
-      margin-top: 4px;
-
-      color: var(--muted);
-
-      font-size: 13px;
-    }
-
-
-    .btn-refresh {
-      min-height: 44px;
-
-      border: none;
-
-      border-radius: 10px;
-
-      padding: 10px 17px;
-
-      background: #12b76a;
-
-      color: #fff;
-
-      font-weight: 900;
-    }
-
-
-    .btn-refresh:disabled {
-      opacity: .5;
-    }
-
-
-    /* =========================================================
-       FILTROS
-       ========================================================= */
-
-    .filters {
-      margin-top: 16px;
-
-      background: #fff;
-
-      border:
-        1px solid var(--borde);
-
-      border-radius:
-        var(--radio);
-
-      padding: 14px;
-
-      box-shadow:
-        var(--sombra);
-    }
-
-
-    .filters-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(180px, 1fr));
-
-      gap: 12px;
-    }
-
-
-    .filter label {
-      display: block;
-
-      margin-bottom: 6px;
-
-      font-size: 12px;
-
-      color: #475467;
-
-      font-weight: 900;
-
-      text-transform:
-        uppercase;
-    }
-
-
-    .filter select {
-      width: 100%;
-      height: 44px;
-
-      border:
-        1px solid #d0d5dd;
-
-      border-radius: 10px;
-
-      padding: 0 12px;
-
-      background: #fff;
-    }
-
-
-    .filters-bottom {
-      margin-top: 12px;
-      padding-top: 12px;
-
-      border-top:
-        1px solid var(--borde);
-
-      display: flex;
-
-      justify-content:
-        space-between;
-
-      gap: 12px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-
-    /* =========================================================
-       ESTADOS
-       ========================================================= */
-
-    .loading,
-    .empty,
-    .error {
-      margin-top: 18px;
-
-      padding: 30px;
-
-      background: #fff;
-
-      border:
-        1px solid var(--borde);
-
-      border-radius:
-        var(--radio);
-
-      box-shadow:
-        var(--sombra);
-
-      text-align: center;
-    }
-
-
-    .error {
-      color:
-        var(--rojo-text);
-    }
-
-
-    .spinner {
-      width: 32px;
-      height: 32px;
-
-      border:
-        4px solid #e4e7ec;
-
-      border-top-color:
-        #1570ef;
-
-      border-radius: 50%;
-
-      margin:
-        0 auto 12px;
-
-      animation:
-        spin .8s linear infinite;
-    }
-
-
-    @keyframes spin {
-
-      to {
-        transform:
-          rotate(360deg);
-      }
-
-    }
-
-
-    /* =========================================================
-       TARJETAS
-       ========================================================= */
-
-    .cards {
-      margin-top: 18px;
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-      gap: 16px;
-    }
-
-
-    .oc-card {
-      padding: 15px;
-
-      min-height: 260px;
-
-      background: #fff;
-
-      border:
-        1px solid var(--borde);
-
-      border-radius:
-        var(--radio);
-
-      box-shadow:
-        var(--sombra);
-
-      display: flex;
-      flex-direction: column;
-    }
-
-
-    .card-head {
-      display: flex;
-
-      gap: 10px;
-
-      align-items:
-        flex-start;
-    }
-
-
-    .card-check input {
-      width: 20px;
-      height: 20px;
-    }
-
-
-    .card-main {
-      min-width: 0;
-      flex: 1;
-    }
-
-
-    .card-title-row {
-      display: flex;
-
-      align-items: center;
-
-      gap: 8px;
-
-      flex-wrap: wrap;
-    }
-
-
-    .oc-number {
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-
-    .status {
-      padding: 5px 9px;
-
-      border-radius:
-        999px;
-
-      font-size: 10px;
-      font-weight: 900;
-
-      text-transform:
-        uppercase;
-    }
-
-
-    .status-NARANJO {
-      background:
-        var(--naranjo-bg);
-
-      color:
-        var(--naranjo-text);
-    }
-
-
-    .status-AMARILLO {
-      background:
-        var(--amarillo-bg);
-
-      color:
-        var(--amarillo-text);
-    }
-
-
-    .status-AZUL {
-      background:
-        var(--azul-bg);
-
-      color:
-        var(--azul-text);
-    }
-
-
-    .status-MORADO {
-      background:
-        var(--morado-bg);
-
-      color:
-        var(--morado-text);
-    }
-
-
-    .status-ROJO {
-      background:
-        var(--rojo-bg);
-
-      color:
-        var(--rojo-text);
-    }
-
-
-    .status-GRIS {
-      background:
-        var(--gris-bg);
-
-      color:
-        var(--gris-text);
-    }
-
-
-    .provider {
-      margin-top: 9px;
-
-      font-size: 15px;
-      font-weight: 900;
-    }
-
-
-    .meta {
-      margin-top: 10px;
-
-      display: grid;
-      gap: 5px;
-
-      font-size: 13px;
-
-      color: #475467;
-    }
-
-
-    .meta strong {
-      color: #344054;
-    }
-
-
-    .amount-row {
-      margin-top: 14px;
-
-      display: flex;
-
-      justify-content:
-        space-between;
-
-      align-items:
-        flex-end;
-
-      gap: 12px;
-    }
-
-
-    .line-count {
-      font-size: 13px;
-
-      color:
-        var(--muted);
-    }
-
-
-    .amount {
-      font-size: 20px;
-
-      font-weight: 900;
-    }
-
-
-    .actions {
-      margin-top: auto;
-
-      padding-top: 16px;
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1.2fr;
-
-      gap: 9px;
-    }
-
-
-    .btn {
-      min-height: 44px;
-
-      border: none;
-
-      border-radius: 10px;
-
-      padding: 10px;
-
-      font-weight: 900;
-    }
-
-
-    .btn-view {
-      background: #eff8ff;
-
-      color: #175cd3;
-    }
-
-
-    .btn-blue {
-      background: #1570ef;
-
-      color: #fff;
-    }
-
-
-    .btn-whatsapp {
-      background: #12b76a;
-
-      color: #fff;
-    }
-
-
-    .btn-confirmar-envio {
-      background: #184f78;
-      color: #fff;
-    }
-
-
-    .btn-confirmar-envio:disabled {
-      opacity: .55;
-      cursor: wait;
-    }
-
-
-    /* =========================================================
-       MODAL
-       ========================================================= */
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-
-      display: none;
-
-      overflow-y: auto;
-
-      padding: 18px;
-
-      background:
-        rgba(16, 24, 40, .72);
-
-      z-index: 100;
-    }
-
-
-    .modal-overlay.visible {
-      display: block;
-    }
-
-
-    .modal {
-      width:
-        min(1050px, 100%);
-
-      margin:
-        18px auto;
-
-      border-radius: 16px;
-
-      background: #fff;
-
-      overflow: hidden;
-    }
-
-
-    .modal-head {
-      min-height: 62px;
-
-      display: flex;
-
-      justify-content:
-        space-between;
-
-      align-items: center;
-
-      padding: 12px 18px;
-
-      border-bottom:
-        1px solid var(--borde);
-    }
-
-
-    .modal-head h2 {
-      margin: 0;
-
-      font-size: 19px;
-    }
-
-
-    .modal-close {
-      width: 40px;
-      height: 40px;
-
-      border: none;
-
-      border-radius: 50%;
-
-      background:
-        #f2f4f7;
-
-      font-size: 23px;
-    }
-
-
-    .modal-body {
-      background:
-        #edf1f4;
-
-      padding: 18px;
-    }
-
-
-    .modal-footer {
-      padding: 12px 18px;
-
-      background: #fff;
-
-      border-top:
-        1px solid var(--borde);
-
-      display: flex;
-
-      justify-content:
-        flex-end;
-
-      gap: 10px;
-    }
-
-
-    /* =========================================================
-       OC
-       ========================================================= */
-
-    .purchase-order {
-      width: 100%;
-      max-width: 900px;
-
-      margin: auto;
-
-      padding: 18px 24px 0;
-
-      background: #fff;
-
-      box-shadow:
-        0 3px 13px
-        rgba(16, 24, 40, .10);
-    }
-
-
-    .po-header-top {
-      display: grid;
-
-      grid-template-columns:
-        1fr 1.45fr;
-
-      gap: 20px;
-
-      align-items: start;
-    }
-
-
-    .po-brand {
-      padding-top: 0;
-    }
-
-
-    /* LOGO REAL */
-
-    .po-logo-real {
-      display: block;
-
-      width: 150px;
-      max-width: 100%;
-
-      height: auto;
-
-      object-fit: contain;
-
-      margin-bottom: 8px;
-    }
-
-
-    .po-company-name {
-      margin-top: 2px;
-
-      font-size: 12px;
-
-      font-weight: 800;
-    }
-
-
-    .po-company-line {
-      margin-top: 3px;
-
-      font-size: 10px;
-
-      line-height: 1.3;
-    }
-
-
-    .po-right-header {
-      width: 100%;
-    }
-
-
-    .po-title {
-      min-height: 32px;
-
-      background:
-        var(--azul-claro);
-
-      color: #111;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      font-size: 14px;
-
-      font-weight: 900;
-    }
-
-
-    .po-number-bar {
-      min-height: 32px;
-
-      background:
-        var(--azul);
-
-      color: #fff;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      font-size: 17px;
-
-      font-weight: 900;
-
-      margin-bottom: 6px;
-    }
-
-
-    .po-meta-row {
-      display: grid;
-
-      grid-template-columns:
-        145px 1fr;
-
-      min-height: 21px;
-
-      align-items: center;
-
-      font-size: 10px;
-    }
-
-
-    .po-meta-label {
-      color: #153d5c;
-
-      font-weight: 800;
-    }
-
-
-    .po-meta-value {
-      text-align: right;
-    }
-
-
-    .po-state {
-      background:
-        #e9f9e8;
-
-      color: #08783f;
-
-      font-weight: 900;
-
-      text-align: center;
-
-      padding: 5px 6px;
-    }
-
-
-    /* =========================================================
-       PROVEEDOR
-       ========================================================= */
-
-    .po-supplier-row {
-      margin-top: 13px;
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1.38fr;
-
-      gap: 10px;
-    }
-
-
-    .po-section-title {
-      padding: 5px 7px;
-
-      background:
-        var(--azul-claro);
-
-      color: #153d5c;
-
-      font-size: 10px;
-
-      font-weight: 900;
-    }
-
-
-    .po-provider-name {
-      margin-top: 5px;
-
-      font-size: 11px;
-
-      font-weight: 700;
-    }
-
-
-    .po-provider-line {
-      margin-top: 3px;
-
-      font-size: 9px;
-
-      line-height: 1.3;
-    }
-
-
-    .po-oc-reminder {
-      border:
-        1px solid
-        var(--azul-linea);
-    }
-
-
-    .po-reminder-text {
-      min-height: 50px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      padding: 7px 15px;
-
-      font-size: 9px;
-
-      font-weight: 700;
-
-      text-align: center;
-
-      line-height: 1.25;
-    }
-
-
-    .po-reminder-number {
-      min-height: 32px;
-
-      background:
-        var(--azul);
-
-      color: #fff;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      font-size: 15px;
-
-      font-weight: 900;
-    }
-
-
-    /* =========================================================
-       TABLA
-       ========================================================= */
-
-    .po-table-wrap {
-      margin-top: 10px;
-
-      overflow-x: auto;
-    }
-
-
-    .po-table {
-      width: 100%;
-
-      border-collapse:
-        collapse;
-
-      table-layout: fixed;
-
-      font-size: 8px;
-    }
-
-
-    .po-table th {
-      height: 30px;
-
-      padding: 5px 3px;
-
-      color: #fff;
-
-      background:
-        #4a7da2;
-
-      font-weight: 900;
-
-      text-align: center;
-
-      border-right:
-        1px solid #acc4d5;
-    }
-
-
-    .po-table td {
-      min-height: 23px;
-
-      padding: 5px 4px;
-
-      border-right:
-        1px solid #d2e2ed;
-
-      border-bottom:
-        1px solid #d2e2ed;
-
-      vertical-align: middle;
-    }
-
-
-    .po-table td.center {
-      text-align: center;
-    }
-
-
-    .po-table td.money {
-      text-align: right;
-    }
-
-
-    .col-num {
-      width: 7%;
-    }
-
-
-    .col-codigo {
-      width: 13%;
-    }
-
-
-    .col-producto {
-      width: 27%;
-    }
-
-
-    .col-cantidad {
-      width: 13%;
-    }
-
-
-    .col-unidad {
-      width: 15%;
-    }
-
-
-    .col-precio {
-      width: 14%;
-    }
-
-
-    .col-total {
-      width: 11%;
-    }
-
-
-    .po-empty-row td {
-      height: 18px;
-    }
-
-
-    /* =========================================================
-       TOTALES
-       ========================================================= */
-
-    .po-totals-area {
-      display: flex;
-
-      justify-content:
-        flex-end;
-
-      margin-top: 2px;
-    }
-
-
-    .po-totals {
-      width: 44%;
-
-      border-collapse:
-        collapse;
-
-      font-size: 9px;
-    }
-
-
-    .po-totals td {
-      padding: 4px 6px;
-    }
-
-
-    .po-totals td:first-child {
-      font-weight: 900;
-    }
-
-
-    .po-totals td:last-child {
-      text-align: right;
-
-      font-weight: 900;
-    }
-
-
-    .po-total-final {
-      background:
-        #4a7da2;
-
-      color: #fff;
-
-      font-weight: 900;
-    }
-
-
-    /* =========================================================
-       CONDICIONES
-       ========================================================= */
-
-    .po-conditions {
-      margin-top: 8px;
-    }
-
-
-    .po-conditions-title {
-      padding: 6px 7px;
-
-      background:
-        var(--azul-claro);
-
-      color: #153d5c;
-
-      font-size: 9px;
-
-      font-weight: 900;
-    }
-
-
-    .po-conditions ol {
-      margin:
-        7px 0 10px 18px;
-
-      padding: 0;
-
-      font-size: 8px;
-
-      line-height: 1.45;
-    }
-
-
-    .po-conditions li {
-      margin-bottom: 1px;
-    }
-
-
-    /* =========================================================
-       PIE
-       ========================================================= */
-
-    .po-footer-bar {
-      margin:
-        10px -24px 0;
-
-      min-height: 48px;
-
-      padding: 8px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      justify-content: center;
-
-      align-items: center;
-
-      background:
-        var(--azul);
-
-      color: #fff;
-
-      text-align: center;
-    }
-
-
-    .po-footer-message {
-      font-size: 8px;
-
-      font-weight: 700;
-    }
-
-
-    .po-footer-company {
-      margin-top: 4px;
-
-      font-size: 8px;
-
-      font-weight: 900;
-    }
-
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    .toast {
-      position: fixed;
-
-      left: 50%;
-      bottom: 25px;
-
-      transform:
-        translate(-50%, 100px);
-
-      opacity: 0;
-
-      max-width:
-        calc(100vw - 30px);
-
-      padding: 13px 16px;
-
-      border-radius: 10px;
-
-      background: #101828;
-
-      color: #fff;
-
-      font-size: 13px;
-
-      z-index: 300;
-
-      transition: .2s;
-    }
-
-
-    .toast.visible {
-      transform:
-        translate(-50%, 0);
-
-      opacity: 1;
-    }
-
-
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
-
-    @media
-      (max-width: 1050px) {
-
-      .cards {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-      }
-
-    }
-
-
-    @media
-      (max-width: 720px) {
-
-      .app-shell {
-        padding: 9px;
-      }
-
-
-      .filters-grid {
-        grid-template-columns: 1fr;
-      }
-
-
-      .filters-bottom {
-        flex-direction: column;
-      }
-
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-
-
-      .modal-overlay {
-        padding: 0;
-      }
-
-
-      .modal {
-        min-height: 100vh;
-
-        margin: 0;
-
-        border-radius: 0;
-      }
-
-
-      .modal-body {
-        padding: 5px;
-      }
-
-
-      .purchase-order {
-        padding:
-          13px 9px 0;
-
-        box-shadow: none;
-      }
-
-
-      .po-header-top {
-        grid-template-columns: 1fr;
-
-        gap: 10px;
-      }
-
-
-      .po-supplier-row {
-        grid-template-columns: 1fr;
-      }
-
-
-      .po-logo-real {
-        width: 140px;
-      }
-
-
-      .po-meta-row {
-        grid-template-columns:
-          130px 1fr;
-      }
-
-
-      .po-footer-bar {
-        margin:
-          10px -9px 0;
-      }
-
-
-      .modal-footer {
-        position: sticky;
-
-        bottom: 0;
-
-        display: grid;
-
-        grid-template-columns:
-          1fr 1fr;
-      }
-
-    }
-
-
-    @media print {
-
-      body * {
-        visibility: hidden;
-      }
-
-
-      #documentoOC,
-      #documentoOC * {
-        visibility: visible;
-      }
-
-
-      #documentoOC {
-        position: absolute;
-
-        left: 0;
-        top: 0;
-
-        width: 100%;
-      }
-
-
-      .purchase-order {
-        width: 100%;
-
-        max-width: none;
-
-        box-shadow: none;
-      }
-
-    }
-
-  </style>
-
-</head>
-
-
-<body>
-
-
-  <div class="app-shell">
-
-
-    <header class="topbar">
-
-      <div>
-
-        <h1>
-          Gestión de Compras
-        </h1>
-
-        <div class="topbar-sub">
-          Grupo Fiorentini · Panel operativo
-        </div>
-
-      </div>
-
-
-      <button
-        id="btnActualizar"
-        class="btn-refresh"
-        onclick="cargarDatos()"
-      >
-        ↻ Actualizar
-      </button>
-
-    </header>
-
-
-    <section class="filters">
-
-
-      <div class="filters-grid">
-
-
-        <div class="filter">
-
-          <label>
-            Estado
-          </label>
-
-          <select
-            id="filtroEstado"
-            onchange="aplicarFiltros()"
-          >
-
-            <option value="">
-              Todos
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="filter">
-
-          <label>
-            Proveedor
-          </label>
-
-          <select
-            id="filtroProveedor"
-            onchange="aplicarFiltros()"
-          >
-
-            <option value="">
-              Todos
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="filter">
-
-          <label>
-            Empresa
-          </label>
-
-          <select
-            id="filtroEmpresa"
-            onchange="aplicarFiltros()"
-          >
-
-            <option value="">
-              Todas
-            </option>
-
-          </select>
-
-        </div>
-
-
-      </div>
-
-
-      <div class="filters-bottom">
-
-        <span id="contadorResultados">
-          0 OC
-        </span>
-
-
-        <span id="ultimaActualizacion">
-          Sin actualizar
-        </span>
-
-      </div>
-
-
-    </section>
-
-
-    <div
-      id="loading"
-      class="loading"
-    >
-
-      <div class="spinner"></div>
-
-      Cargando órdenes de compra...
-
-    </div>
-
-
-    <div
-      id="errorBox"
-      class="error"
-      style="display:none;"
-    ></div>
-
-
-    <div
-      id="emptyBox"
-      class="empty"
-      style="display:none;"
-    >
-      No existen órdenes de compra para estos filtros.
-    </div>
-
-
-    <main
-      id="cardsContainer"
-      class="cards"
-    ></main>
-
-
-  </div>
-
-
-  <!-- =======================================================
-       MODAL OC
-       ======================================================= -->
-
-  <div
-    id="modalOC"
-    class="modal-overlay"
-    onclick="cerrarModalPorFondo(event)"
-  >
-
-
-    <div class="modal">
-
-
-      <div class="modal-head">
-
-        <h2>
-          Vista previa OC
-        </h2>
-
-
-        <button
-          class="modal-close"
-          onclick="cerrarOC()"
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div class="modal-body">
-
-        <div id="documentoOC"></div>
-
-      </div>
-
-
-      <div class="modal-footer">
-
-
-        <button
-          class="btn btn-view"
-          onclick="window.print()"
-        >
-          Imprimir
-        </button>
-
-
-        <button
-          class="btn btn-view"
-          onclick="cerrarOC()"
-        >
-          Volver
-        </button>
-
-
-        <button
-          id="btnEnviarModal"
-          class="btn btn-whatsapp"
-          onclick="abrirWhatsAppDesdeModal()"
-        >
-          WhatsApp
-        </button>
-
-
-        <button
-          id="btnConfirmarEnvioModal"
-          class="btn btn-confirmar-envio"
-          onclick="confirmarEnvioDesdeModal()"
-          style="display:none;"
-        >
-          Confirmar envío
-        </button>
-
-
-      </div>
-
-
-    </div>
-
-
-  </div>
-
-
-  <div
-    id="toast"
-    class="toast"
-  ></div>
-
-
-  <script>
-
-
-    /* =========================================================
-       CONFIG
-       ========================================================= */
-
-    const CONFIG = {
-
-      API_BASE_URL:
-        'https://script.google.com/macros/s/AKfycbyB-26Y-FVjiiD7-yVsQ8rKDZu81ZyVxdzcjd4oaj5fQgKi8MswBwdNR-zN7owVxwU84g/exec'
-
-    };
-
-
-    let PANEL = {
-
-      actualizado: '',
-
-      oc: [],
-
-      proveedores: [],
-
-      empresas: [],
-
-      estados: []
-
-    };
-
-
-    let OC_VISIBLE = [];
-
-    let OC_MODAL_ACTUAL =
-      null;
-
-
-    /*
-     * Guarda solamente en esta sesión qué OC
-     * ya fueron abiertas en WhatsApp.
-     *
-     * IMPORTANTE:
-     * esto NO es trazabilidad oficial.
-     * MAESTRO sigue siendo la fuente de verdad.
-     */
-
-    const WHATSAPP_ABIERTO =
-      new Set();
-
-
-    const CONFIRMACION_ENVIO_EN_CURSO =
-      new Set();
-
-
-
-    /* =========================================================
-       INICIO
-       ========================================================= */
-
-    document.addEventListener(
-      'DOMContentLoaded',
-      cargarDatos
-    );
-
-
-
-    /* =========================================================
-       API
-       ========================================================= */
-
-    async function cargarDatos() {
-
-      mostrarCarga(true);
-
-      ocultarError();
-
-
-      const boton =
-        document.getElementById(
-          'btnActualizar'
-        );
-
-
-      boton.disabled =
-        true;
-
-
-      try {
-
-        const url =
-          CONFIG.API_BASE_URL
-          +
-          '?api=compras&accion=listar';
-
-
-        const respuesta =
-          await cargarJsonp(
-            url
-          );
-
-
-        if (
-          !respuesta ||
-          respuesta.ok !== true
-        ) {
-
-          throw new Error(
-
-            respuesta &&
-            respuesta.error
-
-              ? respuesta.error
-
-              : 'No fue posible cargar Compras.'
-
-          );
-
-        }
-
-
-        PANEL =
-          respuesta.data;
-
-
-        cargarSelects();
-
-        aplicarFiltros();
-
-
-        document
-          .getElementById(
-            'ultimaActualizacion'
-          )
-          .textContent =
-            'Actualizado: '
-            +
-            (
-              PANEL.actualizado ||
-              '-'
-            );
-
-
-      } catch (
-        error
+<script>
+  const CONFIG = {
+    API_BASE_URL:
+      'https://script.google.com/macros/s/AKfycbyB-26Y-FVjiiD7-yVsQ8rKDZu81ZyVxdzcjd4oaj5fQgKi8MswBwdNR-zN7owVxwU84g/exec'
+  };
+
+  let PANEL = {
+    actualizado: '',
+    oc: [],
+    proveedores: [],
+    empresas: [],
+    estados: []
+  };
+
+  let OC_VISIBLE = [];
+  let OC_MODAL_ACTUAL = null;
+
+  const WHATSAPP_ABIERTO = new Set();
+  const CONFIRMACION_ENVIO_EN_CURSO = new Set();
+  const CONFIRMACION_RESPUESTA_EN_CURSO = new Set();
+
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    cargarDatos
+  );
+
+
+  async function cargarDatos() {
+    mostrarCarga(true);
+    ocultarError();
+
+    const boton =
+      document.getElementById(
+        'btnActualizar'
+      );
+
+    boton.disabled = true;
+
+    try {
+      const url =
+        CONFIG.API_BASE_URL
+        +
+        '?api=compras&accion=listar';
+
+      const respuesta =
+        await cargarJsonp(url);
+
+      if (
+        !respuesta ||
+        respuesta.ok !== true
       ) {
-
-        mostrarError(
-          error.message ||
-          String(error)
+        throw new Error(
+          respuesta &&
+          respuesta.error
+            ? respuesta.error
+            : 'No fue posible cargar Compras.'
         );
-
-      } finally {
-
-        mostrarCarga(false);
-
-        boton.disabled =
-          false;
-
       }
 
+      PANEL =
+        respuesta.data || {
+          actualizado: '',
+          oc: [],
+          proveedores: [],
+          empresas: [],
+          estados: []
+        };
+
+      cargarSelects();
+      aplicarFiltros();
+
+      document
+        .getElementById(
+          'ultimaActualizacion'
+        )
+        .textContent =
+          'Actualizado: '
+          +
+          (
+            PANEL.actualizado ||
+            '-'
+          );
+
+    } catch (error) {
+      mostrarError(
+        error &&
+        error.message
+          ? error.message
+          : String(error)
+      );
+
+    } finally {
+      mostrarCarga(false);
+      boton.disabled = false;
     }
+  }
 
 
+  function cargarJsonp(url) {
+    return new Promise(
+      function(resolve, reject) {
+        const callback =
+          '__gfCompras_'
+          +
+          Date.now()
+          +
+          '_'
+          +
+          Math.floor(
+            Math.random() * 100000
+          );
 
-    function cargarJsonp(
-      url
-    ) {
+        const script =
+          document.createElement(
+            'script'
+          );
 
-      return new Promise(
-        function(
-          resolve,
-          reject
-        ) {
+        const separador =
+          url.includes('?')
+            ? '&'
+            : '?';
 
-          const callback =
-            '__gfCompras_'
-            +
-            Date.now()
-            +
-            '_'
-            +
-            Math.floor(
-              Math.random()
-              *
-              100000
-            );
-
-
-          const script =
-            document.createElement(
-              'script'
-            );
-
-
-          const separador =
-            url.includes('?')
-              ? '&'
-              : '?';
-
-
-          const timeout =
-            window.setTimeout(
-              function() {
-
-                limpiar();
-
-                reject(
-                  new Error(
-                    'Tiempo de espera agotado consultando MAESTRO.'
-                  )
-                );
-
-              },
-              20000
-            );
-
-
-          function limpiar() {
-
-            window.clearTimeout(
-              timeout
-            );
-
-
-            if (
-              script.parentNode
-            ) {
-
-              script
-                .parentNode
-                .removeChild(
-                  script
-                );
-
-            }
-
-
-            try {
-
-              delete window[
-                callback
-              ];
-
-            } catch (
-              error
-            ) {
-
-              window[
-                callback
-              ] =
-                undefined;
-
-            }
-
-          }
-
-
-          window[
-            callback
-          ] =
-            function(
-              respuesta
-            ) {
-
-              limpiar();
-
-              resolve(
-                respuesta
-              );
-
-            };
-
-
-          script.onerror =
+        const timeout =
+          window.setTimeout(
             function() {
-
               limpiar();
 
               reject(
                 new Error(
-                  'No fue posible conectar con la API.'
+                  'Tiempo de espera agotado consultando MAESTRO.'
                 )
               );
-
-            };
-
-
-          script.src =
-            url
-            +
-            separador
-            +
-            'callback='
-            +
-            encodeURIComponent(
-              callback
-            );
-
-
-          document
-            .head
-            .appendChild(
-              script
-            );
-
-        }
-      );
-
-    }
-
-
-
-    /* =========================================================
-       FILTROS
-       ========================================================= */
-
-    function cargarSelects() {
-
-      llenarSelect(
-        'filtroEstado',
-        PANEL.estados || [],
-        'Todos'
-      );
-
-
-      llenarSelect(
-        'filtroProveedor',
-        PANEL.proveedores || [],
-        'Todos'
-      );
-
-
-      llenarSelect(
-        'filtroEmpresa',
-        PANEL.empresas || [],
-        'Todas'
-      );
-
-    }
-
-
-
-    function llenarSelect(
-      id,
-      valores,
-      textoTodos
-    ) {
-
-      const select =
-        document.getElementById(
-          id
-        );
-
-
-      const actual =
-        select.value;
-
-
-      select.innerHTML =
-        '';
-
-
-      const primero =
-        document.createElement(
-          'option'
-        );
-
-
-      primero.value =
-        '';
-
-      primero.textContent =
-        textoTodos;
-
-
-      select.appendChild(
-        primero
-      );
-
-
-      valores.forEach(
-        function(
-          valor
-        ) {
-
-          const option =
-            document.createElement(
-              'option'
-            );
-
-
-          option.value =
-            valor;
-
-          option.textContent =
-            valor;
-
-
-          select.appendChild(
-            option
+            },
+            20000
           );
 
-        }
-      );
+        function limpiar() {
+          window.clearTimeout(
+            timeout
+          );
 
-
-      if (
-        Array
-          .from(
-            select.options
-          )
-          .some(
-            function(
-              option
-            ) {
-
-              return (
-                option.value ===
-                actual
-              );
-
-            }
-          )
-      ) {
-
-        select.value =
-          actual;
-
-      }
-
-    }
-
-
-
-    function aplicarFiltros() {
-
-      const estado =
-        document
-          .getElementById(
-            'filtroEstado'
-          )
-          .value;
-
-
-      const proveedor =
-        document
-          .getElementById(
-            'filtroProveedor'
-          )
-          .value;
-
-
-      const empresa =
-        document
-          .getElementById(
-            'filtroEmpresa'
-          )
-          .value;
-
-
-      OC_VISIBLE =
-        (
-          PANEL.oc ||
-          []
-        )
-        .filter(
-          function(
-            item
+          if (
+            script.parentNode
           ) {
+            script
+              .parentNode
+              .removeChild(
+                script
+              );
+          }
 
-            return (
-              (
-                !estado ||
-                item.estado ===
-                  estado
-              )
-              &&
-              (
-                !proveedor ||
-                item.proveedor ===
-                  proveedor
-              )
-              &&
-              (
-                !empresa ||
-                item.empresa ===
-                  empresa
+          try {
+            delete window[
+              callback
+            ];
+
+          } catch (error) {
+            window[
+              callback
+            ] = undefined;
+          }
+        }
+
+        window[
+          callback
+        ] =
+          function(respuesta) {
+            limpiar();
+            resolve(respuesta);
+          };
+
+        script.onerror =
+          function() {
+            limpiar();
+
+            reject(
+              new Error(
+                'No fue posible conectar con la API.'
               )
             );
+          };
 
-          }
-        );
+        script.src =
+          url
+          +
+          separador
+          +
+          'callback='
+          +
+          encodeURIComponent(
+            callback
+          );
+
+        document
+          .head
+          .appendChild(
+            script
+          );
+      }
+    );
+  }
 
 
-      renderTarjetas(
-        OC_VISIBLE
+  function cargarSelects() {
+    llenarSelect(
+      'filtroEstado',
+      PANEL.estados || [],
+      'Todos'
+    );
+
+    llenarSelect(
+      'filtroProveedor',
+      PANEL.proveedores || [],
+      'Todos'
+    );
+
+    llenarSelect(
+      'filtroEmpresa',
+      PANEL.empresas || [],
+      'Todas'
+    );
+  }
+
+
+  function llenarSelect(
+    id,
+    valores,
+    textoTodos
+  ) {
+    const select =
+      document.getElementById(id);
+
+    const actual =
+      select.value;
+
+    select.innerHTML = '';
+
+    const primero =
+      document.createElement(
+        'option'
       );
 
-    }
+    primero.value = '';
+    primero.textContent =
+      textoTodos;
 
+    select.appendChild(
+      primero
+    );
 
+    valores.forEach(
+      function(valor) {
+        const option =
+          document.createElement(
+            'option'
+          );
 
-    /* =========================================================
-       TARJETAS
-       ========================================================= */
+        option.value =
+          valor;
 
-    function renderTarjetas(
-      lista
+        option.textContent =
+          valor;
+
+        select.appendChild(
+          option
+        );
+      }
+    );
+
+    if (
+      Array
+        .from(
+          select.options
+        )
+        .some(
+          function(option) {
+            return (
+              option.value ===
+              actual
+            );
+          }
+        )
     ) {
-
-      const contenedor =
-        document
-          .getElementById(
-            'cardsContainer'
-          );
+      select.value =
+        actual;
+    }
+  }
 
 
-      const empty =
-        document
-          .getElementById(
-            'emptyBox'
-          );
-
-
-      contenedor.innerHTML =
-        '';
-
-
+  function aplicarFiltros() {
+    const estado =
       document
         .getElementById(
-          'contadorResultados'
+          'filtroEstado'
         )
-        .textContent =
-          lista.length
-          +
-          ' OC';
-
-
-      if (
-        !lista.length
-      ) {
-
-        empty.style.display =
-          'block';
-
-        return;
-
-      }
-
-
-      empty.style.display =
-        'none';
-
-
-      lista.forEach(
-        function(
-          item
-        ) {
-
-          const card =
-            document.createElement(
-              'article'
-            );
-
-
-          card.className =
-            'oc-card';
-
-
-          card.innerHTML = `
-
-            <div class="card-head">
-
-
-              <div class="card-check">
-
-                <input
-                  type="checkbox"
-                >
-
-              </div>
-
-
-              <div class="card-main">
-
-
-                <div class="card-title-row">
-
-
-                  <div class="oc-number">
-
-                    ${escapeHtml(item.oc)}
-
-                  </div>
-
-
-                  <span
-                    class="
-                      status
-                      status-${escapeHtml(item.color || 'GRIS')}
-                    "
-                  >
-
-                    ${escapeHtml(item.estado)}
-
-                  </span>
-
-
-                </div>
-
-
-                <div class="provider">
-
-                  ${escapeHtml(
-                    item.proveedor ||
-                    'SIN PROVEEDOR'
-                  )}
-
-                </div>
-
-
-                <div class="meta">
-
-
-                  <div>
-
-                    <strong>
-                      Empresa:
-                    </strong>
-
-                    ${escapeHtml(item.empresa)}
-
-                  </div>
-
-
-                  <div>
-
-                    <strong>
-                      Lote:
-                    </strong>
-
-                    ${escapeHtml(item.lote || '-')}
-
-                  </div>
-
-
-                </div>
-
-
-                <div class="amount-row">
-
-
-                  <div class="line-count">
-
-                    ${item.cantidadLineas || 0}
-
-                    ${
-                      Number(
-                        item.cantidadLineas
-                      ) === 1
-
-                        ? 'producto'
-
-                        : 'productos'
-                    }
-
-                  </div>
-
-
-                  <div class="amount">
-
-                    ${formatoMoneda(item.bruto)}
-
-                  </div>
-
-
-                </div>
-
-
-              </div>
-
-
-            </div>
-
-
-            <div class="actions">
-
-
-              <button
-                class="btn btn-view"
-                onclick="
-                  verOC(
-                    '${jsString(item.clave)}'
-                  )
-                "
-              >
-
-                Ver OC
-
-              </button>
-
-
-              ${botonAccionHTML(item)}
-
-
-            </div>
-
-          `;
-
-
-          contenedor.appendChild(
-            card
+        .value;
+
+    const proveedor =
+      document
+        .getElementById(
+          'filtroProveedor'
+        )
+        .value;
+
+    const empresa =
+      document
+        .getElementById(
+          'filtroEmpresa'
+        )
+        .value;
+
+    OC_VISIBLE =
+      (
+        PANEL.oc ||
+        []
+      )
+      .filter(
+        function(item) {
+          return (
+            (
+              !estado ||
+              item.estado === estado
+            )
+            &&
+            (
+              !proveedor ||
+              item.proveedor === proveedor
+            )
+            &&
+            (
+              !empresa ||
+              item.empresa === empresa
+            )
           );
-
         }
       );
 
+    renderTarjetas(
+      OC_VISIBLE
+    );
+  }
+
+
+  function renderTarjetas(lista) {
+    const contenedor =
+      document.getElementById(
+        'cardsContainer'
+      );
+
+    const empty =
+      document.getElementById(
+        'emptyBox'
+      );
+
+    contenedor.innerHTML = '';
+
+    document
+      .getElementById(
+        'contadorResultados'
+      )
+      .textContent =
+        lista.length +
+        ' OC';
+
+    if (
+      !lista.length
+    ) {
+      empty.style.display =
+        'block';
+
+      return;
     }
 
+    empty.style.display =
+      'none';
 
-
-    function botonAccionHTML(
-      item
-    ) {
-
-      const estado =
-        normalizar(
-          item.estado
-        );
-
-
-      /*
-       * PENDIENTE DE ENVÍO
-       */
-
-      if (
-        estado ===
-        'PENDIENTE DE ENVIO'
-      ) {
-
-        const yaAbrioWhatsApp =
-          WHATSAPP_ABIERTO.has(
-            item.clave
+    lista.forEach(
+      function(item) {
+        const card =
+          document.createElement(
+            'article'
           );
 
+        card.className =
+          'oc-card';
 
-        if (
-          yaAbrioWhatsApp
-        ) {
+        card.innerHTML = `
+          <div class="card-head">
 
-          return `
+            <div class="card-check">
+              <input type="checkbox">
+            </div>
+
+            <div class="card-main">
+
+              <div class="card-title-row">
+
+                <div class="oc-number">
+                  ${escapeHtml(item.oc)}
+                </div>
+
+                <span
+                  class="
+                    status
+                    status-${escapeHtml(item.color || 'GRIS')}
+                  "
+                >
+                  ${escapeHtml(item.estado)}
+                </span>
+
+              </div>
+
+              <div class="provider">
+                ${escapeHtml(
+                  item.proveedor ||
+                  'SIN PROVEEDOR'
+                )}
+              </div>
+
+              <div class="meta">
+
+                <div>
+                  <strong>
+                    Empresa:
+                  </strong>
+
+                  ${escapeHtml(item.empresa)}
+                </div>
+
+                <div>
+                  <strong>
+                    Lote:
+                  </strong>
+
+                  ${escapeHtml(
+                    item.lote ||
+                    '-'
+                  )}
+                </div>
+
+              </div>
+
+              <div class="amount-row">
+
+                <div class="line-count">
+                  ${item.cantidadLineas || 0}
+                  ${
+                    Number(
+                      item.cantidadLineas
+                    ) === 1
+                      ? 'producto'
+                      : 'productos'
+                  }
+                </div>
+
+                <div class="amount">
+                  ${formatoMoneda(item.bruto)}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="actions">
 
             <button
-              class="btn btn-confirmar-envio"
-              data-confirmar-envio="${escapeHtml(item.clave)}"
+              class="btn btn-view"
               onclick="
-                confirmarEnvio(
+                verOC(
                   '${jsString(item.clave)}'
                 )
               "
             >
-
-              Confirmar envío
-
+              Ver OC
             </button>
 
-          `;
+            ${botonAccionHTML(item)}
 
-        }
-
-
-        return `
-
-          <button
-            class="btn btn-whatsapp"
-            onclick="
-              abrirWhatsApp(
-                '${jsString(item.clave)}'
-              )
-            "
-          >
-
-            WhatsApp
-
-          </button>
-
+          </div>
         `;
 
+        contenedor.appendChild(
+          card
+        );
       }
+    );
+  }
 
 
-      /*
-       * ESPERANDO RESPUESTA
-       */
+  function botonAccionHTML(item) {
+    const estado =
+      normalizar(
+        item.estado
+      );
 
-      if (
-        estado ===
-        'ESPERANDO RESPUESTA'
-      ) {
-
-        return `
-
-          <button
-            class="btn btn-blue"
-            onclick="
-              avisoMVP(
-                'Registro de respuesta todavía no habilitado.'
-              )
-            "
-          >
-
-            Registrar respuesta
-
-          </button>
-
-        `;
-
-      }
-
-
-      /*
-       * EXCEPCIÓN
-       */
-
-      if (
-        estado ===
-        'EXCEPCION'
-      ) {
-
-        return `
-
-          <button
-            class="btn btn-blue"
-            onclick="
-              avisoMVP(
-                'Gestión de excepción todavía no habilitada.'
-              )
-            "
-          >
-
-            Gestionar
-
-          </button>
-
-        `;
-
-      }
-
-
-      return `
-
-        <button
-          class="btn btn-blue"
-          onclick="
-            avisoMVP(
-              'La OC continúa en seguimiento.'
-            )
-          "
-        >
-
-          Seguimiento
-
-        </button>
-
-      `;
-
-    }
-
-
-
-    /* =========================================================
-       VER OC
-       ========================================================= */
-
-    function verOC(
-      clave
+    if (
+      estado ===
+      'PENDIENTE DE ENVIO'
     ) {
-
-      const item =
-        (
-          PANEL.oc ||
-          []
-        )
-        .find(
-          function(
-            oc
-          ) {
-
-            return (
-              oc.clave ===
-              clave
-            );
-
-          }
-        );
-
-
-      if (
-        !item
-      ) {
-
-        avisoMVP(
-          'No se pudo localizar la OC.'
-        );
-
-        return;
-
-      }
-
-
-      OC_MODAL_ACTUAL =
-        item;
-
-
-      document
-        .getElementById(
-          'documentoOC'
-        )
-        .innerHTML =
-          construirDocumentoOC(
-            item
-          );
-
-
-      actualizarBotonesModalEnvio(
-        item
-      );
-
-
-      document
-        .getElementById(
-          'modalOC'
-        )
-        .classList
-        .add(
-          'visible'
-        );
-
-
-      document.body.style.overflow =
-        'hidden';
-
-    }
-
-
-
-    /* =========================================================
-       DOCUMENTO OC
-       ========================================================= */
-
-    function construirDocumentoOC(
-      item
-    ) {
-
-      const lineas =
-        item.lineas ||
-        [];
-
-
-      const filas =
-        lineas
-          .map(
-            function(
-              linea,
-              index
-            ) {
-
-              return `
-
-                <tr>
-
-
-                  <td class="center">
-
-                    ${index + 1}
-
-                  </td>
-
-
-                  <td class="center">
-
-                    ${escapeHtml(linea.codigo || '')}
-
-                  </td>
-
-
-                  <td>
-
-                    ${escapeHtml(linea.producto)}
-
-                  </td>
-
-
-                  <td class="center">
-
-                    ${formatoNumero(linea.cantidad)}
-
-                  </td>
-
-
-                  <td class="center">
-
-                    ${escapeHtml(linea.unidad)}
-
-                  </td>
-
-
-                  <td class="money">
-
-                    ${formatoMoneda(linea.precio)}
-
-                  </td>
-
-
-                  <td class="money">
-
-                    ${formatoMoneda(linea.total)}
-
-                  </td>
-
-
-                </tr>
-
-              `;
-
-            }
-          )
-          .join('');
-
-
-      const cantidadFilasVacias =
-        Math.max(
-          0,
-          9 - lineas.length
-        );
-
-
-      let filasVacias =
-        '';
-
-
-      for (
-        let i = 0;
-        i < cantidadFilasVacias;
-        i++
-      ) {
-
-        filasVacias += `
-
-          <tr class="po-empty-row">
-
-            <td></td>
-
-            <td></td>
-
-            <td></td>
-
-            <td></td>
-
-            <td></td>
-
-            <td></td>
-
-            <td></td>
-
-          </tr>
-
-        `;
-
-      }
-
-
-      return `
-
-        <div class="purchase-order">
-
-
-          <div class="po-header-top">
-
-
-            <div class="po-brand">
-
-
-              <img
-                src="Logo-Cafe-de-la-P.jpeg"
-                alt="Café de la P"
-                class="po-logo-real"
-              >
-
-
-              <div class="po-company-name">
-
-                ${escapeHtml(
-                  item.empresaDocumento ||
-                  item.empresa
-                )}
-
-              </div>
-
-
-              ${lineaEmpresa(
-                'RUT',
-                item.rutEmpresa
-              )}
-
-
-              ${lineaEmpresa(
-                'Dirección',
-                item.direccionEmpresa
-              )}
-
-
-              ${lineaEmpresa(
-                'Correo',
-                item.correoEmpresa
-              )}
-
-
-            </div>
-
-
-            <div class="po-right-header">
-
-
-              <div class="po-title">
-
-                ORDEN DE COMPRA
-
-              </div>
-
-
-              <div class="po-number-bar">
-
-                N° ${escapeHtml(item.oc)}
-
-              </div>
-
-
-              ${
-                item.lote
-
-                  ? campoMeta(
-                      'LOTE:',
-                      item.lote
-                    )
-
-                  : ''
-              }
-
-
-              ${campoMeta(
-                'FECHA DE EMISIÓN:',
-                item.fechaEmision || '-'
-              )}
-
-
-              ${campoMeta(
-                'FECHA DE ENTREGA:',
-                item.fechaEntrega || ''
-              )}
-
-
-              <div class="po-meta-row">
-
-                <div class="po-meta-label">
-
-                  ESTADO:
-
-                </div>
-
-
-                <div class="po-state">
-
-                  APROBADO POR JEFATURA
-
-                </div>
-
-
-              </div>
-
-
-            </div>
-
-
-          </div>
-
-
-          <div class="po-supplier-row">
-
-
-            <div>
-
-
-              <div class="po-section-title">
-
-                DATOS DEL PROVEEDOR
-
-              </div>
-
-
-              <div class="po-provider-name">
-
-                ${escapeHtml(
-                  item.proveedor ||
-                  '-'
-                )}
-
-              </div>
-
-
-              ${lineaProveedor(
-                'RUT',
-                item.rutProveedor
-              )}
-
-
-              ${lineaProveedor(
-                'Contacto',
-                item.contactoProveedor
-              )}
-
-
-              ${lineaProveedor(
-                'Correo',
-                item.correoProveedor
-              )}
-
-
-              ${lineaProveedor(
-                'Teléfono',
-                item.telefonoProveedor
-              )}
-
-
-            </div>
-
-
-            <div class="po-oc-reminder">
-
-
-              <div class="po-reminder-text">
-
-                Por favor, en todas sus facturas,
-                guías de despacho y demás documentos
-                tributarios, indique el número de esta
-                Orden de Compra:
-
-              </div>
-
-
-              <div class="po-reminder-number">
-
-                ${escapeHtml(item.oc)}
-
-              </div>
-
-
-            </div>
-
-
-          </div>
-
-
-          <div class="po-table-wrap">
-
-
-            <table class="po-table">
-
-
-              <thead>
-
-
-                <tr>
-
-
-                  <th class="col-num">
-                    N°
-                  </th>
-
-
-                  <th class="col-codigo">
-                    CÓDIGO
-                  </th>
-
-
-                  <th class="col-producto">
-                    PRODUCTO
-                  </th>
-
-
-                  <th class="col-cantidad">
-                    CANTIDAD
-                  </th>
-
-
-                  <th class="col-unidad">
-                    UND. DE MEDIDA
-                  </th>
-
-
-                  <th class="col-precio">
-                    PRECIO UNITARIO
-                  </th>
-
-
-                  <th class="col-total">
-                    TOTAL
-                  </th>
-
-
-                </tr>
-
-
-              </thead>
-
-
-              <tbody>
-
-                ${filas}
-
-                ${filasVacias}
-
-              </tbody>
-
-
-            </table>
-
-
-          </div>
-
-
-          <div class="po-totals-area">
-
-
-            <table class="po-totals">
-
-
-              <tr>
-
-                <td>
-                  SUBTOTAL NETO
-                </td>
-
-                <td>
-                  ${formatoMoneda(item.neto)}
-                </td>
-
-              </tr>
-
-
-              <tr>
-
-                <td>
-                  IVA (19%)
-                </td>
-
-                <td>
-                  ${formatoMoneda(item.iva)}
-                </td>
-
-              </tr>
-
-
-              <tr class="po-total-final">
-
-                <td>
-                  TOTAL FINAL
-                </td>
-
-                <td>
-                  ${formatoMoneda(item.bruto)}
-                </td>
-
-              </tr>
-
-
-            </table>
-
-
-          </div>
-
-
-          <div class="po-conditions">
-
-
-            <div class="po-conditions-title">
-
-              CONDICIONES DE COMPRA
-
-            </div>
-
-
-            <ol>
-
-              <li>
-                Entrega de los productos en la dirección
-                indicada por la empresa emisora, en la fecha
-                y horario acordados.
-              </li>
-
-              <li>
-                Los productos deben ser de la calidad,
-                marca y presentación solicitada.
-              </li>
-
-              <li>
-                Cualquier cambio o sustitución debe ser
-                previamente autorizado por el área de compras.
-              </li>
-
-              <li>
-                Factura electrónica, guía de despacho y demás
-                documentos tributarios deben hacer referencia
-                al número de esta Orden de Compra (OC).
-              </li>
-
-              <li>
-                En caso de diferencias entre lo facturado y lo
-                recibido, éstas serán comunicadas al proveedor
-                para su regularización.
-              </li>
-
-              <li>
-                El incumplimiento de las condiciones acordadas
-                podrá derivar en la no recepción de la mercadería
-                y/o anulación de la Orden de Compra.
-              </li>
-
-              <li>
-                Los precios indicados en esta OC son fijos y no
-                podrán ser modificados sin autorización previa.
-              </li>
-
-              <li>
-                Cualquier duda respecto a esta OC debe ser
-                canalizada a través del área de compras.
-              </li>
-
-              <li>
-                Plazos de entrega y condiciones logísticas según
-                lo acordado con el proveedor.
-              </li>
-
-              <li>
-                El proveedor debe cumplir con toda la normativa
-                legal y sanitaria vigente aplicable a los
-                productos suministrados.
-              </li>
-
-              <li>
-                En caso de incumplimiento, la empresa emisora
-                podrá rechazar la mercadería y/o aplicar las
-                medidas correspondientes.
-              </li>
-
-              <li>
-                Esta Orden de Compra constituye un compromiso
-                formal de compra una vez aprobada.
-              </li>
-
-            </ol>
-
-
-          </div>
-
-
-          <div class="po-footer-bar">
-
-
-            <div class="po-footer-message">
-
-              Gracias por ser parte de nuestro camino
-
-            </div>
-
-
-            <div class="po-footer-company">
-
-              GRUPO FIORENTINI
-
-            </div>
-
-
-          </div>
-
-
-        </div>
-
-      `;
-
-    }
-
-
-
-    function campoMeta(
-      etiqueta,
-      valor
-    ) {
-
-      return `
-
-        <div class="po-meta-row">
-
-
-          <div class="po-meta-label">
-
-            ${escapeHtml(etiqueta)}
-
-          </div>
-
-
-          <div class="po-meta-value">
-
-            ${escapeHtml(valor || '')}
-
-          </div>
-
-
-        </div>
-
-      `;
-
-    }
-
-
-
-    function lineaEmpresa(
-      etiqueta,
-      valor
-    ) {
-
-      if (
-        !valor
-      ) {
-
-        return '';
-
-      }
-
-
-      return `
-
-        <div class="po-company-line">
-
-          <strong>
-            ${escapeHtml(etiqueta)}:
-          </strong>
-
-          ${escapeHtml(valor)}
-
-        </div>
-
-      `;
-
-    }
-
-
-
-    function lineaProveedor(
-      etiqueta,
-      valor
-    ) {
-
-      if (
-        !valor
-      ) {
-
-        return '';
-
-      }
-
-
-      return `
-
-        <div class="po-provider-line">
-
-          <strong>
-            ${escapeHtml(etiqueta)}:
-          </strong>
-
-          ${escapeHtml(valor)}
-
-        </div>
-
-      `;
-
-    }
-
-
-
-    /* =========================================================
-       MODAL
-       ========================================================= */
-
-    function cerrarOC() {
-
-      document
-        .getElementById(
-          'modalOC'
-        )
-        .classList
-        .remove(
-          'visible'
-        );
-
-
-      document.body.style.overflow =
-        '';
-
-
-      OC_MODAL_ACTUAL =
-        null;
-
-    }
-
-
-
-    function cerrarModalPorFondo(
-      event
-    ) {
-
-      if (
-        event.target.id ===
-        'modalOC'
-      ) {
-
-        cerrarOC();
-
-      }
-
-    }
-
-
-
-    /* =========================================================
-       WHATSAPP + CONFIRMACIÓN DE ENVÍO
-       ========================================================= */
-
-
-    /*
-     * ABRIR WHATSAPP
-     *
-     * IMPORTANTE:
-     *
-     * - Abrir WhatsApp NO modifica MAESTRO.
-     * - La OC solamente cambia a ENVIADA
-     *   después de presionar CONFIRMAR ENVÍO.
-     */
-
-    function abrirWhatsApp(
-      clave
-    ) {
-
-      const item =
-        (
-          PANEL.oc ||
-          []
-        )
-        .find(
-          function(
-            oc
-          ) {
-
-            return (
-              oc.clave ===
-              clave
-            );
-
-          }
-        );
-
-
-      if (
-        !item
-      ) {
-
-        avisoMVP(
-          'No se pudo localizar la OC.'
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * Por ahora todavía no tenemos
-       * teléfono oficial del proveedor
-       * conectado al módulo Proveedores.
-       *
-       * Por eso abrimos WhatsApp con
-       * el mensaje preparado, pero sin
-       * inventar un destinatario.
-       */
-
-      const mensaje =
-        construirMensajeWhatsApp(
-          item
-        );
-
-
-      const urlWhatsApp =
-        'https://wa.me/?text='
-        +
-        encodeURIComponent(
-          mensaje
-        );
-
-
-      const ventana =
-        window.open(
-          urlWhatsApp,
-          '_blank',
-          'noopener,noreferrer'
-        );
-
-
-      /*
-       * Marcamos solamente en memoria
-       * del navegador que WhatsApp fue abierto.
-       *
-       * ESTO NO ES MAESTRO.
-       */
-
-      WHATSAPP_ABIERTO.add(
-        clave
-      );
-
-
-      /*
-       * Volvemos a dibujar las tarjetas
-       * para mostrar CONFIRMAR ENVÍO.
-       */
-
-      aplicarFiltros();
-
-
-      /*
-       * Si estamos dentro de VER OC,
-       * actualizamos también sus botones.
-       */
-
-      if (
-        OC_MODAL_ACTUAL &&
-        OC_MODAL_ACTUAL.clave ===
-          clave
-      ) {
-
-        actualizarBotonesModalEnvio(
-          OC_MODAL_ACTUAL
-        );
-
-      }
-
-
-      if (
-        !ventana
-      ) {
-
-        avisoMVP(
-          'El navegador pudo bloquear la apertura de WhatsApp. '
-          +
-          'Habilita las ventanas emergentes e inténtalo nuevamente.'
-        );
-
-        return;
-
-      }
-
-
-      avisoMVP(
-        item.oc
-        +
-        ' abierta en WhatsApp. '
-        +
-        'Después de enviarla realmente, vuelve y presiona CONFIRMAR ENVÍO.'
-      );
-
-    }
-
-
-
-    /*
-     * MENSAJE PREPARADO PARA WHATSAPP
-     */
-
-    function construirMensajeWhatsApp(
-      item
-    ) {
-
-      const partes = [];
-
-
-      partes.push(
-        'Hola.'
-      );
-
-
-      partes.push(
-        ''
-      );
-
-
-      partes.push(
-        'Compartimos la Orden de Compra '
-        +
-        item.oc
-        +
-        ' de Grupo Fiorentini.'
-      );
-
-
-      if (
-        item.proveedor
-      ) {
-
-        partes.push(
-          'Proveedor: '
-          +
-          item.proveedor
-          +
-          '.'
-        );
-
-      }
-
-
-      if (
-        item.lote
-      ) {
-
-        partes.push(
-          'Lote: '
-          +
-          item.lote
-          +
-          '.'
-        );
-
-      }
-
-
-      partes.push(
-        'Total: '
-        +
-        formatoMoneda(
-          item.bruto
-        )
-        +
-        '.'
-      );
-
-
-      partes.push(
-        ''
-      );
-
-
-      partes.push(
-        'Por favor confirmar recepción y disponibilidad del pedido.'
-      );
-
-
-      partes.push(
-        ''
-      );
-
-
-      partes.push(
-        'Gracias.'
-      );
-
-
-      partes.push(
-        'Grupo Fiorentini'
-      );
-
-
-      return partes.join(
-        '\n'
-      );
-
-    }
-
-
-
-    /*
-     * CONFIRMAR ENVÍO
-     *
-     * Esta acción SÍ escribe en MAESTRO.
-     *
-     * Backend ya validado:
-     *
-     * AM = ENVIADA
-     * AN = fecha/hora
-     */
-
-    async function confirmarEnvio(
-      clave
-    ) {
-
-      const item =
-        (
-          PANEL.oc ||
-          []
-        )
-        .find(
-          function(
-            oc
-          ) {
-
-            return (
-              oc.clave ===
-              clave
-            );
-
-          }
-        );
-
-
-      if (
-        !item
-      ) {
-
-        avisoMVP(
-          'No se pudo localizar la OC.'
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * No permitimos confirmar directamente
-       * si WhatsApp no fue abierto primero
-       * durante esta sesión.
-       */
-
-      if (
-        !WHATSAPP_ABIERTO.has(
-          clave
-        )
-      ) {
-
-        avisoMVP(
-          'Primero abre WhatsApp para esta OC.'
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * Evita doble clic / llamadas duplicadas.
-       */
-
-      if (
-        CONFIRMACION_ENVIO_EN_CURSO.has(
-          clave
-        )
-      ) {
-
-        return;
-
-      }
-
-
-      const confirmado =
-        window.confirm(
-          '¿Confirmas que la '
-          +
-          item.oc
-          +
-          ' fue enviada realmente al proveedor '
-          +
-          (
-            item.proveedor ||
-            ''
-          )
-          +
-          ' por WhatsApp?\n\n'
-          +
-          'Al confirmar, MAESTRO registrará el envío.'
-        );
-
-
-      if (
-        !confirmado
-      ) {
-
-        return;
-
-      }
-
-
-      CONFIRMACION_ENVIO_EN_CURSO.add(
-        clave
-      );
-
-
-      actualizarEstadoBotonesConfirmacion(
-        clave,
-        true
-      );
-
-
-      try {
-
-        const url =
-          CONFIG.API_BASE_URL
-          +
-          '?api=compras'
-          +
-          '&accion=confirmarEnvio'
-          +
-          '&empresa='
-          +
-          encodeURIComponent(
-            item.empresa
-          )
-          +
-          '&oc='
-          +
-          encodeURIComponent(
-            item.oc
-          )
-          +
-          '&confirmar=SI';
-
-
-        const respuesta =
-          await cargarJsonp(
-            url
-          );
-
-
-        if (
-          !respuesta ||
-          respuesta.ok !== true
-        ) {
-
-          throw new Error(
-
-            respuesta &&
-            respuesta.error
-
-              ? respuesta.error
-
-              : 'No fue posible confirmar el envío en MAESTRO.'
-
-          );
-
-        }
-
-
-        const data =
-          respuesta.data ||
-          {};
-
-
-        WHATSAPP_ABIERTO.delete(
-          clave
-        );
-
-
-        avisoMVP(
-          data.yaConfirmada
-
-            ? item.oc
-              +
-              ' ya estaba registrada como ENVIADA.'
-
-            : item.oc
-              +
-              ' confirmada como ENVIADA. '
-              +
-              'Ahora queda ESPERANDO RESPUESTA.'
-        );
-
-
-        if (
-          OC_MODAL_ACTUAL &&
-          OC_MODAL_ACTUAL.clave ===
-            clave
-        ) {
-
-          cerrarOC();
-
-        }
-
-
-        await cargarDatos();
-
-
-      } catch (
-        error
-      ) {
-
-        avisoMVP(
-          error &&
-          error.message
-
-            ? error.message
-
-            : String(
-                error
-              )
-        );
-
-
-      } finally {
-
-        CONFIRMACION_ENVIO_EN_CURSO.delete(
-          clave
-        );
-
-
-        actualizarEstadoBotonesConfirmacion(
-          clave,
-          false
-        );
-
-      }
-
-    }
-
-
-
-    /*
-     * ESTADO VISUAL DE BOTONES
-     * DURANTE LA ESCRITURA
-     */
-
-    function actualizarEstadoBotonesConfirmacion(
-      clave,
-      cargando
-    ) {
-
-      const botones =
-        document.querySelectorAll(
-          '[data-confirmar-envio="'
-          +
-          cssEscapeSeguro(
-            clave
-          )
-          +
-          '"]'
-        );
-
-
-      botones.forEach(
-        function(
-          boton
-        ) {
-
-          boton.disabled =
-            cargando;
-
-
-          boton.textContent =
-            cargando
-
-              ? 'Confirmando...'
-
-              : 'Confirmar envío';
-
-        }
-      );
-
-
-      const botonModal =
-        document.getElementById(
-          'btnConfirmarEnvioModal'
-        );
-
-
-      if (
-        botonModal &&
-        OC_MODAL_ACTUAL &&
-        OC_MODAL_ACTUAL.clave ===
-          clave
-      ) {
-
-        botonModal.disabled =
-          cargando;
-
-
-        botonModal.textContent =
-          cargando
-
-            ? 'Confirmando...'
-
-            : 'Confirmar envío';
-
-      }
-
-    }
-
-
-
-    /*
-     * WHATSAPP DESDE VER OC
-     */
-
-    function abrirWhatsAppDesdeModal() {
-
-      if (
-        !OC_MODAL_ACTUAL
-      ) {
-
-        return;
-
-      }
-
-
-      abrirWhatsApp(
-        OC_MODAL_ACTUAL.clave
-      );
-
-    }
-
-
-
-    /*
-     * CONFIRMAR DESDE VER OC
-     */
-
-    function confirmarEnvioDesdeModal() {
-
-      if (
-        !OC_MODAL_ACTUAL
-      ) {
-
-        return;
-
-      }
-
-
-      confirmarEnvio(
-        OC_MODAL_ACTUAL.clave
-      );
-
-    }
-
-
-
-    /*
-     * ACTUALIZAR BOTONES DEL MODAL
-     */
-
-    function actualizarBotonesModalEnvio(
-      item
-    ) {
-
-      const botonWhatsApp =
-        document.getElementById(
-          'btnEnviarModal'
-        );
-
-
-      const botonConfirmar =
-        document.getElementById(
-          'btnConfirmarEnvioModal'
-        );
-
-
-      if (
-        !botonWhatsApp ||
-        !botonConfirmar
-      ) {
-
-        return;
-
-      }
-
-
-      const pendiente =
-        normalizar(
-          item.estado
-        ) ===
-        'PENDIENTE DE ENVIO';
-
-
-      if (
-        !pendiente
-      ) {
-
-        botonWhatsApp.style.display =
-          'none';
-
-
-        botonConfirmar.style.display =
-          'none';
-
-
-        return;
-
-      }
-
-
       const yaAbrioWhatsApp =
         WHATSAPP_ABIERTO.has(
           item.clave
         );
 
-
-      botonWhatsApp.style.display =
-        yaAbrioWhatsApp
-
-          ? 'none'
-
-          : 'block';
-
-
-      botonConfirmar.style.display =
-        yaAbrioWhatsApp
-
-          ? 'block'
-
-          : 'none';
-
-    }
-
-
-
-    /*
-     * ESCAPE MUY SIMPLE PARA SELECTORES CSS
-     */
-
-    function cssEscapeSeguro(
-      valor
-    ) {
-
       if (
-        window.CSS &&
-        typeof window.CSS.escape ===
-          'function'
+        yaAbrioWhatsApp
       ) {
-
-        return window.CSS.escape(
-          String(
-            valor ||
-            ''
-          )
-        );
-
+        return `
+          <button
+            class="btn btn-confirmar-envio"
+            data-confirmar-envio="${escapeHtml(item.clave)}"
+            onclick="
+              confirmarEnvio(
+                '${jsString(item.clave)}'
+              )
+            "
+          >
+            Confirmar envío
+          </button>
+        `;
       }
 
+      return `
+        <button
+          class="btn btn-whatsapp"
+          onclick="
+            abrirWhatsApp(
+              '${jsString(item.clave)}'
+            )
+          "
+        >
+          WhatsApp
+        </button>
+      `;
+    }
 
-      return String(
-        valor ||
-        ''
+
+    if (
+      estado ===
+      'ESPERANDO RESPUESTA'
+    ) {
+      return `
+        <button
+          class="btn btn-blue"
+          onclick="
+            confirmarRespuestaProveedor(
+              '${jsString(item.clave)}'
+            )
+          "
+        >
+          Registrar respuesta
+        </button>
+      `;
+    }
+
+
+    if (
+      estado ===
+      'EXCEPCION'
+    ) {
+      return `
+        <button
+          class="btn btn-blue"
+          onclick="
+            avisoMVP(
+              'Gestión de excepción todavía no habilitada.'
+            )
+          "
+        >
+          Gestionar
+        </button>
+      `;
+    }
+
+
+    return `
+      <button
+        class="btn btn-blue"
+        onclick="
+          avisoMVP(
+            'La OC continúa en seguimiento.'
+          )
+        "
+      >
+        Seguimiento
+      </button>
+    `;
+  }
+
+
+  function verOC(clave) {
+    const item =
+      (
+        PANEL.oc ||
+        []
       )
-      .replace(
-        /\\/g,
-        '\\\\'
-      )
-      .replace(
-        /"/g,
-        '\\"'
+      .find(
+        function(oc) {
+          return (
+            oc.clave ===
+            clave
+          );
+        }
       );
 
-    }
-
-
-
-    /* =========================================================
-       UI
-       ========================================================= */
-
-    function mostrarCarga(
-      mostrar
+    if (
+      !item
     ) {
-
-      document
-        .getElementById(
-          'loading'
-        )
-        .style
-        .display =
-
-          mostrar
-            ? 'block'
-            : 'none';
-
-    }
-
-
-
-    function mostrarError(
-      mensaje
-    ) {
-
-      const box =
-        document
-          .getElementById(
-            'errorBox'
-          );
-
-
-      box.textContent =
-        mensaje;
-
-
-      box.style.display =
-        'block';
-
-    }
-
-
-
-    function ocultarError() {
-
-      document
-        .getElementById(
-          'errorBox'
-        )
-        .style
-        .display =
-          'none';
-
-    }
-
-
-
-    function avisoMVP(
-      mensaje
-    ) {
-
-      const toast =
-        document
-          .getElementById(
-            'toast'
-          );
-
-
-      toast.textContent =
-        mensaje;
-
-
-      toast
-        .classList
-        .add(
-          'visible'
-        );
-
-
-      window.clearTimeout(
-        avisoMVP.timeout
+      avisoMVP(
+        'No se pudo localizar la OC.'
       );
 
-
-      avisoMVP.timeout =
-        window.setTimeout(
-          function() {
-
-            toast
-              .classList
-              .remove(
-                'visible'
-              );
-
-          },
-          4000
-        );
-
+      return;
     }
 
+    OC_MODAL_ACTUAL =
+      item;
+
+    document
+      .getElementById(
+        'documentoOC'
+      )
+      .innerHTML =
+        construirDocumentoOC(
+          item
+        );
+
+    actualizarBotonesModalEnvio(
+      item
+    );
+
+    document
+      .getElementById(
+        'modalOC'
+      )
+      .classList
+      .add(
+        'visible'
+      );
+
+    document.body.style.overflow =
+      'hidden';
+  }
 
 
-    /* =========================================================
-       FORMATO
-       ========================================================= */
+  function construirDocumentoOC(item) {
+    const lineas =
+      item.lineas || [];
 
-    function formatoMoneda(
-      valor
-    ) {
+    const filas =
+      lineas
+        .map(
+          function(
+            linea,
+            index
+          ) {
+            return `
+              <tr>
 
-      return new Intl
-        .NumberFormat(
-          'es-CL',
-          {
-            style:
-              'currency',
+                <td class="center">
+                  ${index + 1}
+                </td>
 
-            currency:
-              'CLP',
+                <td class="center">
+                  ${escapeHtml(
+                    linea.codigo || ''
+                  )}
+                </td>
 
-            maximumFractionDigits:
-              0
+                <td>
+                  ${escapeHtml(
+                    linea.producto
+                  )}
+                </td>
+
+                <td class="center">
+                  ${formatoNumero(
+                    linea.cantidad
+                  )}
+                </td>
+
+                <td class="center">
+                  ${escapeHtml(
+                    linea.unidad
+                  )}
+                </td>
+
+                <td class="money">
+                  ${formatoMoneda(
+                    linea.precio
+                  )}
+                </td>
+
+                <td class="money">
+                  ${formatoMoneda(
+                    linea.total
+                  )}
+                </td>
+
+              </tr>
+            `;
           }
         )
-        .format(
-          Number(
-            valor ||
-            0
-          )
-        );
+        .join('');
 
+    const cantidadFilasVacias =
+      Math.max(
+        0,
+        9 - lineas.length
+      );
+
+    let filasVacias = '';
+
+    for (
+      let i = 0;
+      i < cantidadFilasVacias;
+      i++
+    ) {
+      filasVacias += `
+        <tr class="po-empty-row">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      `;
     }
 
+    return `
+      <div class="purchase-order">
+
+        <div class="po-header-top">
+
+          <div class="po-brand">
+
+            <img
+              src="Logo-Cafe-de-la-P.jpeg"
+              alt="Café de la P"
+              class="po-logo-real"
+            >
+
+            <div class="po-company-name">
+              ${escapeHtml(
+                item.empresaDocumento ||
+                item.empresa
+              )}
+            </div>
+
+            ${lineaEmpresa(
+              'RUT',
+              item.rutEmpresa
+            )}
+
+            ${lineaEmpresa(
+              'Dirección',
+              item.direccionEmpresa
+            )}
+
+            ${lineaEmpresa(
+              'Correo',
+              item.correoEmpresa
+            )}
+
+          </div>
 
 
-    function formatoNumero(
-      valor
+          <div class="po-right-header">
+
+            <div class="po-title">
+              ORDEN DE COMPRA
+            </div>
+
+            <div class="po-number-bar">
+              N° ${escapeHtml(item.oc)}
+            </div>
+
+            ${
+              item.lote
+                ? campoMeta(
+                    'LOTE:',
+                    item.lote
+                  )
+                : ''
+            }
+
+            ${campoMeta(
+              'FECHA DE EMISIÓN:',
+              item.fechaEmision || '-'
+            )}
+
+            ${campoMeta(
+              'FECHA DE ENTREGA:',
+              item.fechaEntrega || ''
+            )}
+
+            <div class="po-meta-row">
+
+              <div class="po-meta-label">
+                ESTADO:
+              </div>
+
+              <div class="po-state">
+                APROBADO POR JEFATURA
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="po-supplier-row">
+
+          <div>
+
+            <div class="po-section-title">
+              DATOS DEL PROVEEDOR
+            </div>
+
+            <div class="po-provider-name">
+              ${escapeHtml(
+                item.proveedor ||
+                '-'
+              )}
+            </div>
+
+            ${lineaProveedor(
+              'RUT',
+              item.rutProveedor
+            )}
+
+            ${lineaProveedor(
+              'Contacto',
+              item.contactoProveedor
+            )}
+
+            ${lineaProveedor(
+              'Correo',
+              item.correoProveedor
+            )}
+
+            ${lineaProveedor(
+              'Teléfono',
+              item.telefonoProveedor
+            )}
+
+          </div>
+
+
+          <div class="po-oc-reminder">
+
+            <div class="po-reminder-text">
+              Por favor, en todas sus facturas,
+              guías de despacho y demás documentos
+              tributarios, indique el número de esta
+              Orden de Compra:
+            </div>
+
+            <div class="po-reminder-number">
+              ${escapeHtml(item.oc)}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="po-table-wrap">
+
+          <table class="po-table">
+
+            <thead>
+
+              <tr>
+
+                <th class="col-num">
+                  N°
+                </th>
+
+                <th class="col-codigo">
+                  CÓDIGO
+                </th>
+
+                <th class="col-producto">
+                  PRODUCTO
+                </th>
+
+                <th class="col-cantidad">
+                  CANTIDAD
+                </th>
+
+                <th class="col-unidad">
+                  UND. DE MEDIDA
+                </th>
+
+                <th class="col-precio">
+                  PRECIO UNITARIO
+                </th>
+
+                <th class="col-total">
+                  TOTAL
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+              ${filas}
+              ${filasVacias}
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div class="po-totals-area">
+
+          <table class="po-totals">
+
+            <tr>
+
+              <td>
+                SUBTOTAL NETO
+              </td>
+
+              <td>
+                ${formatoMoneda(item.neto)}
+              </td>
+
+            </tr>
+
+            <tr>
+
+              <td>
+                IVA (19%)
+              </td>
+
+              <td>
+                ${formatoMoneda(item.iva)}
+              </td>
+
+            </tr>
+
+            <tr class="po-total-final">
+
+              <td>
+                TOTAL FINAL
+              </td>
+
+              <td>
+                ${formatoMoneda(item.bruto)}
+              </td>
+
+            </tr>
+
+          </table>
+
+        </div>
+
+
+        <div class="po-conditions">
+
+          <div class="po-conditions-title">
+            CONDICIONES DE COMPRA
+          </div>
+
+          <ol>
+
+            <li>
+              Entrega de los productos en la dirección
+              indicada por la empresa emisora, en la fecha
+              y horario acordados.
+            </li>
+
+            <li>
+              Los productos deben ser de la calidad,
+              marca y presentación solicitada.
+            </li>
+
+            <li>
+              Cualquier cambio o sustitución debe ser
+              previamente autorizado por el área de compras.
+            </li>
+
+            <li>
+              Factura electrónica, guía de despacho y demás
+              documentos tributarios deben hacer referencia
+              al número de esta Orden de Compra (OC).
+            </li>
+
+            <li>
+              En caso de diferencias entre lo facturado y lo
+              recibido, éstas serán comunicadas al proveedor
+              para su regularización.
+            </li>
+
+            <li>
+              El incumplimiento de las condiciones acordadas
+              podrá derivar en la no recepción de la mercadería
+              y/o anulación de la Orden de Compra.
+            </li>
+
+            <li>
+              Los precios indicados en esta OC son fijos y no
+              podrán ser modificados sin autorización previa.
+            </li>
+
+            <li>
+              Cualquier duda respecto a esta OC debe ser
+              canalizada a través del área de compras.
+            </li>
+
+            <li>
+              Plazos de entrega y condiciones logísticas según
+              lo acordado con el proveedor.
+            </li>
+
+            <li>
+              El proveedor debe cumplir con toda la normativa
+              legal y sanitaria vigente aplicable a los
+              productos suministrados.
+            </li>
+
+            <li>
+              En caso de incumplimiento, la empresa emisora
+              podrá rechazar la mercadería y/o aplicar las
+              medidas correspondientes.
+            </li>
+
+            <li>
+              Esta Orden de Compra constituye un compromiso
+              formal de compra una vez aprobada.
+            </li>
+
+          </ol>
+
+        </div>
+
+
+        <div class="po-footer-bar">
+
+          <div class="po-footer-message">
+            Gracias por ser parte de nuestro camino
+          </div>
+
+          <div class="po-footer-company">
+            GRUPO FIORENTINI
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  function campoMeta(
+    etiqueta,
+    valor
+  ) {
+    return `
+      <div class="po-meta-row">
+
+        <div class="po-meta-label">
+          ${escapeHtml(etiqueta)}
+        </div>
+
+        <div class="po-meta-value">
+          ${escapeHtml(valor || '')}
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  function lineaEmpresa(
+    etiqueta,
+    valor
+  ) {
+    if (
+      !valor
     ) {
+      return '';
+    }
 
-      return new Intl
-        .NumberFormat(
-          'es-CL',
-          {
-            maximumFractionDigits:
-              3
-          }
+    return `
+      <div class="po-company-line">
+
+        <strong>
+          ${escapeHtml(etiqueta)}:
+        </strong>
+
+        ${escapeHtml(valor)}
+
+      </div>
+    `;
+  }
+
+
+  function lineaProveedor(
+    etiqueta,
+    valor
+  ) {
+    if (
+      !valor
+    ) {
+      return '';
+    }
+
+    return `
+      <div class="po-provider-line">
+
+        <strong>
+          ${escapeHtml(etiqueta)}:
+        </strong>
+
+        ${escapeHtml(valor)}
+
+      </div>
+    `;
+  }
+
+
+  function cerrarOC() {
+    document
+      .getElementById(
+        'modalOC'
+      )
+      .classList
+      .remove(
+        'visible'
+      );
+
+    document.body.style.overflow =
+      '';
+
+    OC_MODAL_ACTUAL =
+      null;
+  }
+
+
+  function cerrarModalPorFondo(
+    event
+  ) {
+    if (
+      event.target.id ===
+      'modalOC'
+    ) {
+      cerrarOC();
+    }
+  }
+
+
+  function abrirWhatsApp(clave) {
+    const item =
+      (
+        PANEL.oc ||
+        []
+      )
+      .find(
+        function(oc) {
+          return (
+            oc.clave ===
+            clave
+          );
+        }
+      );
+
+    if (
+      !item
+    ) {
+      avisoMVP(
+        'No se pudo localizar la OC.'
+      );
+
+      return;
+    }
+
+    const mensaje =
+      construirMensajeWhatsApp(
+        item
+      );
+
+    const urlWhatsApp =
+      'https://wa.me/?text='
+      +
+      encodeURIComponent(
+        mensaje
+      );
+
+    const ventana =
+      window.open(
+        urlWhatsApp,
+        '_blank',
+        'noopener,noreferrer'
+      );
+
+    WHATSAPP_ABIERTO.add(
+      clave
+    );
+
+    aplicarFiltros();
+
+    if (
+      OC_MODAL_ACTUAL &&
+      OC_MODAL_ACTUAL.clave ===
+        clave
+    ) {
+      actualizarBotonesModalEnvio(
+        OC_MODAL_ACTUAL
+      );
+    }
+
+    if (
+      !ventana
+    ) {
+      avisoMVP(
+        'El navegador pudo bloquear la apertura de WhatsApp. Habilita las ventanas emergentes e inténtalo nuevamente.'
+      );
+
+      return;
+    }
+
+    avisoMVP(
+      item.oc
+      +
+      ' abierta en WhatsApp. Después de enviarla realmente, vuelve y presiona CONFIRMAR ENVÍO.'
+    );
+  }
+
+
+  function construirMensajeWhatsApp(
+    item
+  ) {
+    const partes = [];
+
+    partes.push(
+      'Hola.'
+    );
+
+    partes.push(
+      ''
+    );
+
+    partes.push(
+      'Compartimos la Orden de Compra '
+      +
+      item.oc
+      +
+      ' de Grupo Fiorentini.'
+    );
+
+    if (
+      item.proveedor
+    ) {
+      partes.push(
+        'Proveedor: '
+        +
+        item.proveedor
+        +
+        '.'
+      );
+    }
+
+    if (
+      item.lote
+    ) {
+      partes.push(
+        'Lote: '
+        +
+        item.lote
+        +
+        '.'
+      );
+    }
+
+    partes.push(
+      'Total: '
+      +
+      formatoMoneda(
+        item.bruto
+      )
+      +
+      '.'
+    );
+
+    partes.push(
+      ''
+    );
+
+    partes.push(
+      'Por favor confirmar recepción y disponibilidad del pedido.'
+    );
+
+    partes.push(
+      ''
+    );
+
+    partes.push(
+      'Gracias.'
+    );
+
+    partes.push(
+      'Grupo Fiorentini'
+    );
+
+    return partes.join(
+      '\n'
+    );
+  }
+
+
+  async function confirmarEnvio(
+    clave
+  ) {
+    const item =
+      (
+        PANEL.oc ||
+        []
+      )
+      .find(
+        function(oc) {
+          return (
+            oc.clave ===
+            clave
+          );
+        }
+      );
+
+    if (
+      !item
+    ) {
+      avisoMVP(
+        'No se pudo localizar la OC.'
+      );
+
+      return;
+    }
+
+    if (
+      !WHATSAPP_ABIERTO.has(
+        clave
+      )
+    ) {
+      avisoMVP(
+        'Primero abre WhatsApp para esta OC.'
+      );
+
+      return;
+    }
+
+    if (
+      CONFIRMACION_ENVIO_EN_CURSO.has(
+        clave
+      )
+    ) {
+      return;
+    }
+
+    const confirmado =
+      window.confirm(
+        '¿Confirmas que la '
+        +
+        item.oc
+        +
+        ' fue enviada realmente al proveedor '
+        +
+        (
+          item.proveedor ||
+          ''
         )
-        .format(
-          Number(
-            valor ||
-            0
-          )
+        +
+        ' por WhatsApp?\n\n'
+        +
+        'Al confirmar, MAESTRO registrará el envío.'
+      );
+
+    if (
+      !confirmado
+    ) {
+      return;
+    }
+
+    CONFIRMACION_ENVIO_EN_CURSO.add(
+      clave
+    );
+
+    actualizarEstadoBotonesConfirmacion(
+      clave,
+      true
+    );
+
+    try {
+      const url =
+        CONFIG.API_BASE_URL
+        +
+        '?api=compras'
+        +
+        '&accion=confirmarEnvio'
+        +
+        '&empresa='
+        +
+        encodeURIComponent(
+          item.empresa
+        )
+        +
+        '&oc='
+        +
+        encodeURIComponent(
+          item.oc
+        )
+        +
+        '&confirmar=SI';
+
+      const respuesta =
+        await cargarJsonp(
+          url
         );
 
-    }
+      if (
+        !respuesta ||
+        respuesta.ok !== true
+      ) {
+        throw new Error(
+          respuesta &&
+          respuesta.error
+            ? respuesta.error
+            : 'No fue posible confirmar el envío en MAESTRO.'
+        );
+      }
 
+      const data =
+        respuesta.data || {};
 
-
-    /* =========================================================
-       SEGURIDAD
-       ========================================================= */
-
-    function escapeHtml(
-      valor
-    ) {
-
-      return String(
-        valor === null ||
-        valor === undefined
-
-          ? ''
-
-          : valor
-      )
-      .replace(
-        /&/g,
-        '&amp;'
-      )
-      .replace(
-        /</g,
-        '&lt;'
-      )
-      .replace(
-        />/g,
-        '&gt;'
-      )
-      .replace(
-        /"/g,
-        '&quot;'
-      )
-      .replace(
-        /'/g,
-        '&#039;'
+      WHATSAPP_ABIERTO.delete(
+        clave
       );
 
-    }
-
-
-
-    function jsString(
-      valor
-    ) {
-
-      return String(
-        valor === null ||
-        valor === undefined
-
-          ? ''
-
-          : valor
-      )
-      .replace(
-        /\\/g,
-        '\\\\'
-      )
-      .replace(
-        /'/g,
-        "\\'"
-      )
-      .replace(
-        /\r/g,
-        ''
-      )
-      .replace(
-        /\n/g,
-        '\\n'
+      avisoMVP(
+        data.yaConfirmada
+          ? item.oc
+            +
+            ' ya estaba registrada como ENVIADA.'
+          : item.oc
+            +
+            ' confirmada como ENVIADA. Ahora queda ESPERANDO RESPUESTA.'
       );
 
+      if (
+        OC_MODAL_ACTUAL &&
+        OC_MODAL_ACTUAL.clave ===
+          clave
+      ) {
+        cerrarOC();
+      }
+
+      await cargarDatos();
+
+    } catch (error) {
+      avisoMVP(
+        error &&
+        error.message
+          ? error.message
+          : String(error)
+      );
+
+    } finally {
+      CONFIRMACION_ENVIO_EN_CURSO.delete(
+        clave
+      );
+
+      actualizarEstadoBotonesConfirmacion(
+        clave,
+        false
+      );
     }
+  }
 
 
+  async function confirmarRespuestaProveedor(
+    clave
+  ) {
+    const item =
+      (
+        PANEL.oc ||
+        []
+      )
+      .find(
+        function(oc) {
+          return (
+            oc.clave ===
+            clave
+          );
+        }
+      );
 
-    function normalizar(
-      valor
+    if (
+      !item
     ) {
+      avisoMVP(
+        'No se pudo localizar la OC.'
+      );
 
-      return String(
-        valor ||
-        ''
-      )
-      .normalize(
-        'NFD'
-      )
-      .replace(
-        /[\u0300-\u036f]/g,
-        ''
-      )
-      .toUpperCase()
-      .trim();
-
+      return;
     }
 
+    if (
+      normalizar(
+        item.estado
+      ) !==
+      'ESPERANDO RESPUESTA'
+    ) {
+      avisoMVP(
+        'Esta OC ya no está esperando respuesta del proveedor.'
+      );
 
-  </script>
+      await cargarDatos();
+
+      return;
+    }
+
+    if (
+      CONFIRMACION_RESPUESTA_EN_CURSO.has(
+        clave
+      )
+    ) {
+      return;
+    }
+
+    const confirmado =
+      window.confirm(
+        '¿Confirmas que el proveedor '
+        +
+        (
+          item.proveedor ||
+          ''
+        )
+        +
+        ' CONFIRMÓ la recepción y disponibilidad de la '
+        +
+        item.oc
+        +
+        '?\n\n'
+        +
+        'Al confirmar, MAESTRO registrará la respuesta CONFIRMO.'
+      );
+
+    if (
+      !confirmado
+    ) {
+      return;
+    }
+
+    CONFIRMACION_RESPUESTA_EN_CURSO.add(
+      clave
+    );
+
+    try {
+      const url =
+        CONFIG.API_BASE_URL
+        +
+        '?api=compras'
+        +
+        '&accion=confirmarRespuesta'
+        +
+        '&empresa='
+        +
+        encodeURIComponent(
+          item.empresa
+        )
+        +
+        '&oc='
+        +
+        encodeURIComponent(
+          item.oc
+        )
+        +
+        '&respuesta=CONFIRMO'
+        +
+        '&confirmar=SI';
+
+      const respuesta =
+        await cargarJsonp(
+          url
+        );
+
+      if (
+        !respuesta ||
+        respuesta.ok !== true
+      ) {
+        throw new Error(
+          respuesta &&
+          respuesta.error
+            ? respuesta.error
+            : 'No fue posible registrar la respuesta en MAESTRO.'
+        );
+      }
+
+      const data =
+        respuesta.data || {};
+
+      avisoMVP(
+        data.yaConfirmada
+          ? item.oc
+            +
+            ' ya tenía registrada la respuesta CONFIRMO.'
+          : item.oc
+            +
+            ' registrada como CONFIRMO. Ahora queda HABILITADA PARA RECEPCIÓN.'
+      );
+
+      if (
+        OC_MODAL_ACTUAL &&
+        OC_MODAL_ACTUAL.clave ===
+          clave
+      ) {
+        cerrarOC();
+      }
+
+      await cargarDatos();
+
+    } catch (error) {
+      avisoMVP(
+        error &&
+        error.message
+          ? error.message
+          : String(error)
+      );
+
+    } finally {
+      CONFIRMACION_RESPUESTA_EN_CURSO.delete(
+        clave
+      );
+    }
+  }
 
 
-</body>
+  function actualizarEstadoBotonesConfirmacion(
+    clave,
+    cargando
+  ) {
+    const botones =
+      document.querySelectorAll(
+        '[data-confirmar-envio="'
+        +
+        cssEscapeSeguro(
+          clave
+        )
+        +
+        '"]'
+      );
 
-</html>
+    botones.forEach(
+      function(boton) {
+        boton.disabled =
+          cargando;
+
+        boton.textContent =
+          cargando
+            ? 'Confirmando...'
+            : 'Confirmar envío';
+      }
+    );
+
+    const botonModal =
+      document.getElementById(
+        'btnConfirmarEnvioModal'
+      );
+
+    if (
+      botonModal &&
+      OC_MODAL_ACTUAL &&
+      OC_MODAL_ACTUAL.clave ===
+        clave
+    ) {
+      botonModal.disabled =
+        cargando;
+
+      botonModal.textContent =
+        cargando
+          ? 'Confirmando...'
+          : 'Confirmar envío';
+    }
+  }
+
+
+  function abrirWhatsAppDesdeModal() {
+    if (
+      !OC_MODAL_ACTUAL
+    ) {
+      return;
+    }
+
+    abrirWhatsApp(
+      OC_MODAL_ACTUAL.clave
+    );
+  }
+
+
+  function confirmarEnvioDesdeModal() {
+    if (
+      !OC_MODAL_ACTUAL
+    ) {
+      return;
+    }
+
+    confirmarEnvio(
+      OC_MODAL_ACTUAL.clave
+    );
+  }
+
+
+  function actualizarBotonesModalEnvio(
+    item
+  ) {
+    const botonWhatsApp =
+      document.getElementById(
+        'btnEnviarModal'
+      );
+
+    const botonConfirmar =
+      document.getElementById(
+        'btnConfirmarEnvioModal'
+      );
+
+    if (
+      !botonWhatsApp ||
+      !botonConfirmar
+    ) {
+      return;
+    }
+
+    const pendiente =
+      normalizar(
+        item.estado
+      ) ===
+      'PENDIENTE DE ENVIO';
+
+    if (
+      !pendiente
+    ) {
+      botonWhatsApp.style.display =
+        'none';
+
+      botonConfirmar.style.display =
+        'none';
+
+      return;
+    }
+
+    const yaAbrioWhatsApp =
+      WHATSAPP_ABIERTO.has(
+        item.clave
+      );
+
+    botonWhatsApp.style.display =
+      yaAbrioWhatsApp
+        ? 'none'
+        : 'block';
+
+    botonConfirmar.style.display =
+      yaAbrioWhatsApp
+        ? 'block'
+        : 'none';
+  }
+
+
+  function cssEscapeSeguro(
+    valor
+  ) {
+    if (
+      window.CSS &&
+      typeof window.CSS.escape ===
+        'function'
+    ) {
+      return window.CSS.escape(
+        String(
+          valor || ''
+        )
+      );
+    }
+
+    return String(
+      valor || ''
+    )
+    .replace(
+      /\\/g,
+      '\\\\'
+    )
+    .replace(
+      /"/g,
+      '\\"'
+    );
+  }
+
+
+  function mostrarCarga(
+    mostrar
+  ) {
+    document
+      .getElementById(
+        'loading'
+      )
+      .style
+      .display =
+        mostrar
+          ? 'block'
+          : 'none';
+  }
+
+
+  function mostrarError(
+    mensaje
+  ) {
+    const box =
+      document.getElementById(
+        'errorBox'
+      );
+
+    box.textContent =
+      mensaje;
+
+    box.style.display =
+      'block';
+  }
+
+
+  function ocultarError() {
+    document
+      .getElementById(
+        'errorBox'
+      )
+      .style
+      .display =
+        'none';
+  }
+
+
+  function avisoMVP(
+    mensaje
+  ) {
+    const toast =
+      document.getElementById(
+        'toast'
+      );
+
+    toast.textContent =
+      mensaje;
+
+    toast
+      .classList
+      .add(
+        'visible'
+      );
+
+    window.clearTimeout(
+      avisoMVP.timeout
+    );
+
+    avisoMVP.timeout =
+      window.setTimeout(
+        function() {
+          toast
+            .classList
+            .remove(
+              'visible'
+            );
+        },
+        4000
+      );
+  }
+
+
+  function formatoMoneda(
+    valor
+  ) {
+    return new Intl
+      .NumberFormat(
+        'es-CL',
+        {
+          style:
+            'currency',
+
+          currency:
+            'CLP',
+
+          maximumFractionDigits:
+            0
+        }
+      )
+      .format(
+        Number(
+          valor || 0
+        )
+      );
+  }
+
+
+  function formatoNumero(
+    valor
+  ) {
+    return new Intl
+      .NumberFormat(
+        'es-CL',
+        {
+          maximumFractionDigits:
+            3
+        }
+      )
+      .format(
+        Number(
+          valor || 0
+        )
+      );
+  }
+
+
+  function escapeHtml(
+    valor
+  ) {
+    return String(
+      valor === null ||
+      valor === undefined
+        ? ''
+        : valor
+    )
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+    .replace(
+      /</g,
+      '&lt;'
+    )
+    .replace(
+      />/g,
+      '&gt;'
+    )
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+  }
+
+
+  function jsString(
+    valor
+  ) {
+    return String(
+      valor === null ||
+      valor === undefined
+        ? ''
+        : valor
+    )
+    .replace(
+      /\\/g,
+      '\\\\'
+    )
+    .replace(
+      /'/g,
+      "\\'"
+    )
+    .replace(
+      /\r/g,
+      ''
+    )
+    .replace(
+      /\n/g,
+      '\\n'
+    );
+  }
+
+
+  function normalizar(
+    valor
+  ) {
+    return String(
+      valor || ''
+    )
+    .normalize(
+      'NFD'
+    )
+    .replace(
+      /[\u0300-\u036f]/g,
+      ''
+    )
+    .toUpperCase()
+    .trim();
+  }
+</script>
