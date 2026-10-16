@@ -2259,9 +2259,24 @@
                     "
                   >
 
-                    ${escapeHtml(item.estado)}
+                    ${escapeHtml(estadoVisibleTarjeta(item))}
 
                   </span>
+
+                  ${
+                    motivoVisibleTarjeta(item)
+                      ? `
+                        <span
+                          class="
+                            status
+                            status-NARANJO
+                          "
+                        >
+                          ${escapeHtml(motivoVisibleTarjeta(item))}
+                        </span>
+                      `
+                      : ''
+                  }
 
 
                 </div>
@@ -2372,6 +2387,94 @@
 
         }
       );
+
+    }
+
+
+
+    function respuestaVigenteTarjeta(
+      item
+    ) {
+
+      return normalizar(
+        item.usaProveedorAlternativo === true
+          ? item.respuestaAlternativo
+          : item.respuestaOriginal
+      );
+
+    }
+
+
+    function motivoVisibleTarjeta(
+      item
+    ) {
+
+      const respuesta =
+        respuestaVigenteTarjeta(
+          item
+        );
+
+      if (
+        respuesta !==
+        'RECHAZO'
+      ) {
+        return '';
+      }
+
+      const motivo =
+        normalizar(
+          item.usaProveedorAlternativo === true
+            ? item.incidenciaAlternativo
+            : item.incidenciaOriginal
+        );
+
+      if (
+        motivo ===
+        'BLOQUEO POR PAGO'
+      ) {
+        return 'BLOQUEO';
+      }
+
+      if (
+        motivo ===
+        'CAMBIO RAZON SOCIAL'
+      ) {
+        return 'CAMBIO RAZÓN SOCIAL';
+      }
+
+      return motivo;
+
+    }
+
+
+    function estadoVisibleTarjeta(
+      item
+    ) {
+
+      const respuesta =
+        respuestaVigenteTarjeta(
+          item
+        );
+
+      if (
+        respuesta ===
+        'RECHAZO'
+      ) {
+        return 'RECHAZO';
+      }
+
+      if (
+        respuesta ===
+        'CONFIRMO' &&
+        normalizar(
+          item.estado
+        ) ===
+        'HABILITADA PARA RECEPCION'
+      ) {
+        return 'HABILITADA PARA RECEPCIÓN';
+      }
+
+      return item.estado || '';
 
     }
 
