@@ -3950,6 +3950,75 @@
     }
 
 
+    /* =========================================================
+       ESTADO BOTÓN CONFIRMAR ENVÍO
+       ========================================================= */
+
+    function actualizarEstadoBotonesConfirmacion(
+      clave,
+      cargando
+    ) {
+
+      const botones =
+        document.querySelectorAll(
+          '[data-confirmar-envio="' +
+          cssEscapeSeguro(
+            clave
+          ) +
+          '"]'
+        );
+
+
+      botones.forEach(
+        function(
+          boton
+        ) {
+
+          boton.disabled =
+            cargando;
+
+
+          boton.textContent =
+            cargando
+
+              ? 'Confirmando...'
+
+              : 'Confirmar envío';
+
+        }
+      );
+
+
+      const botonModal =
+        document.getElementById(
+          'btnConfirmarEnvioModal'
+        );
+
+
+      if (
+        botonModal &&
+        OC_MODAL_ACTUAL &&
+        OC_MODAL_ACTUAL.clave ===
+          clave
+      ) {
+
+        botonModal.disabled =
+          cargando;
+
+
+        botonModal.textContent =
+          cargando
+
+            ? 'Confirmando...'
+
+            : 'Confirmar envío';
+
+      }
+
+    }
+
+
+
     function actualizarEstadoBotonesRespuesta(
       clave,
       cargando
