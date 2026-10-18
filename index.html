@@ -1236,6 +1236,44 @@
     }
 
 
+    .gestion-process-banner {
+      display: none;
+      padding: 14px 16px;
+      border: 1px solid #d0d5dd;
+      border-radius: 12px;
+      background: #eaecf0;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .gestion-process-banner.visible {
+      display: block;
+    }
+
+    .gestion-process-banner strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+      color: #182230;
+    }
+
+    .gestion-bloqueado,
+    .gestion-field input.gestion-bloqueado,
+    .gestion-table input.gestion-bloqueado {
+      background: #eaecf0 !important;
+      color: #667085 !important;
+      border-color: #d0d5dd !important;
+      cursor: not-allowed !important;
+    }
+
+    .btn-reautorizacion-espera {
+      background: #eaecf0;
+      color: #667085;
+      cursor: not-allowed;
+    }
+
+
     /* =========================================================
        RESPONSIVE
        ========================================================= */
@@ -1911,6 +1949,14 @@
       </div>
 
       <div class="gestion-grid">
+
+        <div
+          id="gxReautorizacionBanner"
+          class="gestion-process-banner gestion-span-12"
+        >
+          <strong>EN PROCESO DE REAUTORIZACIÓN</strong>
+          Esperando decisión de Jefatura. La propuesta de Compras queda bloqueada y no puede modificarse mientras esté en revisión.
+        </div>
 
         <section class="gestion-card gestion-span-6">
           <h3>1. Orden de compra</h3>
@@ -2753,6 +2799,19 @@
                           "
                         >
                           ${escapeHtml(motivoVisibleTarjeta(item))}
+                        </span>
+                      `
+                      : ''
+                  }
+
+
+                  ${
+                    normalizar(item.estado) === 'PENDIENTE DE REAUTORIZACION'
+                      ? `
+                        <span
+                          class="status status-GRIS"
+                        >
+                          REAUTORIZACIÓN EN PROCESO
                         </span>
                       `
                       : ''
@@ -3908,6 +3967,34 @@
        WHATSAPP
        ========================================================= */
 
+    function esPendienteReautorizacion(
+      item
+    ) {
+      return normalizar(
+        item && item.estado
+      ) === 'PENDIENTE DE REAUTORIZACION';
+    }
+
+
+    function datosReautorizacionCompletos(
+      item
+    ) {
+      const lineas =
+        item && Array.isArray(item.lineas)
+          ? item.lineas
+          : [];
+
+      return !!lineas.length &&
+        lineas.every(
+          function(linea) {
+            return Number(
+              linea.precioAutorizadoRegistrado || 0
+            ) > 0;
+          }
+        );
+    }
+
+
     function gestionarExcepcion(
       clave
     ) {
@@ -4023,6 +4110,55 @@
       document.getElementById('gxResponsable').value =
         item.responsablePropuestaAlternativa || '';
 
+      const pendienteReautorizacion =
+        esPendienteReautorizacion(item);
+
+      const datosCompletos =
+        datosReautorizacionCompletos(item);
+
+      const bannerReautorizacion =
+        document.getElementById(
+          'gxReautorizacionBanner'
+        );
+
+      if (bannerReautorizacion) {
+        bannerReautorizacion.classList.toggle(
+          'visible',
+          pendienteReautorizacion
+        );
+      }
+
+      const proveedorInput =
+        document.getElementById(
+          'gxProveedorAlternativo'
+        );
+
+      const responsableInput =
+        document.getElementById(
+          'gxResponsable'
+        );
+
+      [proveedorInput, responsableInput].forEach(
+        function(input) {
+          if (!input) {
+            return;
+          }
+
+          input.readOnly =
+            pendienteReautorizacion;
+
+          input.classList.toggle(
+            'gestion-bloqueado',
+            pendienteReautorizacion
+          );
+        }
+      );
+
+      document.getElementById('gxFechaPropuesta').value =
+        pendienteReautorizacion
+          ? 'Registrada en MAESTRO'
+          : 'Automática al enviar';
+
       document.getElementById('gestionExcepcionSubtitulo').textContent =
         item.oc + ' · ' +
         (item.proveedor || '') +
@@ -4032,6 +4168,36 @@
 
       renderGestionExcepcionProductos();
       recalcularGestionExcepcion();
+
+      const botonEnviar =
+        document.getElementById(
+          'gxBtnEnviar'
+        );
+
+      if (botonEnviar) {
+        botonEnviar.classList.remove(
+          'btn-reautorizacion-espera'
+        );
+
+        if (pendienteReautorizacion) {
+          if (datosCompletos) {
+            botonEnviar.disabled = true;
+            botonEnviar.textContent =
+              'EN PROCESO DE REAUTORIZACIÓN';
+            botonEnviar.classList.add(
+              'btn-reautorizacion-espera'
+            );
+          } else {
+            botonEnviar.disabled = false;
+            botonEnviar.textContent =
+              'COMPLETAR DATOS DE REAUTORIZACIÓN';
+          }
+        } else {
+          botonEnviar.disabled = false;
+          botonEnviar.textContent =
+            'Enviar a reautorización';
+        }
+      }
 
       const hoja =
         document.getElementById(
@@ -4122,6 +4288,7 @@
                     step="0.01"
                     value="${escapeHtml(String(precioPropuesto || ''))}"
                     data-gx-precio="${index}"
+                    ${esPendienteReautorizacion(item) ? 'readonly class="gestion-bloqueado"' : ''}
                     oninput="recalcularGestionExcepcion()"
                   >
                 </td>
@@ -4330,6 +4497,104 @@
     }
 
 
+    async function completarDatosReautorizacionPendiente(
+      item
+    ) {
+
+      if (
+        datosReautorizacionCompletos(item)
+      ) {
+        mostrarErrorGestionExcepcion(
+          'La propuesta ya está completa y se encuentra esperando decisión de Jefatura.'
+        );
+        return;
+      }
+
+      const confirmado =
+        window.confirm(
+          '¿Completar los datos técnicos faltantes de ' +
+          item.oc +
+          '?\n\n' +
+          'Esta acción solo completará Precio Autorizado desde el precio original. ' +
+          'No modificará proveedor alternativo, responsable, precios propuestos ni motivo.'
+        );
+
+      if (!confirmado) {
+        return;
+      }
+
+      const boton =
+        document.getElementById(
+          'gxBtnEnviar'
+        );
+
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent =
+          'Completando...';
+      }
+
+      try {
+
+        const url =
+          CONFIG.API_BASE_URL +
+          '?api=compras' +
+          '&accion=completarDatosReautorizacion' +
+          '&empresa=' +
+          encodeURIComponent(item.empresa) +
+          '&oc=' +
+          encodeURIComponent(item.oc) +
+          '&confirmar=SI';
+
+        const respuesta =
+          await cargarJsonp(
+            url
+          );
+
+        if (
+          !respuesta ||
+          respuesta.ok !== true
+        ) {
+          throw new Error(
+            respuesta && respuesta.error
+              ? respuesta.error
+              : 'No fue posible completar los datos de reautorización en MAESTRO.'
+          );
+        }
+
+        cerrarGestionExcepcion();
+
+        avisoMVP(
+          item.oc +
+          ' · datos de reautorización completos. Continúa esperando decisión de Jefatura.'
+        );
+
+        await cargarDatos();
+
+      } catch (error) {
+
+        const mensajeError =
+          error && error.message
+            ? error.message
+            : String(error);
+
+        mostrarErrorGestionExcepcion(
+          mensajeError
+        );
+
+        avisoMVP(
+          mensajeError
+        );
+
+        if (boton) {
+          boton.disabled = false;
+          boton.textContent =
+            'COMPLETAR DATOS DE REAUTORIZACIÓN';
+        }
+      }
+    }
+
+
     async function enviarGestionExcepcionAReautorizacion() {
 
       mostrarErrorGestionExcepcion('');
@@ -4340,6 +4605,15 @@
       if (!item) {
         mostrarErrorGestionExcepcion(
           'No existe una OC activa en gestión.'
+        );
+        return;
+      }
+
+      if (
+        esPendienteReautorizacion(item)
+      ) {
+        await completarDatosReautorizacionPendiente(
+          item
         );
         return;
       }
