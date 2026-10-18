@@ -1204,7 +1204,7 @@
 
       font-size: 13px;
 
-      z-index: 300;
+      z-index: 13000;
 
       transition: .2s;
     }
@@ -1215,6 +1215,24 @@
         translate(-50%, 0);
 
       opacity: 1;
+    }
+
+
+    .gestion-error-box {
+      display: none;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid #f5b8b5;
+      border-radius: 10px;
+      background: #fef3f2;
+      color: #b42318;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .gestion-error-box.visible {
+      display: block;
     }
 
 
@@ -2032,6 +2050,11 @@
         </section>
 
         <section class="gestion-card gestion-span-12">
+          <div
+            id="gxErrorBox"
+            class="gestion-error-box"
+          ></div>
+
           <div class="gestion-actions">
             <button
               class="btn btn-view"
@@ -3038,6 +3061,35 @@
 
 
       /*
+       * PENDIENTE DE REAUTORIZACIÓN
+       */
+
+      if (
+        estado ===
+        'PENDIENTE DE REAUTORIZACION'
+      ) {
+
+        return `
+
+          <button
+            class="btn btn-blue"
+            onclick="
+              gestionarExcepcion(
+                '${jsString(item.clave)}'
+              )
+            "
+          >
+
+            Revisar propuesta
+
+          </button>
+
+        `;
+
+      }
+
+
+      /*
        * EXCEPCIÓN
        */
 
@@ -3893,7 +3945,8 @@
 
       const incidencia =
         normalizar(
-          item.incidenciaOriginal
+          item.incidenciaOriginal ||
+          item.incidenciaCompra
         );
 
       const motivoElegible =
@@ -3936,6 +3989,8 @@
       GESTION_EXCEPCION_ACTUAL =
         item;
 
+      mostrarErrorGestionExcepcion('');
+
       document.getElementById('gxOc').textContent =
         item.oc || '-';
 
@@ -3963,16 +4018,17 @@
         incidencia;
 
       document.getElementById('gxProveedorAlternativo').value =
-        '';
+        item.proveedorAlternativo || '';
 
       document.getElementById('gxResponsable').value =
-        '';
+        item.responsablePropuestaAlternativa || '';
 
       document.getElementById('gestionExcepcionSubtitulo').textContent =
         item.oc + ' · ' +
         (item.proveedor || '') +
         ' · ' +
-        (incidencia === 'BLOQUEO POR PAGO' ? 'BLOQUEO' : incidencia);
+        (incidencia === 'BLOQUEO POR PAGO' ? 'BLOQUEO' : incidencia) +
+        (item.proveedorAlternativo ? ' · PROPUESTA: ' + item.proveedorAlternativo : '');
 
       renderGestionExcepcionProductos();
       recalcularGestionExcepcion();
@@ -4007,6 +4063,8 @@
         );
       }
 
+      mostrarErrorGestionExcepcion('');
+
       GESTION_EXCEPCION_ACTUAL =
         null;
 
@@ -4036,8 +4094,19 @@
         lineas.map(
           function(linea, index) {
 
-            const precio =
-              Number(linea.precio || 0);
+            const precioAutorizado =
+              Number(
+                linea.precioAutorizado ||
+                linea.precio ||
+                0
+              );
+
+            const precioPropuesto =
+              Number(
+                linea.precioPropuesto ||
+                precioAutorizado ||
+                0
+              );
 
             return `
               <tr>
@@ -4045,13 +4114,13 @@
                 <td>${escapeHtml(linea.producto || '')}</td>
                 <td>${escapeHtml(linea.unidad || '')}</td>
                 <td class="gestion-num">${escapeHtml(String(linea.cantidad || 0))}</td>
-                <td class="gestion-num">$${formatoNumero(precio)}</td>
+                <td class="gestion-num">$${formatoNumero(precioAutorizado)}</td>
                 <td class="gestion-num">
                   <input
                     type="number"
                     min="0.01"
                     step="0.01"
-                    value="${escapeHtml(String(precio || ''))}"
+                    value="${escapeHtml(String(precioPropuesto || ''))}"
                     data-gx-precio="${index}"
                     oninput="recalcularGestionExcepcion()"
                   >
@@ -4123,7 +4192,11 @@
             Number(linea.cantidad || 0);
 
           const precioAutorizado =
-            Number(linea.precio || 0);
+            Number(
+              linea.precioAutorizado ||
+              linea.precio ||
+              0
+            );
 
           const precioNuevo =
             leerPrecioGestionExcepcion(
@@ -4220,13 +4293,52 @@
     }
 
 
+    function mostrarErrorGestionExcepcion(
+      mensaje
+    ) {
+
+      const box =
+        document.getElementById(
+          'gxErrorBox'
+        );
+
+      if (!box) {
+        avisoMVP(mensaje);
+        return;
+      }
+
+      const texto =
+        String(
+          mensaje || ''
+        ).trim();
+
+      box.textContent =
+        texto;
+
+      box.classList.toggle(
+        'visible',
+        !!texto
+      );
+
+      if (texto) {
+        box.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+
+    }
+
+
     async function enviarGestionExcepcionAReautorizacion() {
+
+      mostrarErrorGestionExcepcion('');
 
       const item =
         GESTION_EXCEPCION_ACTUAL;
 
       if (!item) {
-        avisoMVP(
+        mostrarErrorGestionExcepcion(
           'No existe una OC activa en gestión.'
         );
         return;
@@ -4256,7 +4368,7 @@
         );
 
       if (!proveedorAlternativo) {
-        avisoMVP(
+        mostrarErrorGestionExcepcion(
           'Debe indicar el proveedor alternativo.'
         );
         return;
@@ -4266,14 +4378,14 @@
         normalizar(proveedorAlternativo) ===
         normalizar(item.proveedor || '')
       ) {
-        avisoMVP(
+        mostrarErrorGestionExcepcion(
           'El proveedor alternativo debe ser distinto del proveedor original.'
         );
         return;
       }
 
       if (!responsable) {
-        avisoMVP(
+        mostrarErrorGestionExcepcion(
           'Debe indicar el responsable de la propuesta.'
         );
         return;
@@ -4307,14 +4419,14 @@
           );
 
         if (!idLinea) {
-          avisoMVP(
+          mostrarErrorGestionExcepcion(
             'Una línea no tiene ID de origen. No se puede enviar la propuesta.'
           );
           return;
         }
 
         if (!(precio > 0)) {
-          avisoMVP(
+          mostrarErrorGestionExcepcion(
             'Todos los productos deben tener un nuevo precio mayor que cero.'
           );
           return;
@@ -4399,17 +4511,24 @@
 
         avisoMVP(
           item.oc +
-          ' enviada a Jefatura. Queda PENDIENTE DE REAUTORIZACIÓN.'
+          ' · propuesta verificada en MAESTRO. Queda PENDIENTE DE REAUTORIZACIÓN.'
         );
 
         await cargarDatos();
 
       } catch (error) {
 
-        avisoMVP(
+        const mensajeError =
           error && error.message
             ? error.message
-            : String(error)
+            : String(error);
+
+        mostrarErrorGestionExcepcion(
+          mensajeError
+        );
+
+        avisoMVP(
+          mensajeError
         );
 
       } finally {
