@@ -14,6 +14,7 @@
 
   <title>Gestión de Compras · Grupo Fiorentini</title>
 
+
   <style>
 
     :root {
@@ -2971,19 +2972,26 @@
           item
         );
 
-      if (
-        respuesta !==
-        'RECHAZO'
-      ) {
-        return '';
-      }
-
       const motivo =
         normalizar(
           item.usaProveedorAlternativo === true
             ? item.incidenciaAlternativo
             : item.incidenciaOriginal
         );
+
+      if (
+        respuesta === 'INCOMPLETO' &&
+        motivo === 'ENTREGA PARCIAL'
+      ) {
+        return 'PENDIENTE GESTIÓN';
+      }
+
+      if (
+        respuesta !==
+        'RECHAZO'
+      ) {
+        return '';
+      }
 
       if (
         motivo ===
@@ -3158,6 +3166,35 @@
           >
 
             Revisar propuesta
+
+          </button>
+
+        `;
+
+      }
+
+
+      /*
+       * ENTREGA PARCIAL / PENDIENTE GESTIÓN
+       */
+
+      if (
+        estado ===
+        'ENTREGA PARCIAL'
+      ) {
+
+        return `
+
+          <button
+            class="btn btn-blue"
+            onclick="
+              gestionarExcepcion(
+                '${jsString(item.clave)}'
+              )
+            "
+          >
+
+            Gestionar
 
           </button>
 
@@ -4057,10 +4094,18 @@
       const motivoElegible =
         incidencia === 'SIN STOCK' ||
         incidencia === 'BLOQUEO' ||
-        incidencia === 'BLOQUEO POR PAGO';
+        incidencia === 'BLOQUEO POR PAGO' ||
+        incidencia === 'ENTREGA PARCIAL';
+
+      const respuestaElegible =
+        respuesta === 'RECHAZO' ||
+        (
+          respuesta === 'INCOMPLETO' &&
+          incidencia === 'ENTREGA PARCIAL'
+        );
 
       if (
-        respuesta !== 'RECHAZO' ||
+        !respuestaElegible ||
         !motivoElegible
       ) {
 
@@ -4074,7 +4119,7 @@
         }
 
         avisoMVP(
-          'La hoja de gestión de excepción está habilitada para RECHAZO por SIN STOCK o BLOQUEO.'
+          'La hoja de gestión está habilitada para RECHAZO por SIN STOCK/BLOQUEO o INCOMPLETO por ENTREGA PARCIAL.'
         );
         return;
       }
@@ -4106,13 +4151,15 @@
         item.lote || 'SIN LOTE';
 
       document.getElementById('gxEstado').textContent =
-        'RECHAZO';
+        respuesta === 'INCOMPLETO'
+          ? 'ENTREGA PARCIAL'
+          : 'RECHAZO';
 
       document.getElementById('gxProveedorOriginal').textContent =
         item.proveedor || '-';
 
       document.getElementById('gxRespuestaOriginal').textContent =
-        'RECHAZO';
+        respuesta || '-';
 
       document.getElementById('gxIncidenciaOriginal').textContent =
         incidencia === 'BLOQUEO POR PAGO'
