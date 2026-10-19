@@ -6631,8 +6631,22 @@
       NUEVA_OC_RUTA = ruta;
       document.getElementById('nuevaOcRutaManual').classList.toggle('activa', ruta === 'MANUAL');
       document.getElementById('nuevaOcRutaSaldo').classList.toggle('activa', ruta === 'SALDO');
-      document.getElementById('nuevaOcBloqueManual').classList.toggle('nuevaoc-hidden', ruta !== 'MANUAL');
-      document.getElementById('nuevaOcBloqueSaldo').classList.toggle('nuevaoc-hidden', ruta !== 'SALDO');
+
+      const bloqueManual = document.getElementById('nuevaOcBloqueManual');
+      const bloqueSaldo = document.getElementById('nuevaOcBloqueSaldo');
+      bloqueManual.classList.toggle('nuevaoc-hidden', ruta !== 'MANUAL');
+      bloqueSaldo.classList.toggle('nuevaoc-hidden', ruta !== 'SALDO');
+
+      // IMPORTANTE: los controles REQUIRED de la ruta oculta deben quedar deshabilitados.
+      // Si no, la validación nativa del navegador bloquea silenciosamente el submit
+      // de CREAR OC SALDO PENDIENTE por los campos vacíos de CREAR OC.
+      bloqueManual.querySelectorAll('input,select,textarea,button').forEach(function(el) {
+        el.disabled = ruta !== 'MANUAL';
+      });
+      bloqueSaldo.querySelectorAll('input,select,textarea,button').forEach(function(el) {
+        el.disabled = ruta !== 'SALDO';
+      });
+
       document.getElementById('nuevaOcTituloRuta').textContent = ruta === 'MANUAL' ? 'CREAR OC' : 'CREAR OC SALDO PENDIENTE';
       const descartar = document.getElementById('nuevaOcDescartar');
       if (descartar) descartar.style.display = ruta === 'SALDO' ? '' : 'none';
