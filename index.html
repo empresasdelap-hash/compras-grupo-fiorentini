@@ -1676,6 +1676,145 @@
       }
     }
 
+  
+
+    /* =========================================================
+       NUEVA OC · VISTA INTEGRADA EN GESTIÓN DE COMPRAS
+       ========================================================= */
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-nueva-oc {
+      min-height: 44px;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 17px;
+      background: #184f78;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .nuevaoc-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 12500;
+      display: none;
+      overflow-y: auto;
+      background: #f2f4f7;
+    }
+
+    .nuevaoc-overlay.visible { display: block; }
+
+    .nuevaoc-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 18px 48px;
+    }
+
+    .nuevaoc-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0 18px;
+      margin-bottom: 18px;
+      background: rgba(242,244,247,.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e4e7ec;
+    }
+
+    .nuevaoc-title h2 { margin: 0; font-size: 24px; }
+    .nuevaoc-title p { margin: 5px 0 0; color: #667085; font-size: 14px; font-weight: 700; }
+
+    .nuevaoc-rutas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .nuevaoc-ruta {
+      min-height: 64px;
+      border: 2px solid #c8dcea;
+      border-radius: 12px;
+      background: #fff;
+      color: #184f78;
+      font-weight: 900;
+      padding: 12px 16px;
+    }
+
+    .nuevaoc-ruta.activa {
+      background: #184f78;
+      color: #fff;
+      border-color: #184f78;
+    }
+
+    .nuevaoc-card {
+      background: #fff;
+      border: 1px solid #e4e7ec;
+      border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(16,24,40,.04);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .nuevaoc-card h3 { margin: 0 0 14px; font-size: 16px; }
+
+    .nuevaoc-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .nuevaoc-field { min-width: 0; }
+    .nuevaoc-field.wide { grid-column: 1 / -1; }
+    .nuevaoc-field label { display: block; margin-bottom: 6px; color:#344054; font-size:13px; font-weight:900; }
+    .nuevaoc-field input,
+    .nuevaoc-field select,
+    .nuevaoc-field textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      padding: 9px 11px;
+      background: #fff;
+      color: #101828;
+      font: inherit;
+    }
+    .nuevaoc-field textarea { min-height: 88px; resize: vertical; }
+
+    .nuevaoc-table-wrap { overflow-x:auto; border:1px solid #e4e7ec; border-radius:12px; }
+    .nuevaoc-table { width:100%; min-width:900px; border-collapse:collapse; }
+    .nuevaoc-table th { padding:10px; background:#f9fafb; color:#475467; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid #e4e7ec; }
+    .nuevaoc-table td { padding:9px; border-bottom:1px solid #eaecf0; vertical-align:middle; font-size:13px; }
+    .nuevaoc-table input,
+    .nuevaoc-table select { width:100%; min-height:40px; border:1px solid #d0d5dd; border-radius:9px; padding:7px 9px; font:inherit; }
+    .nuevaoc-table input[type="checkbox"] { width:22px; min-height:22px; }
+
+    .nuevaoc-actions { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; align-items:center; }
+    .nuevaoc-total { margin-right:auto; font-weight:900; color:#344054; }
+    .nuevaoc-msg { white-space:pre-wrap; line-height:1.4; padding:12px 14px; border-radius:10px; background:#eff4f7; color:#344054; margin-bottom:14px; }
+    .nuevaoc-msg.error { background:#fef3f2; color:#b42318; }
+    .nuevaoc-msg.success { background:#ecfdf3; color:#027a48; }
+    .nuevaoc-small { color:#667085; font-size:12px; line-height:1.4; }
+    .nuevaoc-hidden { display:none !important; }
+
+    @media (max-width: 820px) {
+      .topbar { align-items:flex-start; }
+      .topbar-actions { width:100%; }
+      .btn-nueva-oc, .btn-refresh { flex:1; }
+      .nuevaoc-grid, .nuevaoc-rutas { grid-template-columns:1fr; }
+      .nuevaoc-topbar { align-items:flex-start; }
+    }
+
   </style>
 
 </head>
@@ -1701,6 +1840,16 @@
 
       </div>
 
+      <div class="topbar-actions">
+        <button
+          id="btnNuevaOC"
+          class="btn-nueva-oc"
+          onclick="abrirNuevaOC()"
+        >
+          + NUEVA OC
+        </button>
+
+
 
       <button
         id="btnActualizar"
@@ -1709,6 +1858,7 @@
       >
         ↻ Actualizar
       </button>
+      </div>
 
     </header>
 
@@ -2144,6 +2294,86 @@
 
   </div>
 
+
+
+
+  <!-- =======================================================
+       NUEVA OC · VISTA INTERNA DE GESTIÓN DE COMPRAS
+       ======================================================= -->
+  <div id="nuevaOcOverlay" class="nuevaoc-overlay">
+    <div class="nuevaoc-shell">
+      <div class="nuevaoc-topbar">
+        <div class="nuevaoc-title">
+          <h2>NUEVA OC</h2>
+          <p>Gestión de Compras · Solicitudes sujetas a decisión de Jefatura</p>
+        </div>
+        <button class="btn btn-view" onclick="cerrarNuevaOC()">Volver a Compras</button>
+      </div>
+
+      <div class="nuevaoc-rutas">
+        <button id="nuevaOcRutaManual" class="nuevaoc-ruta activa" onclick="nuevaOcCambiarRuta('MANUAL')">CREAR OC</button>
+        <button id="nuevaOcRutaSaldo" class="nuevaoc-ruta" onclick="nuevaOcCambiarRuta('SALDO')">CREAR OC SALDO PENDIENTE</button>
+      </div>
+
+      <div id="nuevaOcMensaje" class="nuevaoc-msg">Abra NUEVA OC para cargar empresas y saldos disponibles.</div>
+
+      <form id="nuevaOcForm" onsubmit="nuevaOcEnviar(event)">
+        <fieldset id="nuevaOcCampos" style="border:0;padding:0;margin:0;min-width:0;">
+          <section class="nuevaoc-card">
+            <h3 id="nuevaOcTituloRuta">CREAR OC</h3>
+            <div class="nuevaoc-grid">
+              <div class="nuevaoc-field"><label>Empresa</label><select id="nuevaOcEmpresa" required onchange="nuevaOcPintarSaldos()"></select></div>
+              <div class="nuevaoc-field"><label>Proveedor</label><input id="nuevaOcProveedor" maxlength="180" required></div>
+              <div class="nuevaoc-field"><label>RUT proveedor</label><input id="nuevaOcRut" maxlength="50"></div>
+              <div class="nuevaoc-field"><label>Dirección proveedor</label><input id="nuevaOcDireccion" maxlength="300"></div>
+              <div class="nuevaoc-field"><label>Correo proveedor</label><input id="nuevaOcCorreo" type="email" maxlength="180"></div>
+              <div class="nuevaoc-field"><label>Teléfono proveedor</label><input id="nuevaOcTelefono" maxlength="100"></div>
+              <div class="nuevaoc-field wide"><label>Motivo y observaciones</label><textarea id="nuevaOcMotivo" maxlength="1000" required></textarea></div>
+            </div>
+          </section>
+
+          <section id="nuevaOcBloqueManual" class="nuevaoc-card">
+            <h3>Productos o servicios</h3>
+            <p class="nuevaoc-small">Precio unitario neto. INVENTARIO admite código pendiente; OCASIONAL y SERVICIO pueden no requerir código.</p>
+            <div class="nuevaoc-table-wrap">
+              <table class="nuevaoc-table">
+                <thead><tr><th>Tipo</th><th>Código</th><th>Producto / servicio</th><th>Unidad</th><th>Cantidad</th><th>Precio neto</th><th>Acción</th></tr></thead>
+                <tbody id="nuevaOcLineas"></tbody>
+              </table>
+            </div>
+            <div style="margin-top:12px;"><button type="button" class="btn btn-view" onclick="nuevaOcAgregarLinea()">Agregar línea</button></div>
+          </section>
+
+          <section id="nuevaOcBloqueSaldo" class="nuevaoc-card nuevaoc-hidden">
+            <h3>Saldos disponibles</h3>
+            <p class="nuevaoc-small">Seleccione saldos de una misma empresa y OC origen. Se utiliza toda la cantidad pendiente.</p>
+            <div style="margin-bottom:12px;"><button type="button" class="btn btn-view" onclick="nuevaOcCargar()">Actualizar saldos</button></div>
+            <div class="nuevaoc-table-wrap">
+              <table class="nuevaoc-table">
+                <thead><tr><th>Elegir</th><th>OC origen / ID saldo</th><th>Código / Producto</th><th>Unidad</th><th>Autorizada</th><th>Confirmada</th><th>Pendiente</th><th>Precio neto propuesto</th></tr></thead>
+                <tbody id="nuevaOcSaldos"></tbody>
+              </table>
+            </div>
+            <p id="nuevaOcSinSaldos" class="nuevaoc-small" style="display:none;">No hay saldos disponibles para esta empresa.</p>
+          </section>
+
+          <section class="nuevaoc-card">
+            <div class="nuevaoc-actions">
+              <span id="nuevaOcTotal" class="nuevaoc-total">Neto: $0 · IVA: $0 · Total: $0</span>
+              <button id="nuevaOcGenerar" type="submit" class="btn btn-blue">Generar solicitud para Jefatura</button>
+            </div>
+            <p class="nuevaoc-small">El numerador central asigna la OC. NUEVA OC no escribe la autorización de Jefatura ni reemplaza la historia original.</p>
+          </section>
+        </fieldset>
+      </form>
+
+      <section id="nuevaOcResultado" class="nuevaoc-card nuevaoc-hidden">
+        <h3>Solicitud registrada</h3>
+        <p id="nuevaOcDetalleResultado"></p>
+        <button type="button" class="btn btn-blue" onclick="nuevaOcOtraSolicitud()">Preparar otra solicitud</button>
+      </section>
+    </div>
+  </div>
 
   <div
     id="toast"
@@ -6265,7 +6495,351 @@
     }
 
 
-  </script>
+  
+
+    /* =========================================================
+       NUEVA OC · LÓGICA INTEGRADA EN GESTIÓN DE COMPRAS
+       ========================================================= */
+
+    let NUEVA_OC_DATA = null;
+    let NUEVA_OC_RUTA = 'MANUAL';
+    let NUEVA_OC_ID = null;
+    let NUEVA_OC_INFLIGHT = false;
+    let NUEVA_OC_FROZEN = null;
+    let NUEVA_OC_FINISHED = false;
+
+    const NUEVA_OC_STORAGE_KEY = 'GF_COMPRAS_NUEVA_OC_PENDING';
+
+    function nuevaOcUuid() {
+      if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      const a = crypto.getRandomValues(new Uint8Array(16));
+      a[6] = (a[6] & 15) | 64;
+      a[8] = (a[8] & 63) | 128;
+      const h = Array.from(a).map(function(x) {
+        return x.toString(16).padStart(2, '0');
+      }).join('');
+      return h.slice(0,8) + '-' + h.slice(8,12) + '-' + h.slice(12,16) + '-' + h.slice(16,20) + '-' + h.slice(20);
+    }
+
+    function nuevaOcMensaje(texto, tipo) {
+      const box = document.getElementById('nuevaOcMensaje');
+      box.textContent = texto || '';
+      box.className = 'nuevaoc-msg' + (tipo ? ' ' + tipo : '');
+    }
+
+    function abrirNuevaOC() {
+      document.getElementById('nuevaOcOverlay').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+
+      const pendiente = sessionStorage.getItem(NUEVA_OC_STORAGE_KEY);
+      if (pendiente) {
+        try {
+          NUEVA_OC_FROZEN = JSON.parse(pendiente);
+          NUEVA_OC_ID = NUEVA_OC_FROZEN.idSolicitud;
+          NUEVA_OC_RUTA = NUEVA_OC_FROZEN.ruta;
+          nuevaOcRecuperarPendiente();
+          return;
+        } catch (error) {
+          nuevaOcMensaje('No se pudo recuperar la solicitud pendiente. Conserve el ID y solicite revisión.', 'error');
+          return;
+        }
+      }
+
+      if (!NUEVA_OC_ID || NUEVA_OC_FINISHED) {
+        nuevaOcResetLocal();
+      }
+
+      nuevaOcCargar();
+    }
+
+    function cerrarNuevaOC() {
+      if (NUEVA_OC_INFLIGHT) {
+        nuevaOcMensaje('Hay una operación en curso. Espere la respuesta antes de salir.', 'error');
+        return;
+      }
+      document.getElementById('nuevaOcOverlay').classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    function nuevaOcResetLocal() {
+      NUEVA_OC_DATA = null;
+      NUEVA_OC_RUTA = 'MANUAL';
+      NUEVA_OC_ID = nuevaOcUuid();
+      NUEVA_OC_INFLIGHT = false;
+      NUEVA_OC_FROZEN = null;
+      NUEVA_OC_FINISHED = false;
+      document.getElementById('nuevaOcResultado').classList.add('nuevaoc-hidden');
+      document.getElementById('nuevaOcForm').classList.remove('nuevaoc-hidden');
+      document.getElementById('nuevaOcLineas').innerHTML = '';
+      document.getElementById('nuevaOcMotivo').value = '';
+      document.getElementById('nuevaOcProveedor').value = '';
+      document.getElementById('nuevaOcRut').value = '';
+      document.getElementById('nuevaOcDireccion').value = '';
+      document.getElementById('nuevaOcCorreo').value = '';
+      document.getElementById('nuevaOcTelefono').value = '';
+      nuevaOcAgregarLinea();
+      nuevaOcCambiarRuta('MANUAL');
+      nuevaOcFreeze(false);
+    }
+
+    async function nuevaOcCargar() {
+      try {
+        nuevaOcMensaje('Leyendo MAESTRO y saldos disponibles...');
+        const url = CONFIG.API_BASE_URL + '?api=compras&accion=nuevaoccargar';
+        const respuesta = await cargarJsonp(url);
+        if (!respuesta || respuesta.ok !== true) {
+          throw new Error(respuesta && respuesta.error ? respuesta.error : 'No fue posible cargar NUEVA OC.');
+        }
+        NUEVA_OC_DATA = respuesta.data || {};
+        const select = document.getElementById('nuevaOcEmpresa');
+        const actual = select.value;
+        select.innerHTML = '';
+        (NUEVA_OC_DATA.empresas || []).forEach(function(empresa) {
+          select.add(new Option(empresa, empresa));
+        });
+        if ((NUEVA_OC_DATA.empresas || []).includes(actual)) {
+          select.value = actual;
+        }
+        nuevaOcPintarSaldos();
+        nuevaOcCambiarRuta(NUEVA_OC_RUTA);
+        nuevaOcMensaje((NUEVA_OC_DATA.avisos || []).length ? 'Revisar:\n' + NUEVA_OC_DATA.avisos.join('\n') : 'MAESTRO leído. Complete la solicitud.');
+      } catch (error) {
+        nuevaOcMensaje(error && error.message ? error.message : String(error), 'error');
+      }
+    }
+
+    function nuevaOcCambiarRuta(ruta) {
+      if (NUEVA_OC_FROZEN || NUEVA_OC_INFLIGHT || NUEVA_OC_FINISHED) return;
+      NUEVA_OC_RUTA = ruta;
+      document.getElementById('nuevaOcRutaManual').classList.toggle('activa', ruta === 'MANUAL');
+      document.getElementById('nuevaOcRutaSaldo').classList.toggle('activa', ruta === 'SALDO');
+      document.getElementById('nuevaOcBloqueManual').classList.toggle('nuevaoc-hidden', ruta !== 'MANUAL');
+      document.getElementById('nuevaOcBloqueSaldo').classList.toggle('nuevaoc-hidden', ruta !== 'SALDO');
+      document.getElementById('nuevaOcTituloRuta').textContent = ruta === 'MANUAL' ? 'CREAR OC' : 'CREAR OC SALDO PENDIENTE';
+      nuevaOcTotales();
+    }
+
+    function nuevaOcAgregarLinea() {
+      const body = document.getElementById('nuevaOcLineas');
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td><select class="noc-tipo"><option>INVENTARIO</option><option>OCASIONAL</option><option>SERVICIO</option></select></td>' +
+        '<td><input class="noc-codigo" type="text" maxlength="80"></td>' +
+        '<td><input class="noc-producto" type="text" maxlength="300" required></td>' +
+        '<td><input class="noc-unidad" type="text" maxlength="30" value="UND" required></td>' +
+        '<td><input class="noc-cantidad" type="number" min="0.000001" step="any" value="1" required></td>' +
+        '<td><input class="noc-precio" type="number" min="0.000001" step="any" required></td>' +
+        '<td><button type="button" class="btn btn-view noc-quitar">Quitar</button></td>';
+      tr.querySelectorAll('input,select').forEach(function(el) {
+        el.addEventListener('input', nuevaOcTotales);
+        el.addEventListener('change', nuevaOcTotales);
+      });
+      tr.querySelector('.noc-quitar').onclick = function() {
+        if (body.children.length <= 1) {
+          nuevaOcMensaje('Debe conservar al menos una línea.', 'error');
+          return;
+        }
+        tr.remove();
+        nuevaOcTotales();
+      };
+      body.appendChild(tr);
+      nuevaOcTotales();
+    }
+
+    function nuevaOcPintarSaldos() {
+      const body = document.getElementById('nuevaOcSaldos');
+      body.innerHTML = '';
+      if (!NUEVA_OC_DATA) return;
+      const empresa = document.getElementById('nuevaOcEmpresa').value;
+      const lista = (NUEVA_OC_DATA.saldos || []).filter(function(x) { return x.empresa === empresa; });
+      lista.forEach(function(s) {
+        const tr = document.createElement('tr');
+        tr.dataset.id = s.id;
+        tr.dataset.fingerprint = s.fingerprint;
+        tr.dataset.oc = s.oc;
+        tr.dataset.pending = s.pending;
+        tr.innerHTML = '<td><input class="noc-saldo-check" type="checkbox"></td>' +
+          '<td>' + escapeHtml(s.oc) + '<br><span class="nuevaoc-small">' + escapeHtml(s.id) + '</span></td>' +
+          '<td>' + escapeHtml((s.codigo || '') + ' · ' + (s.producto || '')) + '</td>' +
+          '<td>' + escapeHtml(s.unidad || '') + '</td>' +
+          '<td>' + formatoNumero(s.original) + '</td>' +
+          '<td>' + formatoNumero(s.confirmed) + '</td>' +
+          '<td>' + formatoNumero(s.pending) + '</td>' +
+          '<td><input class="noc-saldo-precio" type="number" min="0.000001" step="any"></td>';
+        tr.querySelector('.noc-saldo-check').onchange = function() {
+          const elegidos = Array.from(body.querySelectorAll('tr')).filter(function(row) {
+            return row.querySelector('.noc-saldo-check').checked;
+          });
+          if (new Set(elegidos.map(function(row){ return row.dataset.oc; })).size > 1) {
+            this.checked = false;
+            nuevaOcMensaje('Seleccione saldos de una misma OC origen.', 'error');
+          }
+          nuevaOcTotales();
+        };
+        tr.querySelector('.noc-saldo-precio').addEventListener('input', nuevaOcTotales);
+        body.appendChild(tr);
+      });
+      document.getElementById('nuevaOcSinSaldos').style.display = lista.length ? 'none' : 'block';
+      nuevaOcTotales();
+    }
+
+    function nuevaOcTotales() {
+      let neto = 0;
+      let iva = 0;
+      function sumar(cantidad, precio) {
+        const n = Number(cantidad) * Number(precio);
+        if (Number.isFinite(n)) {
+          neto += n;
+          iva += Math.round(n * 0.19 * 100) / 100;
+        }
+      }
+      if (NUEVA_OC_RUTA === 'MANUAL') {
+        document.querySelectorAll('#nuevaOcLineas tr').forEach(function(tr) {
+          sumar(tr.querySelector('.noc-cantidad').value, tr.querySelector('.noc-precio').value);
+        });
+      } else {
+        document.querySelectorAll('#nuevaOcSaldos tr').forEach(function(tr) {
+          if (tr.querySelector('.noc-saldo-check').checked) {
+            sumar(tr.dataset.pending, tr.querySelector('.noc-saldo-precio').value);
+          }
+        });
+      }
+      document.getElementById('nuevaOcTotal').textContent = 'Neto: ' + formatoMoneda(neto) + ' · IVA: ' + formatoMoneda(iva) + ' · Total: ' + formatoMoneda(neto + iva);
+    }
+
+    function nuevaOcPayload() {
+      const proveedor = {
+        nombre: document.getElementById('nuevaOcProveedor').value.trim(),
+        rut: document.getElementById('nuevaOcRut').value.trim(),
+        direccion: document.getElementById('nuevaOcDireccion').value.trim(),
+        correo: document.getElementById('nuevaOcCorreo').value.trim(),
+        telefono: document.getElementById('nuevaOcTelefono').value.trim()
+      };
+      let lineas;
+      if (NUEVA_OC_RUTA === 'MANUAL') {
+        lineas = Array.from(document.querySelectorAll('#nuevaOcLineas tr')).map(function(tr) {
+          return {
+            tipo: tr.querySelector('.noc-tipo').value,
+            codigo: tr.querySelector('.noc-codigo').value.trim(),
+            producto: tr.querySelector('.noc-producto').value.trim(),
+            unidad: tr.querySelector('.noc-unidad').value.trim(),
+            cantidad: Number(tr.querySelector('.noc-cantidad').value),
+            precio: Number(tr.querySelector('.noc-precio').value)
+          };
+        });
+      } else {
+        lineas = Array.from(document.querySelectorAll('#nuevaOcSaldos tr')).filter(function(tr) {
+          return tr.querySelector('.noc-saldo-check').checked;
+        }).map(function(tr) {
+          return {
+            idSaldo: tr.dataset.id,
+            fingerprint: tr.dataset.fingerprint,
+            precio: Number(tr.querySelector('.noc-saldo-precio').value)
+          };
+        });
+      }
+      if (!lineas.length) throw new Error('Seleccione o agregue al menos una línea.');
+      if (lineas.some(function(l){ return !Number.isFinite(l.precio) || l.precio <= 0; })) {
+        throw new Error('Complete todos los precios propuestos.');
+      }
+      return {
+        idSolicitud: NUEVA_OC_ID,
+        empresa: document.getElementById('nuevaOcEmpresa').value,
+        ruta: NUEVA_OC_RUTA,
+        proveedor: proveedor,
+        motivo: document.getElementById('nuevaOcMotivo').value.trim(),
+        lineas: lineas
+      };
+    }
+
+    function nuevaOcFreeze(valor) {
+      const campos = document.getElementById('nuevaOcCampos');
+      Array.from(campos.querySelectorAll('input,select,textarea,button')).forEach(function(el) {
+        el.disabled = valor;
+      });
+      document.getElementById('nuevaOcRutaManual').disabled = valor;
+      document.getElementById('nuevaOcRutaSaldo').disabled = valor;
+      if (!valor) {
+        document.getElementById('nuevaOcGenerar').disabled = false;
+      }
+    }
+
+    function nuevaOcRecuperarPendiente() {
+      document.getElementById('nuevaOcForm').classList.remove('nuevaoc-hidden');
+      document.getElementById('nuevaOcResultado').classList.add('nuevaoc-hidden');
+      NUEVA_OC_FINISHED = false;
+      nuevaOcFreeze(true);
+      const boton = document.getElementById('nuevaOcGenerar');
+      boton.disabled = false;
+      boton.textContent = 'Verificar / reintentar la misma solicitud';
+      nuevaOcMensaje('Se recuperó la solicitud ' + NUEVA_OC_ID + '. Debe verificarse con el mismo contenido antes de iniciar otra.');
+    }
+
+    async function nuevaOcEnviar(evento) {
+      evento.preventDefault();
+      if (NUEVA_OC_INFLIGHT || NUEVA_OC_FINISHED) return;
+
+      try {
+        if (!NUEVA_OC_FROZEN) {
+          NUEVA_OC_FROZEN = nuevaOcPayload();
+        }
+        NUEVA_OC_INFLIGHT = true;
+        sessionStorage.setItem(NUEVA_OC_STORAGE_KEY, JSON.stringify(NUEVA_OC_FROZEN));
+        nuevaOcFreeze(true);
+        nuevaOcMensaje('Registrando solicitud ' + NUEVA_OC_ID + '...');
+
+        const texto = JSON.stringify(NUEVA_OC_FROZEN);
+        const url = CONFIG.API_BASE_URL +
+          '?api=compras&accion=nuevaocgenerar&confirmar=SI&payload=' + encodeURIComponent(texto);
+
+        if (url.length > 14000) {
+          throw new Error('SIN ESCRITURA: La solicitud supera el tamaño admitido por el transporte actual de Compras. Reduzca líneas antes de generar.');
+        }
+
+        const respuesta = await cargarJsonp(url);
+        if (!respuesta || respuesta.ok !== true) {
+          throw new Error(respuesta && respuesta.error ? respuesta.error : 'Respuesta no confirmada.');
+        }
+
+        const resultado = respuesta.data;
+        if (!resultado || resultado.ok !== true) {
+          throw new Error('Respuesta de NUEVA OC no confirmada.');
+        }
+
+        NUEVA_OC_FINISHED = true;
+        sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
+        document.getElementById('nuevaOcForm').classList.add('nuevaoc-hidden');
+        document.getElementById('nuevaOcResultado').classList.remove('nuevaoc-hidden');
+        document.getElementById('nuevaOcDetalleResultado').textContent = resultado.oc + ' · ' + resultado.estado + ' · ID: ' + resultado.idSolicitud;
+        nuevaOcMensaje('Solicitud registrada para Jefatura. Módulo EN VALIDACIÓN.', 'success');
+      } catch (error) {
+        const mensaje = error && error.message ? error.message : String(error);
+        if (mensaje.indexOf('SIN ESCRITURA:') >= 0) {
+          NUEVA_OC_FROZEN = null;
+          sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
+          nuevaOcFreeze(false);
+          document.getElementById('nuevaOcGenerar').textContent = 'Generar solicitud para Jefatura';
+          nuevaOcMensaje(mensaje, 'error');
+        } else {
+          nuevaOcMensaje(mensaje + '\nID de solicitud: ' + NUEVA_OC_ID + '\nSe conserva el mismo contenido para verificar o reintentar.', 'error');
+          nuevaOcFreeze(true);
+          const boton = document.getElementById('nuevaOcGenerar');
+          boton.disabled = false;
+          boton.textContent = 'Verificar / reintentar la misma solicitud';
+        }
+      } finally {
+        NUEVA_OC_INFLIGHT = false;
+      }
+    }
+
+    function nuevaOcOtraSolicitud() {
+      sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
+      nuevaOcResetLocal();
+      nuevaOcCargar();
+    }
+
+</script>
 
 
 </body>
