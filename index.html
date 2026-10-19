@@ -1798,6 +1798,19 @@
     .nuevaoc-table input,
     .nuevaoc-table select { width:100%; min-height:40px; border:1px solid #d0d5dd; border-radius:9px; padding:7px 9px; font:inherit; }
     .nuevaoc-table input[type="checkbox"] { width:22px; min-height:22px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table { min-width:1020px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th,
+    #nuevaOcBloqueSaldo .nuevaoc-table td { padding:8px 7px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(1) { width:54px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(2) { width:125px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(3) { width:115px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(4) { width:150px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(5) { width:82px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(6) { width:62px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(7) { width:112px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(8) { min-width:240px; }
+    #nuevaOcBloqueSaldo .nuevaoc-table th:nth-child(9) { width:130px; }
+    .nuevaoc-saldo-motivo { font-weight:800; color:#344054; line-height:1.3; margin-bottom:3px; }
 
     .nuevaoc-actions { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; align-items:center; }
     .nuevaoc-total { margin-right:auto; font-weight:900; color:#344054; }
@@ -2350,7 +2363,7 @@
             <div style="margin-bottom:12px;"><button type="button" class="btn btn-view" onclick="nuevaOcCargar()">Actualizar saldos</button></div>
             <div class="nuevaoc-table-wrap">
               <table class="nuevaoc-table">
-                <thead><tr><th>Elegir</th><th>OC origen / ID saldo</th><th>Código / Producto</th><th>Unidad</th><th>Autorizada</th><th>Confirmada</th><th>Pendiente</th><th>Precio neto propuesto</th></tr></thead>
+                <thead><tr><th>Elegir</th><th>OC origen</th><th>Código</th><th>Producto</th><th>Pendiente</th><th>Und.</th><th>Precio unitario</th><th>Motivo del saldo</th><th>Precio nuevo</th></tr></thead>
                 <tbody id="nuevaOcSaldos"></tbody>
               </table>
             </div>
@@ -6659,13 +6672,18 @@
         tr.dataset.fingerprint = s.fingerprint;
         tr.dataset.oc = s.oc;
         tr.dataset.pending = s.pending;
+        const detalleCantidad = 'Autorizada ' + formatoNumero(s.original) + ' ' + escapeHtml(s.unidad || '') +
+          ' · confirmada ' + formatoNumero(s.confirmed) + ' ' + escapeHtml(s.unidad || '') +
+          ' · saldo ' + formatoNumero(s.pending) + ' ' + escapeHtml(s.unidad || '');
         tr.innerHTML = '<td><input class="noc-saldo-check" type="checkbox"></td>' +
-          '<td>' + escapeHtml(s.oc) + '<br><span class="nuevaoc-small">' + escapeHtml(s.id) + '</span></td>' +
-          '<td>' + escapeHtml((s.codigo || '') + ' · ' + (s.producto || '')) + '</td>' +
+          '<td><strong>' + escapeHtml(s.oc) + '</strong></td>' +
+          '<td>' + escapeHtml(s.codigo || '') + '</td>' +
+          '<td><strong>' + escapeHtml(s.producto || '') + '</strong></td>' +
+          '<td><strong>' + formatoNumero(s.pending) + '</strong></td>' +
           '<td>' + escapeHtml(s.unidad || '') + '</td>' +
-          '<td>' + formatoNumero(s.original) + '</td>' +
-          '<td>' + formatoNumero(s.confirmed) + '</td>' +
-          '<td>' + formatoNumero(s.pending) + '</td>' +
+          '<td>' + formatoMoneda(Number(s.currentPrice || 0)) + '</td>' +
+          '<td><div class="nuevaoc-saldo-motivo">' + escapeHtml(s.motivoSaldo || 'SALDO PENDIENTE') + '</div>' +
+          '<div class="nuevaoc-small">' + detalleCantidad + '</div></td>' +
           '<td><input class="noc-saldo-precio" type="number" min="0.000001" step="any"></td>';
         tr.querySelector('.noc-saldo-check').onchange = function() {
           const elegidos = Array.from(body.querySelectorAll('tr')).filter(function(row) {
