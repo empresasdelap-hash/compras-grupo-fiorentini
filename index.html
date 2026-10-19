@@ -2044,14 +2044,31 @@
                 readonly
               >
             </div>
+
+            <div class="gestion-field" style="grid-column:1 / -1;">
+              <label for="gxMotivoCantidad">Motivo del ajuste de cantidad</label>
+              <input
+                id="gxMotivoCantidad"
+                type="text"
+                autocomplete="off"
+                placeholder="Obligatorio solo si cambia alguna cantidad. Ej.: stock parcial, mínimo de compra, formato proveedor"
+              >
+            </div>
+
+            <div class="gestion-field" style="grid-column:1 / -1;">
+              <label style="display:flex;gap:10px;align-items:flex-start;font-weight:700;">
+                <input id="gxPreconfirmado" type="checkbox" style="width:auto;margin-top:3px;">
+                <span>Proveedor alternativo confirmó disponibilidad, cantidades, precios y condiciones antes de enviar a Jefatura.</span>
+              </label>
+            </div>
           </div>
         </section>
 
         <section class="gestion-card gestion-span-12">
-          <h3>4. Productos y nuevos precios</h3>
+          <h3>4. Productos, cantidades y nuevos precios</h3>
 
           <div class="gestion-alert" style="margin-bottom:14px;">
-            La cantidad autorizada no se modifica aquí. Compras propone proveedor y precio por línea; Jefatura decide la reautorización.
+            Compras puede proponer una cantidad distinta y un nuevo precio por línea. Si la cantidad es menor, se tratará como ENTREGA PARCIAL y quedará saldo pendiente. Si es mayor, Jefatura deberá autorizar expresamente el exceso.
           </div>
 
           <div class="gestion-table-wrap">
@@ -2061,10 +2078,12 @@
                   <th>Código</th>
                   <th>Producto</th>
                   <th>Unidad</th>
-                  <th class="gestion-num">Cantidad</th>
+                  <th class="gestion-num">Cant. autorizada</th>
+                  <th class="gestion-num">Cant. propuesta</th>
+                  <th class="gestion-num">Saldo / exceso</th>
                   <th class="gestion-num">Precio autorizado</th>
                   <th class="gestion-num">Nuevo precio</th>
-                  <th class="gestion-num">Diferencia</th>
+                  <th class="gestion-num">Dif. total</th>
                   <th class="gestion-num">Total propuesto</th>
                 </tr>
               </thead>
@@ -4110,6 +4129,12 @@
       document.getElementById('gxResponsable').value =
         item.responsablePropuestaAlternativa || '';
 
+      document.getElementById('gxMotivoCantidad').value =
+        item.motivoAjusteCantidad || '';
+
+      document.getElementById('gxPreconfirmado').checked =
+        item.preconfirmadoProveedorAlternativo === true;
+
       const pendienteReautorizacion =
         esPendienteReautorizacion(item);
 
@@ -4138,7 +4163,17 @@
           'gxResponsable'
         );
 
-      [proveedorInput, responsableInput].forEach(
+      const motivoCantidadInput =
+        document.getElementById(
+          'gxMotivoCantidad'
+        );
+
+      const preconfirmadoInput =
+        document.getElementById(
+          'gxPreconfirmado'
+        );
+
+      [proveedorInput, responsableInput, motivoCantidadInput].forEach(
         function(input) {
           if (!input) {
             return;
@@ -4153,6 +4188,10 @@
           );
         }
       );
+
+      if (preconfirmadoInput) {
+        preconfirmadoInput.disabled = pendienteReautorizacion;
+      }
 
       document.getElementById('gxFechaPropuesta').value =
         pendienteReautorizacion
@@ -4256,9 +4295,22 @@
           ? item.lineas
           : [];
 
+      const bloqueado =
+        esPendienteReautorizacion(item);
+
       body.innerHTML =
         lineas.map(
           function(linea, index) {
+
+            const cantidadAutorizada =
+              Number(linea.cantidad || 0);
+
+            const cantidadPropuesta =
+              Number(
+                linea.cantidadPropuesta ||
+                cantidadAutorizada ||
+                0
+              );
 
             const precioAutorizado =
               Number(
@@ -4279,7 +4331,19 @@
                 <td>${escapeHtml(linea.codigo || '')}</td>
                 <td>${escapeHtml(linea.producto || '')}</td>
                 <td>${escapeHtml(linea.unidad || '')}</td>
-                <td class="gestion-num">${escapeHtml(String(linea.cantidad || 0))}</td>
+                <td class="gestion-num">${escapeHtml(String(cantidadAutorizada || 0))}</td>
+                <td class="gestion-num">
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value="${escapeHtml(String(cantidadPropuesta || ''))}"
+                    data-gx-cantidad="${index}"
+                    ${bloqueado ? 'readonly class="gestion-bloqueado"' : ''}
+                    oninput="recalcularGestionExcepcion()"
+                  >
+                </td>
+                <td id="gxSaldo-${index}" class="gestion-num">0</td>
                 <td class="gestion-num">$${formatoNumero(precioAutorizado)}</td>
                 <td class="gestion-num">
                   <input
@@ -4288,26 +4352,39 @@
                     step="0.01"
                     value="${escapeHtml(String(precioPropuesto || ''))}"
                     data-gx-precio="${index}"
-                    ${esPendienteReautorizacion(item) ? 'readonly class="gestion-bloqueado"' : ''}
+                    ${bloqueado ? 'readonly class="gestion-bloqueado"' : ''}
                     oninput="recalcularGestionExcepcion()"
                   >
                 </td>
-                <td
-                  id="gxDif-${index}"
-                  class="gestion-num"
-                >
-                  $0
-                </td>
-                <td
-                  id="gxTotal-${index}"
-                  class="gestion-num"
-                >
-                  $0
-                </td>
+                <td id="gxDif-${index}" class="gestion-num">$0</td>
+                <td id="gxTotal-${index}" class="gestion-num">$0</td>
               </tr>
             `;
           }
         ).join('');
+
+    }
+
+
+    function leerCantidadGestionExcepcion(
+      index
+    ) {
+
+      const input =
+        document.querySelector(
+          '[data-gx-cantidad="' +
+          index +
+          '"]'
+        );
+
+      if (!input) {
+        return 0;
+      }
+
+      return Number(
+        input.value ||
+        0
+      );
 
     }
 
@@ -4351,12 +4428,16 @@
 
       let netoAutorizado = 0;
       let netoPropuesto = 0;
+      let hayAjusteCantidad = false;
 
       lineas.forEach(
         function(linea, index) {
 
-          const cantidad =
+          const cantidadAutorizada =
             Number(linea.cantidad || 0);
+
+          const cantidadPropuesta =
+            leerCantidadGestionExcepcion(index);
 
           const precioAutorizado =
             Number(
@@ -4371,19 +4452,48 @@
             );
 
           const totalAutorizado =
-            cantidad * precioAutorizado;
+            cantidadAutorizada * precioAutorizado;
 
           const totalNuevo =
-            cantidad * precioNuevo;
+            cantidadPropuesta * precioNuevo;
 
           const diferencia =
             totalNuevo - totalAutorizado;
+
+          const diferenciaCantidad =
+            cantidadAutorizada - cantidadPropuesta;
+
+          if (Math.abs(diferenciaCantidad) > 0.000001) {
+            hayAjusteCantidad = true;
+          }
 
           netoAutorizado +=
             totalAutorizado;
 
           netoPropuesto +=
             totalNuevo;
+
+          const saldoCelda =
+            document.getElementById(
+              'gxSaldo-' + index
+            );
+
+          if (saldoCelda) {
+            if (diferenciaCantidad > 0) {
+              saldoCelda.textContent =
+                'Saldo ' + formatoNumero(diferenciaCantidad);
+              saldoCelda.className =
+                'gestion-num gestion-danger';
+            } else if (diferenciaCantidad < 0) {
+              saldoCelda.textContent =
+                'Exceso +' + formatoNumero(Math.abs(diferenciaCantidad));
+              saldoCelda.className =
+                'gestion-num gestion-danger';
+            } else {
+              saldoCelda.textContent = '0';
+              saldoCelda.className = 'gestion-num';
+            }
+          }
 
           const difCelda =
             document.getElementById(
@@ -4423,6 +4533,16 @@
 
         }
       );
+
+      const motivoCantidad =
+        document.getElementById('gxMotivoCantidad');
+
+      if (motivoCantidad) {
+        motivoCantidad.placeholder =
+          hayAjusteCantidad
+            ? 'OBLIGATORIO: explique por qué cambia la cantidad'
+            : 'Solo necesario si cambia alguna cantidad';
+      }
 
       const diferenciaNeta =
         netoPropuesto - netoAutorizado;
@@ -4506,6 +4626,16 @@
       ) {
         mostrarErrorGestionExcepcion(
           'La propuesta ya está completa y se encuentra esperando decisión de Jefatura.'
+        );
+        return;
+      }
+
+      if (
+        hayAjusteCantidad &&
+        !motivoAjusteCantidad
+      ) {
+        mostrarErrorGestionExcepcion(
+          'Debe indicar el motivo del ajuste de cantidad.'
         );
         return;
       }
@@ -4641,6 +4771,19 @@
           ).value
         );
 
+      const preconfirmado =
+        document.getElementById(
+          'gxPreconfirmado'
+        ).checked === true;
+
+      const motivoAjusteCantidad =
+        String(
+          document.getElementById(
+            'gxMotivoCantidad'
+          ).value ||
+          ''
+        ).trim();
+
       if (!proveedorAlternativo) {
         mostrarErrorGestionExcepcion(
           'Debe indicar el proveedor alternativo.'
@@ -4665,12 +4808,21 @@
         return;
       }
 
+      if (!preconfirmado) {
+        mostrarErrorGestionExcepcion(
+          'Antes de enviar a Jefatura debe confirmar que el proveedor alternativo validó disponibilidad, cantidades, precios y condiciones.'
+        );
+        return;
+      }
+
       const lineas =
         Array.isArray(item.lineas)
           ? item.lineas
           : [];
 
       const preciosPorLinea = {};
+      const cantidadesPorLinea = {};
+      let hayAjusteCantidad = false;
 
       for (
         let index = 0;
@@ -4692,6 +4844,14 @@
             index
           );
 
+        const cantidadPropuesta =
+          leerCantidadGestionExcepcion(
+            index
+          );
+
+        const cantidadAutorizada =
+          Number(linea.cantidad || 0);
+
         if (!idLinea) {
           mostrarErrorGestionExcepcion(
             'Una línea no tiene ID de origen. No se puede enviar la propuesta.'
@@ -4706,8 +4866,26 @@
           return;
         }
 
+        if (!(cantidadPropuesta > 0)) {
+          mostrarErrorGestionExcepcion(
+            'Todos los productos deben tener una cantidad propuesta mayor que cero.'
+          );
+          return;
+        }
+
+        if (
+          Math.abs(
+            cantidadPropuesta - cantidadAutorizada
+          ) > 0.000001
+        ) {
+          hayAjusteCantidad = true;
+        }
+
         preciosPorLinea[idLinea] =
           precio;
+
+        cantidadesPorLinea[idLinea] =
+          cantidadPropuesta;
       }
 
       const confirmado =
@@ -4723,6 +4901,8 @@
           incidencia +
           '\nProductos: ' +
           lineas.length +
+          (hayAjusteCantidad ? '\nExiste ajuste de cantidad: SÍ' : '\nExiste ajuste de cantidad: NO') +
+          '\nProveedor alternativo preconfirmado: SÍ' +
           '\n\nEsta acción registrará la propuesta en MAESTRO sin reemplazar la autorización original.'
         );
 
@@ -4759,6 +4939,15 @@
               preciosPorLinea
             )
           ) +
+          '&cantidadesPorLinea=' +
+          encodeURIComponent(
+            JSON.stringify(
+              cantidadesPorLinea
+            )
+          ) +
+          '&preconfirmado=SI' +
+          '&motivoAjusteCantidad=' +
+          encodeURIComponent(motivoAjusteCantidad) +
           '&responsable=' +
           encodeURIComponent(responsable) +
           '&incidencia=' +
