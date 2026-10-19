@@ -4039,12 +4039,42 @@
           ? item.lineas
           : [];
 
+      const estadoGestion =
+        normalizar(
+          item && item.estadoGestionCompra
+        );
+
       return !!lineas.length &&
+        estadoGestion === 'PENDIENTE REAUTORIZACION' &&
         lineas.every(
           function(linea) {
-            return Number(
+            const precioAutorizado = Number(
               linea.precioAutorizadoRegistrado || 0
-            ) > 0;
+            );
+            const precioPropuesto = Number(
+              linea.precioPropuesto || 0
+            );
+            const diferenciaEsperada =
+              precioPropuesto - precioAutorizado;
+            const diferenciaRegistrada = Number(
+              linea.diferenciaPrecioRegistrada || 0
+            );
+            const porcentajeEsperado =
+              precioAutorizado > 0
+                ? diferenciaEsperada / precioAutorizado
+                : 0;
+            const porcentajeRegistrado = Number(
+              linea.porcentajeDiferenciaPrecioRegistrado || 0
+            );
+
+            return precioAutorizado > 0 &&
+              precioPropuesto > 0 &&
+              Math.abs(
+                diferenciaRegistrada - diferenciaEsperada
+              ) <= 0.000001 &&
+              Math.abs(
+                porcentajeRegistrado - porcentajeEsperado
+              ) <= 0.000001;
           }
         );
     }
