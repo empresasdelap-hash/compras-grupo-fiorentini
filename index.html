@@ -2330,7 +2330,7 @@
 
       <div id="nuevaOcMensaje" class="nuevaoc-msg">Abra NUEVA OC para cargar empresas y saldos disponibles.</div>
 
-      <form id="nuevaOcForm" onsubmit="nuevaOcEnviar(event)">
+      <form id="nuevaOcForm" onsubmit="nuevaOcEnviar(event)" novalidate>
         <fieldset id="nuevaOcCampos" style="border:0;padding:0;margin:0;min-width:0;">
           <section class="nuevaoc-card">
             <h3 id="nuevaOcTituloRuta">CREAR OC</h3>
@@ -2374,7 +2374,7 @@
             <div class="nuevaoc-actions">
               <span id="nuevaOcTotal" class="nuevaoc-total">Neto: $0 · IVA: $0 · Total: $0</span>
               <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
-                <button id="nuevaOcGenerar" type="submit" class="btn btn-blue">Generar solicitud para Jefatura</button>
+                <button id="nuevaOcGenerar" type="button" class="btn btn-blue" onclick="nuevaOcEnviar(event)">Generar solicitud para Jefatura</button>
                 <button id="nuevaOcDescartar" type="button" class="btn" style="background:#b42318;color:#fff;" onclick="nuevaOcDescartarSaldo()">Descartar saldo</button>
               </div>
             </div>
@@ -6801,6 +6801,14 @@
           };
         });
       }
+      if (!document.getElementById('nuevaOcEmpresa').value) throw new Error('Seleccione la empresa.');
+      if (!proveedor.nombre) throw new Error('Indique el proveedor.');
+      const motivoSolicitud = document.getElementById('nuevaOcMotivo').value.trim();
+      if (!motivoSolicitud) throw new Error('Indique el motivo y observaciones.');
+      const correoProveedor = proveedor.correo;
+      if (correoProveedor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoProveedor)) {
+        throw new Error('El correo del proveedor no tiene un formato válido.');
+      }
       if (!lineas.length) throw new Error('Seleccione o agregue al menos una línea.');
       if (lineas.some(function(l){ return !Number.isFinite(l.precio) || l.precio <= 0; })) {
         throw new Error('Complete todos los precios propuestos.');
@@ -6813,7 +6821,7 @@
         empresa: document.getElementById('nuevaOcEmpresa').value,
         ruta: NUEVA_OC_RUTA,
         proveedor: proveedor,
-        motivo: document.getElementById('nuevaOcMotivo').value.trim(),
+        motivo: motivoSolicitud,
         lineas: lineas
       };
     }
@@ -6844,7 +6852,7 @@
     }
 
     async function nuevaOcEnviar(evento) {
-      evento.preventDefault();
+      if (evento && typeof evento.preventDefault === 'function') evento.preventDefault();
       if (NUEVA_OC_INFLIGHT || NUEVA_OC_FINISHED) return;
 
       try {
