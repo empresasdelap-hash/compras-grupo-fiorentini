@@ -2359,11 +2359,11 @@
 
           <section id="nuevaOcBloqueSaldo" class="nuevaoc-card nuevaoc-hidden">
             <h3>Saldos disponibles</h3>
-            <p class="nuevaoc-small">Seleccione saldos de una misma empresa y OC origen. Se utiliza toda la cantidad pendiente.</p>
+            <p class="nuevaoc-small">Seleccione saldos de una misma empresa y OC origen. La cantidad a comprar parte con el saldo pendiente, pero puede ser menor, igual o mayor. Toda solicitud se envía a Jefatura para reaprobación.</p>
             <div style="margin-bottom:12px;"><button type="button" class="btn btn-view" onclick="nuevaOcCargar()">Actualizar saldos</button></div>
             <div class="nuevaoc-table-wrap">
               <table class="nuevaoc-table">
-                <thead><tr><th>Elegir</th><th>OC origen</th><th>Código</th><th>Producto</th><th>Pendiente</th><th>Und.</th><th>Precio unitario</th><th>Motivo del saldo</th><th>Precio nuevo</th></tr></thead>
+                <thead><tr><th>Elegir</th><th>OC origen</th><th>Código</th><th>Producto</th><th>Pendiente</th><th>Cantidad a comprar</th><th>Und.</th><th>Precio unitario</th><th>Motivo del saldo</th><th>Precio nuevo</th></tr></thead>
                 <tbody id="nuevaOcSaldos"></tbody>
               </table>
             </div>
@@ -2373,7 +2373,10 @@
           <section class="nuevaoc-card">
             <div class="nuevaoc-actions">
               <span id="nuevaOcTotal" class="nuevaoc-total">Neto: $0 · IVA: $0 · Total: $0</span>
-              <button id="nuevaOcGenerar" type="submit" class="btn btn-blue">Generar solicitud para Jefatura</button>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+                <button id="nuevaOcGenerar" type="submit" class="btn btn-blue">Generar solicitud para Jefatura</button>
+                <button id="nuevaOcDescartar" type="button" class="btn" style="background:#b42318;color:#fff;" onclick="nuevaOcDescartarSaldo()">Descartar saldo</button>
+              </div>
             </div>
             <p class="nuevaoc-small">El numerador central asigna la OC. NUEVA OC no escribe la autorización de Jefatura ni reemplaza la historia original.</p>
           </section>
@@ -6631,6 +6634,8 @@
       document.getElementById('nuevaOcBloqueManual').classList.toggle('nuevaoc-hidden', ruta !== 'MANUAL');
       document.getElementById('nuevaOcBloqueSaldo').classList.toggle('nuevaoc-hidden', ruta !== 'SALDO');
       document.getElementById('nuevaOcTituloRuta').textContent = ruta === 'MANUAL' ? 'CREAR OC' : 'CREAR OC SALDO PENDIENTE';
+      const descartar = document.getElementById('nuevaOcDescartar');
+      if (descartar) descartar.style.display = ruta === 'SALDO' ? '' : 'none';
       nuevaOcTotales();
     }
 
@@ -6680,12 +6685,34 @@
           '<td>' + escapeHtml(s.codigo || '') + '</td>' +
           '<td><strong>' + escapeHtml(s.producto || '') + '</strong></td>' +
           '<td><strong>' + formatoNumero(s.pending) + '</strong></td>' +
+          '<td><input class="noc-saldo-cantidad" type="number" min="0.000001" step="any" value="' + escapeHtml(String(s.pending)) + '"></td>' +
           '<td>' + escapeHtml(s.unidad || '') + '</td>' +
           '<td>' + formatoMoneda(Number(s.currentPrice || 0)) + '</td>' +
           '<td><div class="nuevaoc-saldo-motivo">' + escapeHtml(s.motivoSaldo || 'SALDO PENDIENTE') + '</div>' +
-          '<div class="nuevaoc-small">' + detalleCantidad + '</div></td>' +
+          '<div class="nuevaoc-small">' + detalleCantidad + '</div>' +
+          '<div class="nuevaoc-small noc-saldo-ajuste"></div></td>' +
           '<td><input class="noc-saldo-precio" type="number" min="0.000001" step="any"></td>';
-        tr.querySelector('.noc-saldo-check').onchange = function() {
+        const check = tr.querySelector('.noc-saldo-check');
+        const cantidad = tr.querySelector('.noc-saldo-cantidad');
+        const ajuste = tr.querySelector('.noc-saldo-ajuste');
+        function pintarAjuste() {
+          const q = Number(cantidad.value);
+          const p = Number(tr.dataset.pending);
+          if (!Number.isFinite(q) || q <= 0) {
+            ajuste.textContent = 'Cantidad inválida';
+            ajuste.style.color = '#b42318';
+          } else if (q > p) {
+            ajuste.textContent = 'Exceso a reaprobación: +' + formatoNumero(q - p);
+            ajuste.style.color = '#b54708';
+          } else if (q < p) {
+            ajuste.textContent = 'Remanente pendiente: ' + formatoNumero(p - q);
+            ajuste.style.color = '#175cd3';
+          } else {
+            ajuste.textContent = 'Compra el saldo completo';
+            ajuste.style.color = '#027a48';
+          }
+        }
+        check.onchange = function() {
           const elegidos = Array.from(body.querySelectorAll('tr')).filter(function(row) {
             return row.querySelector('.noc-saldo-check').checked;
           });
@@ -6695,7 +6722,9 @@
           }
           nuevaOcTotales();
         };
+        cantidad.addEventListener('input', function(){ pintarAjuste(); nuevaOcTotales(); });
         tr.querySelector('.noc-saldo-precio').addEventListener('input', nuevaOcTotales);
+        pintarAjuste();
         body.appendChild(tr);
       });
       document.getElementById('nuevaOcSinSaldos').style.display = lista.length ? 'none' : 'block';
@@ -6719,7 +6748,7 @@
       } else {
         document.querySelectorAll('#nuevaOcSaldos tr').forEach(function(tr) {
           if (tr.querySelector('.noc-saldo-check').checked) {
-            sumar(tr.dataset.pending, tr.querySelector('.noc-saldo-precio').value);
+            sumar(tr.querySelector('.noc-saldo-cantidad').value, tr.querySelector('.noc-saldo-precio').value);
           }
         });
       }
@@ -6753,6 +6782,7 @@
           return {
             idSaldo: tr.dataset.id,
             fingerprint: tr.dataset.fingerprint,
+            cantidad: Number(tr.querySelector('.noc-saldo-cantidad').value),
             precio: Number(tr.querySelector('.noc-saldo-precio').value)
           };
         });
@@ -6760,6 +6790,9 @@
       if (!lineas.length) throw new Error('Seleccione o agregue al menos una línea.');
       if (lineas.some(function(l){ return !Number.isFinite(l.precio) || l.precio <= 0; })) {
         throw new Error('Complete todos los precios propuestos.');
+      }
+      if (NUEVA_OC_RUTA === 'SALDO' && lineas.some(function(l){ return !Number.isFinite(l.cantidad) || l.cantidad <= 0; })) {
+        throw new Error('Complete cantidades a comprar mayores que cero.');
       }
       return {
         idSolicitud: NUEVA_OC_ID,
@@ -6780,6 +6813,8 @@
       document.getElementById('nuevaOcRutaSaldo').disabled = valor;
       if (!valor) {
         document.getElementById('nuevaOcGenerar').disabled = false;
+        const descartar = document.getElementById('nuevaOcDescartar');
+        if (descartar) descartar.disabled = false;
       }
     }
 
@@ -6848,6 +6883,61 @@
         }
       } finally {
         NUEVA_OC_INFLIGHT = false;
+      }
+    }
+
+    async function nuevaOcDescartarSaldo() {
+      if (NUEVA_OC_RUTA !== 'SALDO') {
+        nuevaOcMensaje('Descartar saldo solo está disponible en CREAR OC SALDO PENDIENTE.', 'error');
+        return;
+      }
+      if (NUEVA_OC_INFLIGHT || NUEVA_OC_FINISHED) return;
+      const filas = Array.from(document.querySelectorAll('#nuevaOcSaldos tr')).filter(function(tr) {
+        return tr.querySelector('.noc-saldo-check').checked;
+      });
+      if (!filas.length) {
+        nuevaOcMensaje('Seleccione al menos un saldo para descartar.', 'error');
+        return;
+      }
+      if (new Set(filas.map(function(tr){ return tr.dataset.oc; })).size > 1) {
+        nuevaOcMensaje('Seleccione saldos de una misma OC origen.', 'error');
+        return;
+      }
+      const resumen = filas.map(function(tr){
+        const producto = tr.children[3] ? tr.children[3].textContent.trim() : 'saldo';
+        return producto + ' (' + formatoNumero(Number(tr.dataset.pending)) + ')';
+      }).join(', ');
+      if (!window.confirm('¿Descartar ' + resumen + '?\n\nEsta acción cerrará el saldo sin generar una nueva OC ni consumir numeración.')) return;
+      const motivo = window.prompt('Motivo obligatorio del descarte. Ej.: Chef confirma que ya no se requiere.');
+      if (motivo === null) return;
+      if (!motivo.trim() || motivo.trim().length < 5) {
+        nuevaOcMensaje('Debe indicar un motivo de descarte.', 'error');
+        return;
+      }
+      const payload = {
+        empresa: document.getElementById('nuevaOcEmpresa').value,
+        motivo: motivo.trim(),
+        lineas: filas.map(function(tr){
+          return {idSaldo: tr.dataset.id, fingerprint: tr.dataset.fingerprint};
+        })
+      };
+      NUEVA_OC_INFLIGHT = true;
+      nuevaOcFreeze(true);
+      nuevaOcMensaje('Descartando saldo sin generar OC...');
+      try {
+        const texto = JSON.stringify(payload);
+        const url = CONFIG.API_BASE_URL + '?api=compras&accion=nuevaocdescartar&confirmar=SI&payload=' + encodeURIComponent(texto);
+        const respuesta = await cargarJsonp(url);
+        if (!respuesta || respuesta.ok !== true || !respuesta.data || respuesta.data.ok !== true) {
+          throw new Error(respuesta && respuesta.error ? respuesta.error : 'No fue posible confirmar el descarte.');
+        }
+        nuevaOcMensaje('Saldo descartado. No se generó OC ni se consumió numeración. ' + respuesta.data.ocOrigen + ' · ' + respuesta.data.fecha, 'success');
+        await nuevaOcCargar();
+      } catch (error) {
+        nuevaOcMensaje(error && error.message ? error.message : String(error), 'error');
+      } finally {
+        NUEVA_OC_INFLIGHT = false;
+        nuevaOcFreeze(false);
       }
     }
 
