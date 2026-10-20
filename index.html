@@ -6826,6 +6826,15 @@
           );
         }
 
+        /*
+         * La respuesta ya fue confirmada por MAESTRO.
+         * Liberamos el bloqueo ANTES de cerrar la vista para que
+         * cerrarEntregaParcial() no interprete la operación como activa.
+         */
+        CONFIRMACION_RESPUESTA_EN_CURSO.delete(
+          clave
+        );
+
         cerrarEntregaParcial();
 
         avisoMVP(
