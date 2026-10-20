@@ -5774,11 +5774,34 @@
         }
 
         const nombre = nombreArchivoPdfOC(item);
-        pdf.save(nombre);
+        const blobPdf = pdf.output('blob');
+
+        if (!blobPdf || blobPdf.size < 500) {
+          throw new Error('El PDF generado está vacío o incompleto. No se abrió WhatsApp.');
+        }
+
+        const urlPdf = URL.createObjectURL(blobPdf);
+        const enlace = document.createElement('a');
+        enlace.href = urlPdf;
+        enlace.download = nombre;
+        enlace.style.display = 'none';
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+
+        window.setTimeout(
+          function() {
+            try {
+              URL.revokeObjectURL(urlPdf);
+            } catch (e) {}
+          },
+          60000
+        );
 
         return {
           nombre: nombre,
-          paginas: pagina
+          paginas: pagina,
+          bytes: blobPdf.size
         };
 
       } finally {
@@ -5904,7 +5927,7 @@
           item.oc +
           ' · PDF generado: ' +
           pdf.nombre +
-          '. WhatsApp abierto. Adjunta ese PDF antes de enviar y luego presiona CONFIRMAR ENVÍO.'
+          ' (' + formatoNumero(pdf.bytes) + ' bytes). WhatsApp abierto. Adjunta ese PDF antes de enviar y luego presiona CONFIRMAR ENVÍO.'
         );
 
       } catch (
