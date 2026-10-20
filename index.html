@@ -5832,6 +5832,7 @@
         item.oc + ' · ' + (item.proveedor || '') + '\n\n' +
         'Escribe una de estas opciones:\n' +
         'CONFIRMO\n' +
+        'INCOMPLETO\n' +
         'RECHAZO'
       );
 
@@ -5843,15 +5844,18 @@
 
       if (
         respuestaElegida !== 'CONFIRMO' &&
+        respuestaElegida !== 'INCOMPLETO' &&
         respuestaElegida !== 'RECHAZO'
       ) {
         avisoMVP(
-          'Respuesta no válida. Debe escribir CONFIRMO o RECHAZO.'
+          'Respuesta no válida. Debe escribir CONFIRMO, INCOMPLETO o RECHAZO.'
         );
         return;
       }
 
       let motivo = '';
+      let cantidadesPorLinea = {};
+      let resumenParcial = '';
 
       if (respuestaElegida === 'RECHAZO') {
         const motivoIngresado = window.prompt(
@@ -5882,33 +5886,105 @@
         }
       }
 
+      if (respuestaElegida === 'INCOMPLETO') {
+        if (item.usaProveedorAlternativo === true) {
+          avisoMVP(
+            'ENTREGA PARCIAL del proveedor alternativo se validará en otro hito.'
+          );
+          return;
+        }
+
+        motivo = 'ENTREGA PARCIAL';
+        const lineas = Array.isArray(item.lineas) ? item.lineas : [];
+        if (!lineas.length) {
+          avisoMVP('La OC no tiene líneas disponibles para registrar entrega parcial.');
+          return;
+        }
+
+        const resumen = [];
+        let existeSaldo = false;
+
+        for (let i = 0; i < lineas.length; i++) {
+          const linea = lineas[i] || {};
+          const idLinea = String(linea.idLinea || '').trim();
+          const autorizada = Number(linea.cantidad || 0);
+
+          if (!idLinea || !(autorizada > 0)) {
+            avisoMVP('Una línea de la OC no tiene ID o cantidad autorizada válida.');
+            return;
+          }
+
+          const ingresada = window.prompt(
+            'ENTREGA PARCIAL · ' + item.oc + '\n\n' +
+            (linea.producto || linea.codigo || ('Línea ' + (i + 1))) + '\n' +
+            'Cantidad autorizada: ' + formatoNumero(autorizada) + ' ' + (linea.unidad || '') + '\n\n' +
+            'Ingrese la cantidad que el proveedor CONFIRMA entregar:'
+          );
+
+          if (ingresada === null) {
+            return;
+          }
+
+          const confirmada = Number(String(ingresada).replace(',', '.'));
+          if (!Number.isFinite(confirmada) || confirmada < 0 || confirmada > autorizada) {
+            avisoMVP(
+              'Cantidad inválida. Debe estar entre 0 y ' + formatoNumero(autorizada) + '.'
+            );
+            return;
+          }
+
+          const saldo = Math.round((autorizada - confirmada) * 1000000) / 1000000;
+          if (saldo > 0) existeSaldo = true;
+          cantidadesPorLinea[idLinea] = confirmada;
+          resumen.push(
+            (linea.producto || linea.codigo || ('Línea ' + (i + 1))) +
+            ': autorizada ' + formatoNumero(autorizada) +
+            ' · confirma ' + formatoNumero(confirmada) +
+            ' · saldo ' + formatoNumero(saldo)
+          );
+        }
+
+        if (!existeSaldo) {
+          avisoMVP('INCOMPLETO requiere al menos una línea con saldo pendiente.');
+          return;
+        }
+
+        resumenParcial = resumen.join('\n');
+      }
+
       const etapaProveedor =
         item.usaProveedorAlternativo === true
           ? 'proveedor alternativo'
           : 'proveedor original';
 
-      const textoConfirmacion =
-        respuestaElegida === 'CONFIRMO'
-          ? (
-              '¿Confirmas que el ' +
-              etapaProveedor +
-              ' ' +
-              (item.proveedor || '') +
-              ' CONFIRMÓ la ' +
-              item.oc +
-              '?'
-            )
-          : (
-              '¿Confirmas que el ' +
-              etapaProveedor +
-              ' ' +
-              (item.proveedor || '') +
-              ' RECHAZÓ la ' +
-              item.oc +
-              ' por ' +
-              motivo +
-              '?'
-            );
+      let textoConfirmacion = '';
+
+      if (respuestaElegida === 'CONFIRMO') {
+        textoConfirmacion =
+          '¿Confirmas que el ' +
+          etapaProveedor +
+          ' ' +
+          (item.proveedor || '') +
+          ' CONFIRMÓ la ' +
+          item.oc +
+          '?';
+      } else if (respuestaElegida === 'INCOMPLETO') {
+        textoConfirmacion =
+          '¿Registrar ENTREGA PARCIAL para ' + item.oc + '?\n\n' +
+          resumenParcial +
+          '\n\nEl saldo quedará disponible en CREAR OC SALDO PENDIENTE.';
+      } else {
+        textoConfirmacion =
+          '¿Confirmas que el ' +
+          etapaProveedor +
+          ' ' +
+          (item.proveedor || '') +
+          ' RECHAZÓ la ' +
+          item.oc +
+          ' por ' +
+          motivo +
+          '?';
+      }
 
       if (!window.confirm(textoConfirmacion)) {
         return;
@@ -5936,6 +6012,12 @@
           url += '&motivo=' + encodeURIComponent(motivo);
         }
 
+        if (respuestaElegida === 'INCOMPLETO') {
+          url += '&cantidadesPorLinea=' + encodeURIComponent(
+            JSON.stringify(cantidadesPorLinea)
+          );
+        }
+
         const respuestaApi = await cargarJsonp(url);
 
         if (!respuestaApi || respuestaApi.ok !== true) {
@@ -5950,6 +6032,11 @@
           avisoMVP(
             item.oc +
             ' registrada como CONFIRMO. Ahora queda HABILITADA PARA RECEPCIÓN.'
+          );
+        } else if (respuestaElegida === 'INCOMPLETO') {
+          avisoMVP(
+            item.oc +
+            ' registrada como ENTREGA PARCIAL. El saldo quedó disponible para gestión.'
           );
         } else {
           avisoMVP(
