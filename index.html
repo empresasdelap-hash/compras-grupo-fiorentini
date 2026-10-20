@@ -14,6 +14,10 @@
 
   <title>Gestión de Compras · Grupo Fiorentini</title>
 
+  <!-- PDF local para envío por WhatsApp -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
   <style>
 
@@ -2264,7 +2268,7 @@
           class="btn btn-whatsapp"
           onclick="abrirWhatsAppDesdeModal()"
         >
-          WhatsApp
+          WhatsApp + PDF
         </button>
 
 
@@ -2740,7 +2744,7 @@
 
     /*
      * Guarda solamente en esta sesión qué OC
-     * ya fueron abiertas en WhatsApp.
+     * ya fueron preparadas para abrirse en WhatsApp.
      *
      * IMPORTANTE:
      * esto NO es trazabilidad oficial.
@@ -2748,6 +2752,15 @@
      */
 
     const WHATSAPP_ABIERTO =
+      new Set();
+
+
+    /*
+     * Marca localmente las OC cuyo PDF fue generado/descargado
+     * durante esta sesión antes de abrir WhatsApp.
+     * No reemplaza la trazabilidad oficial de MAESTRO.
+     */
+    const PDF_PREPARADO =
       new Set();
 
 
@@ -3655,7 +3668,7 @@
             "
           >
 
-            WhatsApp
+            WhatsApp + PDF
 
           </button>
 
@@ -5632,7 +5645,151 @@
     }
 
 
-    function abrirWhatsApp(
+    function nombreArchivoPdfOC(item) {
+      const oc = String(item && item.oc || 'OC').trim();
+      const proveedor = String(item && item.proveedor || 'PROVEEDOR').trim();
+      const seguro = (oc + ' · ' + proveedor)
+        .replace(/[\\/:*?"<>|]/g, '-')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return seguro + '.pdf';
+    }
+
+
+    async function esperarImagenesPdf(contenedor) {
+      const imagenes = Array.from(
+        contenedor.querySelectorAll('img')
+      );
+
+      await Promise.all(
+        imagenes.map(
+          function(img) {
+            if (img.complete) {
+              return Promise.resolve();
+            }
+
+            return new Promise(
+              function(resolve) {
+                let resuelta = false;
+                const terminar = function() {
+                  if (resuelta) return;
+                  resuelta = true;
+                  resolve();
+                };
+                img.addEventListener('load', terminar, { once: true });
+                img.addEventListener('error', terminar, { once: true });
+                window.setTimeout(terminar, 3000);
+              }
+            );
+          }
+        )
+      );
+    }
+
+
+    async function generarPdfOcLocal(item) {
+      if (
+        !window.html2canvas ||
+        !window.jspdf ||
+        !window.jspdf.jsPDF
+      ) {
+        throw new Error(
+          'No fue posible cargar el generador de PDF. Revise la conexión e inténtalo nuevamente.'
+        );
+      }
+
+      const host = document.createElement('div');
+      host.setAttribute('aria-hidden', 'true');
+      host.style.position = 'fixed';
+      host.style.left = '-12000px';
+      host.style.top = '0';
+      host.style.width = '900px';
+      host.style.background = '#ffffff';
+      host.style.zIndex = '-1';
+      host.innerHTML = construirDocumentoOC(item);
+      document.body.appendChild(host);
+
+      try {
+        const documento = host.querySelector('.purchase-order');
+        if (!documento) {
+          throw new Error('No fue posible construir el documento de la OC para PDF.');
+        }
+
+        documento.style.width = '900px';
+        documento.style.maxWidth = '900px';
+        documento.style.boxShadow = 'none';
+
+        await esperarImagenesPdf(documento);
+
+        const canvas = await window.html2canvas(
+          documento,
+          {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            logging: false,
+            windowWidth: 900,
+            scrollX: 0,
+            scrollY: 0
+          }
+        );
+
+        const jsPDF = window.jspdf.jsPDF;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'letter',
+          compress: true
+        });
+
+        const margen = 7;
+        const anchoPagina = pdf.internal.pageSize.getWidth();
+        const altoPagina = pdf.internal.pageSize.getHeight();
+        const anchoImagen = anchoPagina - (margen * 2);
+        const altoImagen = canvas.height * anchoImagen / canvas.width;
+        const altoUtil = altoPagina - (margen * 2);
+        const imagen = canvas.toDataURL('image/jpeg', 0.96);
+
+        let desplazamiento = 0;
+        let pagina = 0;
+
+        while (desplazamiento < altoImagen - 0.1) {
+          if (pagina > 0) {
+            pdf.addPage('letter', 'portrait');
+          }
+
+          pdf.addImage(
+            imagen,
+            'JPEG',
+            margen,
+            margen - desplazamiento,
+            anchoImagen,
+            altoImagen,
+            undefined,
+            'FAST'
+          );
+
+          desplazamiento += altoUtil;
+          pagina++;
+        }
+
+        const nombre = nombreArchivoPdfOC(item);
+        pdf.save(nombre);
+
+        return {
+          nombre: nombre,
+          paginas: pagina
+        };
+
+      } finally {
+        if (host.parentNode) {
+          host.parentNode.removeChild(host);
+        }
+      }
+    }
+
+
+    async function abrirWhatsApp(
       clave
     ) {
 
@@ -5663,81 +5820,121 @@
           'No se pudo localizar la OC.'
         );
 
-
         return;
 
       }
 
 
-      const mensaje =
-        construirMensajeWhatsApp(
-          item
+      if (
+        normalizar(item.estado) !==
+        'PENDIENTE DE ENVIO'
+      ) {
+        avisoMVP(
+          'Solo se puede preparar WhatsApp + PDF para una OC PENDIENTE DE ENVÍO.'
         );
-
-
-      const urlWhatsApp =
-        'https://wa.me/?text='
-        +
-        encodeURIComponent(
-          mensaje
-        );
+        return;
+      }
 
 
       const ventana =
         window.open(
-          urlWhatsApp,
-          '_blank',
-          'noopener,noreferrer'
+          '',
+          '_blank'
         );
-
-
-      WHATSAPP_ABIERTO.add(
-        clave
-      );
-
-
-      aplicarFiltros();
-
-
-      if (
-        OC_MODAL_ACTUAL &&
-        OC_MODAL_ACTUAL.clave ===
-          clave
-      ) {
-
-        actualizarBotonesModalEnvio(
-          OC_MODAL_ACTUAL
-        );
-
-      }
 
 
       if (
         !ventana
       ) {
-
         avisoMVP(
-          'El navegador pudo bloquear la apertura de WhatsApp. '
-          +
-          'Habilita las ventanas emergentes e inténtalo nuevamente.'
+          'El navegador bloqueó la apertura. Habilita las ventanas emergentes e inténtalo nuevamente.'
         );
-
-
         return;
-
       }
 
 
-      avisoMVP(
-        item.oc
-        +
-        ' abierta en WhatsApp. '
-        +
-        'Después de enviarla realmente, vuelve y presiona CONFIRMAR ENVÍO.'
-      );
+      try {
+        ventana.document.write(
+          '<!doctype html><html><body style="font-family:Arial,sans-serif;padding:24px">' +
+          '<strong>Preparando ' + escapeHtml(item.oc) + '...</strong><br>' +
+          'Generando PDF antes de abrir WhatsApp.' +
+          '</body></html>'
+        );
+
+        const pdf =
+          await generarPdfOcLocal(
+            item
+          );
+
+        PDF_PREPARADO.add(
+          clave
+        );
+
+        const mensaje =
+          construirMensajeWhatsApp(
+            item
+          );
+
+        const urlWhatsApp =
+          'https://wa.me/?text=' +
+          encodeURIComponent(
+            mensaje
+          );
+
+        ventana.location.href =
+          urlWhatsApp;
+
+        WHATSAPP_ABIERTO.add(
+          clave
+        );
+
+        aplicarFiltros();
+
+        if (
+          OC_MODAL_ACTUAL &&
+          OC_MODAL_ACTUAL.clave ===
+          clave
+        ) {
+          actualizarBotonesModalEnvio(
+            OC_MODAL_ACTUAL
+          );
+        }
+
+        avisoMVP(
+          item.oc +
+          ' · PDF generado: ' +
+          pdf.nombre +
+          '. WhatsApp abierto. Adjunta ese PDF antes de enviar y luego presiona CONFIRMAR ENVÍO.'
+        );
+
+      } catch (
+        error
+      ) {
+        try {
+          ventana.close();
+        } catch (e) {}
+
+        PDF_PREPARADO.delete(
+          clave
+        );
+
+        WHATSAPP_ABIERTO.delete(
+          clave
+        );
+
+
+        PDF_PREPARADO.delete(
+          clave
+        );
+
+        avisoMVP(
+          error && error.message
+            ? error.message
+            : String(error)
+        );
+      }
 
     }
-
 
 
     function construirMensajeWhatsApp(
@@ -5814,6 +6011,11 @@
 
 
       partes.push(
+        'Adjuntamos el PDF de la Orden de Compra para su revisión.'
+      );
+
+
+      partes.push(
         'Por favor confirmar recepción y disponibilidad del pedido.'
       );
 
@@ -5885,11 +6087,14 @@
       if (
         !WHATSAPP_ABIERTO.has(
           clave
+        ) ||
+        !PDF_PREPARADO.has(
+          clave
         )
       ) {
 
         avisoMVP(
-          'Primero abre WhatsApp para esta OC.'
+          'Primero usa WHATSAPP + PDF para generar el archivo y abrir WhatsApp.'
         );
 
 
@@ -5932,7 +6137,7 @@
             ''
           )
           +
-          ' por WhatsApp?\n\n'
+          ' por WhatsApp CON EL PDF DE LA OC ADJUNTO?\n\n'
           +
           'Al confirmar, MAESTRO registrará este envío sin sobrescribir el histórico anterior.'
         );
@@ -6034,7 +6239,7 @@
 
             : item.oc
               +
-              ' confirmada como ENVIADA. '
+              ' confirmada como ENVIADA con PDF adjunto. '
               +
               'Ahora queda ESPERANDO RESPUESTA.'
         );
@@ -7080,6 +7285,9 @@
 
       const yaAbrioWhatsApp =
         WHATSAPP_ABIERTO.has(
+          item.clave
+        ) &&
+        PDF_PREPARADO.has(
           item.clave
         );
 
