@@ -6855,58 +6855,203 @@
       if (evento && typeof evento.preventDefault === 'function') evento.preventDefault();
       if (NUEVA_OC_INFLIGHT || NUEVA_OC_FINISHED) return;
 
-      try {
-        if (!NUEVA_OC_FROZEN) {
+      /*
+       * VALIDACION LOCAL:
+       * Se ejecuta ANTES de congelar campos, guardar sessionStorage o iniciar
+       * una llamada al servidor. Si falta motivo, proveedor, líneas, precios,
+       * cantidades, correo válido, etc., la pantalla permanece EDITABLE.
+       */
+      if (!NUEVA_OC_FROZEN) {
+        try {
           NUEVA_OC_FROZEN = nuevaOcPayload();
+        } catch (error) {
+          const mensajeValidacion =
+            error && error.message
+              ? error.message
+              : String(error);
+
+          NUEVA_OC_FROZEN = null;
+          NUEVA_OC_INFLIGHT = false;
+          sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
+          nuevaOcFreeze(false);
+
+          const botonValidacion =
+            document.getElementById('nuevaOcGenerar');
+
+          if (botonValidacion) {
+            botonValidacion.disabled = false;
+            botonValidacion.textContent =
+              'Generar solicitud para Jefatura';
+          }
+
+          nuevaOcMensaje(
+            mensajeValidacion,
+            'error'
+          );
+
+          return;
         }
-        NUEVA_OC_INFLIGHT = true;
-        sessionStorage.setItem(NUEVA_OC_STORAGE_KEY, JSON.stringify(NUEVA_OC_FROZEN));
-        nuevaOcFreeze(true);
-        nuevaOcMensaje('Registrando solicitud ' + NUEVA_OC_ID + '...');
+      }
 
-        const texto = JSON.stringify(NUEVA_OC_FROZEN);
-        const url = CONFIG.API_BASE_URL +
-          '?api=compras&accion=nuevaocgenerar&confirmar=SI&payload=' + encodeURIComponent(texto);
+      /*
+       * Desde este punto la solicitud ya pasó la validación del navegador.
+       * Se conserva el payload exacto y el mismo ID para proteger contra
+       * doble numeración si existe una respuesta incierta del servidor.
+       */
+      NUEVA_OC_INFLIGHT = true;
+      sessionStorage.setItem(
+        NUEVA_OC_STORAGE_KEY,
+        JSON.stringify(NUEVA_OC_FROZEN)
+      );
+      nuevaOcFreeze(true);
+      nuevaOcMensaje(
+        'Registrando solicitud ' + NUEVA_OC_ID + '...'
+      );
 
+      try {
+        const texto =
+          JSON.stringify(NUEVA_OC_FROZEN);
+
+        const url =
+          CONFIG.API_BASE_URL +
+          '?api=compras&accion=nuevaocgenerar&confirmar=SI&payload=' +
+          encodeURIComponent(texto);
+
+        /*
+         * Este error ocurre ANTES de enviar la solicitud.
+         * Por lo tanto es seguro volver a habilitar la edición.
+         */
         if (url.length > 14000) {
-          throw new Error('SIN ESCRITURA: La solicitud supera el tamaño admitido por el transporte actual de Compras. Reduzca líneas antes de generar.');
+          throw new Error(
+            'SIN ESCRITURA: La solicitud supera el tamaño admitido por el transporte actual de Compras. Reduzca líneas antes de generar.'
+          );
         }
 
-        const respuesta = await cargarJsonp(url);
-        if (!respuesta || respuesta.ok !== true) {
-          throw new Error(respuesta && respuesta.error ? respuesta.error : 'Respuesta no confirmada.');
+        const respuesta =
+          await cargarJsonp(url);
+
+        if (
+          !respuesta ||
+          respuesta.ok !== true
+        ) {
+          throw new Error(
+            respuesta && respuesta.error
+              ? respuesta.error
+              : 'Respuesta no confirmada.'
+          );
         }
 
-        const resultado = respuesta.data;
-        if (!resultado || resultado.ok !== true) {
-          throw new Error('Respuesta de NUEVA OC no confirmada.');
+        const resultado =
+          respuesta.data;
+
+        if (
+          !resultado ||
+          resultado.ok !== true
+        ) {
+          throw new Error(
+            'Respuesta de NUEVA OC no confirmada.'
+          );
         }
 
         NUEVA_OC_FINISHED = true;
-        sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
-        document.getElementById('nuevaOcForm').classList.add('nuevaoc-hidden');
-        document.getElementById('nuevaOcResultado').classList.remove('nuevaoc-hidden');
-        document.getElementById('nuevaOcDetalleResultado').textContent = resultado.oc + ' · ' + resultado.estado + ' · ID: ' + resultado.idSolicitud;
-        nuevaOcMensaje('Solicitud registrada para Jefatura. Módulo EN VALIDACIÓN.', 'success');
+        sessionStorage.removeItem(
+          NUEVA_OC_STORAGE_KEY
+        );
+
+        document
+          .getElementById('nuevaOcForm')
+          .classList
+          .add('nuevaoc-hidden');
+
+        document
+          .getElementById('nuevaOcResultado')
+          .classList
+          .remove('nuevaoc-hidden');
+
+        document
+          .getElementById('nuevaOcDetalleResultado')
+          .textContent =
+            resultado.oc +
+            ' · ' +
+            resultado.estado +
+            ' · ID: ' +
+            resultado.idSolicitud;
+
+        nuevaOcMensaje(
+          'Solicitud registrada para Jefatura. Módulo EN VALIDACIÓN.',
+          'success'
+        );
+
       } catch (error) {
-        const mensaje = error && error.message ? error.message : String(error);
-        if (mensaje.indexOf('SIN ESCRITURA:') >= 0) {
+        const mensaje =
+          error && error.message
+            ? error.message
+            : String(error);
+
+        /*
+         * SIN ESCRITURA = sabemos que la petición NO salió hacia MAESTRO.
+         * Se libera la pantalla para corregir y volver a intentar.
+         */
+        if (
+          mensaje.indexOf('SIN ESCRITURA:') >= 0
+        ) {
           NUEVA_OC_FROZEN = null;
-          sessionStorage.removeItem(NUEVA_OC_STORAGE_KEY);
+
+          sessionStorage.removeItem(
+            NUEVA_OC_STORAGE_KEY
+          );
+
           nuevaOcFreeze(false);
-          document.getElementById('nuevaOcGenerar').textContent = 'Generar solicitud para Jefatura';
-          nuevaOcMensaje(mensaje, 'error');
+
+          const botonSinEscritura =
+            document.getElementById(
+              'nuevaOcGenerar'
+            );
+
+          if (botonSinEscritura) {
+            botonSinEscritura.disabled = false;
+            botonSinEscritura.textContent =
+              'Generar solicitud para Jefatura';
+          }
+
+          nuevaOcMensaje(
+            mensaje,
+            'error'
+          );
+
         } else {
-          nuevaOcMensaje(mensaje + '\nID de solicitud: ' + NUEVA_OC_ID + '\nSe conserva el mismo contenido para verificar o reintentar.', 'error');
+          /*
+           * Solo se congela cuando YA hubo una llamada al servidor y no es
+           * posible saber con certeza si MAESTRO alcanzó a registrar la OC.
+           * En ese caso conservar ID + contenido evita crear duplicados.
+           */
+          nuevaOcMensaje(
+            mensaje +
+            '\nID de solicitud: ' +
+            NUEVA_OC_ID +
+            '\nSe conserva el mismo contenido para verificar o reintentar.',
+            'error'
+          );
+
           nuevaOcFreeze(true);
-          const boton = document.getElementById('nuevaOcGenerar');
-          boton.disabled = false;
-          boton.textContent = 'Verificar / reintentar la misma solicitud';
+
+          const boton =
+            document.getElementById(
+              'nuevaOcGenerar'
+            );
+
+          if (boton) {
+            boton.disabled = false;
+            boton.textContent =
+              'Verificar / reintentar la misma solicitud';
+          }
         }
+
       } finally {
         NUEVA_OC_INFLIGHT = false;
       }
     }
+
 
     async function nuevaOcDescartarSaldo() {
       if (NUEVA_OC_RUTA !== 'SALDO') {
