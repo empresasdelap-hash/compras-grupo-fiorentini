@@ -1820,12 +1820,215 @@
     .nuevaoc-small { color:#667085; font-size:12px; line-height:1.4; }
     .nuevaoc-hidden { display:none !important; }
 
+
+    /* =========================================================
+       ENTREGA PARCIAL · RESPUESTA INCOMPLETA
+       Vista diferenciada en amarillo pastel
+       ========================================================= */
+
+    .parcial-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 12750;
+      display: none;
+      overflow-y: auto;
+      background: #f2f4f7;
+    }
+
+    .parcial-overlay.visible {
+      display: block;
+    }
+
+    .parcial-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 18px 48px;
+    }
+
+    .parcial-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0 18px;
+      margin-bottom: 18px;
+      background: rgba(242,244,247,.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e4e7ec;
+    }
+
+    .parcial-title h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #7a5a00;
+    }
+
+    .parcial-title p {
+      margin: 5px 0 0;
+      color: #7a6a35;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .parcial-banner {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border: 1px solid #ead78a;
+      border-radius: 12px;
+      background: #fff8d6;
+      color: #6f5700;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .parcial-card {
+      background: #fffdf3;
+      border: 1px solid #ead78a;
+      border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(16,24,40,.04);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .parcial-resumen {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .parcial-resumen-box {
+      background: #fff8d6;
+      border: 1px solid #ead78a;
+      border-radius: 12px;
+      padding: 13px;
+    }
+
+    .parcial-resumen-box span {
+      display: block;
+      color: #7a6a35;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .parcial-resumen-box strong {
+      display: block;
+      color: #4d3c00;
+      font-size: 19px;
+    }
+
+    .parcial-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #ead78a;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .parcial-table {
+      width: 100%;
+      min-width: 840px;
+      border-collapse: collapse;
+    }
+
+    .parcial-table th {
+      padding: 10px;
+      background: #fff3b0;
+      color: #5f4a00;
+      font-size: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ead78a;
+      white-space: nowrap;
+    }
+
+    .parcial-table td {
+      padding: 10px;
+      border-bottom: 1px solid #f1e5b0;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .parcial-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .parcial-table input {
+      width: 100%;
+      min-width: 110px;
+      min-height: 40px;
+      border: 1px solid #d8bd52;
+      border-radius: 9px;
+      padding: 7px 9px;
+      font: inherit;
+      font-weight: 900;
+      text-align: right;
+      background: #fffdf3;
+    }
+
+    .parcial-num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .parcial-saldo-cero {
+      color: #027a48;
+      font-weight: 900;
+    }
+
+    .parcial-saldo-pendiente {
+      color: #b54708;
+      font-weight: 900;
+    }
+
+    .parcial-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-parcial-confirmar {
+      min-height: 44px;
+      border: 1px solid #d8bd52;
+      border-radius: 10px;
+      padding: 10px 17px;
+      background: #f6d96b;
+      color: #4d3c00;
+      font-weight: 900;
+    }
+
+    .btn-parcial-confirmar:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .parcial-error {
+      display: none;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid #f5b8b5;
+      border-radius: 10px;
+      background: #fef3f2;
+      color: #b42318;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .parcial-error.visible {
+      display: block;
+    }
+
     @media (max-width: 820px) {
       .topbar { align-items:flex-start; }
       .topbar-actions { width:100%; }
       .btn-nueva-oc, .btn-refresh { flex:1; }
       .nuevaoc-grid, .nuevaoc-rutas { grid-template-columns:1fr; }
       .nuevaoc-topbar { align-items:flex-start; }
+      .parcial-topbar { align-items:flex-start; }
+      .parcial-resumen { grid-template-columns:1fr; }
     }
 
   </style>
@@ -2391,6 +2594,103 @@
     </div>
   </div>
 
+
+  <!-- =======================================================
+       ENTREGA PARCIAL · RESPUESTA INCOMPLETA
+       ======================================================= -->
+  <div id="parcialOverlay" class="parcial-overlay">
+    <div class="parcial-shell">
+
+      <div class="parcial-topbar">
+        <div class="parcial-title">
+          <h2>ENTREGA PARCIAL</h2>
+          <p id="parcialSubtitulo">Respuesta INCOMPLETA del proveedor</p>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-view"
+          onclick="cerrarEntregaParcial()"
+        >
+          Volver a Compras
+        </button>
+      </div>
+
+      <div class="parcial-banner">
+        <strong>INCOMPLETO · ENTREGA PARCIAL</strong><br>
+        Todas las líneas parten con la cantidad autorizada completa.
+        Modifique solamente lo que el proveedor entregará en menor cantidad.
+        Si no entregará una línea, ingrese <strong>0</strong>.
+      </div>
+
+      <section class="parcial-card">
+        <div class="parcial-resumen">
+          <div class="parcial-resumen-box">
+            <span>OC</span>
+            <strong id="parcialOc">-</strong>
+          </div>
+          <div class="parcial-resumen-box">
+            <span>Proveedor</span>
+            <strong id="parcialProveedor">-</strong>
+          </div>
+          <div class="parcial-resumen-box">
+            <span>Estado</span>
+            <strong>INCOMPLETO</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="parcial-card">
+        <h3 style="margin:0 0 8px;color:#5f4a00;">Detalle de la OC</h3>
+        <p style="margin:0 0 14px;color:#7a6a35;font-size:13px;font-weight:700;">
+          Cantidad confirmada puede ser 0, menor o igual a la cantidad autorizada.
+          El saldo se calcula automáticamente.
+        </p>
+
+        <div class="parcial-table-wrap">
+          <table class="parcial-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Unidad</th>
+                <th class="parcial-num">Cantidad autorizada</th>
+                <th class="parcial-num">Cantidad confirmada</th>
+                <th class="parcial-num">Saldo pendiente</th>
+              </tr>
+            </thead>
+            <tbody id="parcialProductosBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="parcial-card">
+        <div id="parcialError" class="parcial-error"></div>
+
+        <div class="parcial-actions">
+          <button
+            type="button"
+            class="btn btn-view"
+            onclick="cerrarEntregaParcial()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            id="parcialBtnConfirmar"
+            type="button"
+            class="btn-parcial-confirmar"
+            onclick="confirmarEntregaParcial()"
+          >
+            CONFIRMAR ENTREGA PARCIAL
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+
   <div
     id="toast"
     class="toast"
@@ -2457,6 +2757,9 @@
 
     const CONFIRMACION_RESPUESTA_EN_CURSO =
       new Set();
+
+    let ENTREGA_PARCIAL_ACTUAL = null;
+
 
 
 
@@ -5854,8 +6157,6 @@
       }
 
       let motivo = '';
-      let cantidadesPorLinea = {};
-      let resumenParcial = '';
 
       if (respuestaElegida === 'RECHAZO') {
         const motivoIngresado = window.prompt(
@@ -5894,62 +6195,11 @@
           return;
         }
 
-        motivo = 'ENTREGA PARCIAL';
-        const lineas = Array.isArray(item.lineas) ? item.lineas : [];
-        if (!lineas.length) {
-          avisoMVP('La OC no tiene líneas disponibles para registrar entrega parcial.');
-          return;
-        }
-
-        const resumen = [];
-        let existeSaldo = false;
-
-        for (let i = 0; i < lineas.length; i++) {
-          const linea = lineas[i] || {};
-          const idLinea = String(linea.idLinea || '').trim();
-          const autorizada = Number(linea.cantidad || 0);
-
-          if (!idLinea || !(autorizada > 0)) {
-            avisoMVP('Una línea de la OC no tiene ID o cantidad autorizada válida.');
-            return;
-          }
-
-          const ingresada = window.prompt(
-            'ENTREGA PARCIAL · ' + item.oc + '\n\n' +
-            (linea.producto || linea.codigo || ('Línea ' + (i + 1))) + '\n' +
-            'Cantidad autorizada: ' + formatoNumero(autorizada) + ' ' + (linea.unidad || '') + '\n\n' +
-            'Ingrese la cantidad que el proveedor CONFIRMA entregar:'
-          );
-
-          if (ingresada === null) {
-            return;
-          }
-
-          const confirmada = Number(String(ingresada).replace(',', '.'));
-          if (!Number.isFinite(confirmada) || confirmada < 0 || confirmada > autorizada) {
-            avisoMVP(
-              'Cantidad inválida. Debe estar entre 0 y ' + formatoNumero(autorizada) + '.'
-            );
-            return;
-          }
-
-          const saldo = Math.round((autorizada - confirmada) * 1000000) / 1000000;
-          if (saldo > 0) existeSaldo = true;
-          cantidadesPorLinea[idLinea] = confirmada;
-          resumen.push(
-            (linea.producto || linea.codigo || ('Línea ' + (i + 1))) +
-            ': autorizada ' + formatoNumero(autorizada) +
-            ' · confirma ' + formatoNumero(confirmada) +
-            ' · saldo ' + formatoNumero(saldo)
-          );
-        }
-
-        if (!existeSaldo) {
-          avisoMVP('INCOMPLETO requiere al menos una línea con saldo pendiente.');
-          return;
-        }
-
-        resumenParcial = resumen.join('\n');
+        abrirEntregaParcial(
+          item,
+          clave
+        );
+        return;
       }
 
       const etapaProveedor =
@@ -5968,11 +6218,6 @@
           ' CONFIRMÓ la ' +
           item.oc +
           '?';
-      } else if (respuestaElegida === 'INCOMPLETO') {
-        textoConfirmacion =
-          '¿Registrar ENTREGA PARCIAL para ' + item.oc + '?\n\n' +
-          resumenParcial +
-          '\n\nEl saldo quedará disponible en CREAR OC SALDO PENDIENTE.';
       } else {
         textoConfirmacion =
           '¿Confirmas que el ' +
@@ -6012,11 +6257,6 @@
           url += '&motivo=' + encodeURIComponent(motivo);
         }
 
-        if (respuestaElegida === 'INCOMPLETO') {
-          url += '&cantidadesPorLinea=' + encodeURIComponent(
-            JSON.stringify(cantidadesPorLinea)
-          );
-        }
 
         const respuestaApi = await cargarJsonp(url);
 
@@ -6032,11 +6272,6 @@
           avisoMVP(
             item.oc +
             ' registrada como CONFIRMO. Ahora queda HABILITADA PARA RECEPCIÓN.'
-          );
-        } else if (respuestaElegida === 'INCOMPLETO') {
-          avisoMVP(
-            item.oc +
-            ' registrada como ENTREGA PARCIAL. El saldo quedó disponible para gestión.'
           );
         } else {
           avisoMVP(
@@ -6066,6 +6301,569 @@
       } finally {
         CONFIRMACION_RESPUESTA_EN_CURSO.delete(clave);
         actualizarEstadoBotonesRespuesta(clave, false);
+      }
+    }
+
+
+
+    /* =========================================================
+       ENTREGA PARCIAL · VISTA MULTI-LÍNEA
+       ========================================================= */
+
+    function mostrarErrorEntregaParcial(
+      mensaje
+    ) {
+      const box =
+        document.getElementById(
+          'parcialError'
+        );
+
+      if (!box) {
+        avisoMVP(mensaje || '');
+        return;
+      }
+
+      const texto =
+        String(
+          mensaje || ''
+        ).trim();
+
+      box.textContent =
+        texto;
+
+      box.classList.toggle(
+        'visible',
+        !!texto
+      );
+    }
+
+
+    function abrirEntregaParcial(
+      item,
+      clave
+    ) {
+      const lineas =
+        item && Array.isArray(item.lineas)
+          ? item.lineas
+          : [];
+
+      if (!lineas.length) {
+        avisoMVP(
+          'La OC no tiene líneas disponibles para registrar entrega parcial.'
+        );
+        return;
+      }
+
+      const invalidas =
+        lineas.some(
+          function(linea) {
+            return (
+              !String(linea.idLinea || '').trim() ||
+              !(Number(linea.cantidad || 0) > 0)
+            );
+          }
+        );
+
+      if (invalidas) {
+        avisoMVP(
+          'Una línea de la OC no tiene ID o cantidad autorizada válida.'
+        );
+        return;
+      }
+
+      ENTREGA_PARCIAL_ACTUAL = {
+        clave: clave,
+        item: item
+      };
+
+      document
+        .getElementById(
+          'parcialOc'
+        )
+        .textContent =
+          item.oc || '-';
+
+      document
+        .getElementById(
+          'parcialProveedor'
+        )
+        .textContent =
+          item.proveedor || '-';
+
+      document
+        .getElementById(
+          'parcialSubtitulo'
+        )
+        .textContent =
+          (item.oc || '') +
+          ' · ' +
+          (item.proveedor || '') +
+          ' · respuesta INCOMPLETA';
+
+      const body =
+        document.getElementById(
+          'parcialProductosBody'
+        );
+
+      body.innerHTML =
+        lineas
+          .map(
+            function(linea, index) {
+              const autorizada =
+                Number(
+                  linea.cantidad ||
+                  0
+                );
+
+              return `
+                <tr data-parcial-index="${index}">
+                  <td>${escapeHtml(linea.codigo || '')}</td>
+                  <td><strong>${escapeHtml(linea.producto || '')}</strong></td>
+                  <td>${escapeHtml(linea.unidad || '')}</td>
+                  <td class="parcial-num">${formatoNumero(autorizada)}</td>
+                  <td class="parcial-num">
+                    <input
+                      type="number"
+                      min="0"
+                      max="${escapeHtml(String(autorizada))}"
+                      step="any"
+                      value="${escapeHtml(String(autorizada))}"
+                      data-parcial-cantidad="${index}"
+                      oninput="recalcularEntregaParcial()"
+                    >
+                  </td>
+                  <td
+                    id="parcialSaldo-${index}"
+                    class="parcial-num parcial-saldo-cero"
+                  >
+                    0
+                  </td>
+                </tr>
+              `;
+            }
+          )
+          .join('');
+
+      mostrarErrorEntregaParcial('');
+
+      const boton =
+        document.getElementById(
+          'parcialBtnConfirmar'
+        );
+
+      if (boton) {
+        boton.disabled = false;
+        boton.textContent =
+          'CONFIRMAR ENTREGA PARCIAL';
+      }
+
+      document
+        .getElementById(
+          'parcialOverlay'
+        )
+        .classList
+        .add(
+          'visible'
+        );
+
+      document.body.style.overflow =
+        'hidden';
+
+      recalcularEntregaParcial();
+
+      window.scrollTo(
+        0,
+        0
+      );
+    }
+
+
+    function cerrarEntregaParcial() {
+      if (
+        ENTREGA_PARCIAL_ACTUAL &&
+        CONFIRMACION_RESPUESTA_EN_CURSO.has(
+          ENTREGA_PARCIAL_ACTUAL.clave
+        )
+      ) {
+        mostrarErrorEntregaParcial(
+          'Hay una operación en curso. Espere la respuesta antes de salir.'
+        );
+        return;
+      }
+
+      const overlay =
+        document.getElementById(
+          'parcialOverlay'
+        );
+
+      if (overlay) {
+        overlay.classList.remove(
+          'visible'
+        );
+      }
+
+      mostrarErrorEntregaParcial('');
+
+      ENTREGA_PARCIAL_ACTUAL =
+        null;
+
+      document.body.style.overflow =
+        '';
+    }
+
+
+    function leerCantidadEntregaParcial(
+      index
+    ) {
+      const input =
+        document.querySelector(
+          '[data-parcial-cantidad="' +
+          index +
+          '"]'
+        );
+
+      if (!input) {
+        return NaN;
+      }
+
+      return Number(
+        String(
+          input.value ||
+          ''
+        ).replace(
+          ',',
+          '.'
+        )
+      );
+    }
+
+
+    function recalcularEntregaParcial() {
+      const actual =
+        ENTREGA_PARCIAL_ACTUAL;
+
+      if (!actual) {
+        return;
+      }
+
+      const lineas =
+        Array.isArray(actual.item.lineas)
+          ? actual.item.lineas
+          : [];
+
+      lineas.forEach(
+        function(linea, index) {
+          const autorizada =
+            Number(
+              linea.cantidad ||
+              0
+            );
+
+          const confirmada =
+            leerCantidadEntregaParcial(
+              index
+            );
+
+          const celda =
+            document.getElementById(
+              'parcialSaldo-' +
+              index
+            );
+
+          if (!celda) {
+            return;
+          }
+
+          if (
+            !Number.isFinite(confirmada) ||
+            confirmada < 0 ||
+            confirmada > autorizada
+          ) {
+            celda.textContent =
+              'REVISAR';
+
+            celda.className =
+              'parcial-num parcial-saldo-pendiente';
+
+            return;
+          }
+
+          const saldo =
+            Math.round(
+              (
+                autorizada -
+                confirmada
+              ) *
+              1000000
+            ) /
+            1000000;
+
+          celda.textContent =
+            formatoNumero(
+              saldo
+            );
+
+          celda.className =
+            saldo > 0
+              ? 'parcial-num parcial-saldo-pendiente'
+              : 'parcial-num parcial-saldo-cero';
+        }
+      );
+    }
+
+
+    async function confirmarEntregaParcial() {
+      const actual =
+        ENTREGA_PARCIAL_ACTUAL;
+
+      if (!actual) {
+        mostrarErrorEntregaParcial(
+          'No existe una OC activa para registrar entrega parcial.'
+        );
+        return;
+      }
+
+      const item =
+        actual.item;
+
+      const clave =
+        actual.clave;
+
+      if (
+        CONFIRMACION_RESPUESTA_EN_CURSO.has(
+          clave
+        )
+      ) {
+        return;
+      }
+
+      const lineas =
+        Array.isArray(item.lineas)
+          ? item.lineas
+          : [];
+
+      const cantidadesPorLinea =
+        {};
+
+      const resumen =
+        [];
+
+      let existeSaldo =
+        false;
+
+      for (
+        let index = 0;
+        index < lineas.length;
+        index++
+      ) {
+        const linea =
+          lineas[index] ||
+          {};
+
+        const idLinea =
+          String(
+            linea.idLinea ||
+            ''
+          ).trim();
+
+        const autorizada =
+          Number(
+            linea.cantidad ||
+            0
+          );
+
+        const confirmada =
+          leerCantidadEntregaParcial(
+            index
+          );
+
+        if (
+          !idLinea ||
+          !(autorizada > 0)
+        ) {
+          mostrarErrorEntregaParcial(
+            'Una línea no tiene ID o cantidad autorizada válida.'
+          );
+          return;
+        }
+
+        if (
+          !Number.isFinite(confirmada) ||
+          confirmada < 0 ||
+          confirmada > autorizada
+        ) {
+          mostrarErrorEntregaParcial(
+            'Revise ' +
+            (linea.producto || linea.codigo || ('línea ' + (index + 1))) +
+            ': la cantidad confirmada debe estar entre 0 y ' +
+            formatoNumero(autorizada) +
+            '.'
+          );
+          return;
+        }
+
+        const saldo =
+          Math.round(
+            (
+              autorizada -
+              confirmada
+            ) *
+            1000000
+          ) /
+          1000000;
+
+        if (
+          saldo > 0
+        ) {
+          existeSaldo =
+            true;
+        }
+
+        cantidadesPorLinea[
+          idLinea
+        ] =
+          confirmada;
+
+        resumen.push(
+          (linea.producto || linea.codigo || ('Línea ' + (index + 1))) +
+          ': ' +
+          formatoNumero(confirmada) +
+          ' de ' +
+          formatoNumero(autorizada) +
+          ' · saldo ' +
+          formatoNumero(saldo)
+        );
+      }
+
+      if (
+        !existeSaldo
+      ) {
+        mostrarErrorEntregaParcial(
+          'Todas las líneas quedaron completas. Si el proveedor entregará todo, registre CONFIRMO en vez de INCOMPLETO.'
+        );
+        return;
+      }
+
+      const confirmado =
+        window.confirm(
+          '¿Confirmar ENTREGA PARCIAL de ' +
+          item.oc +
+          '?\n\n' +
+          resumen.join('\n') +
+          '\n\nLos saldos pendientes se registrarán en MAESTRO.'
+        );
+
+      if (
+        !confirmado
+      ) {
+        return;
+      }
+
+      CONFIRMACION_RESPUESTA_EN_CURSO.add(
+        clave
+      );
+
+      actualizarEstadoBotonesRespuesta(
+        clave,
+        true
+      );
+
+      const boton =
+        document.getElementById(
+          'parcialBtnConfirmar'
+        );
+
+      if (boton) {
+        boton.disabled =
+          true;
+
+        boton.textContent =
+          'Registrando...';
+      }
+
+      mostrarErrorEntregaParcial('');
+
+      try {
+        const url =
+          CONFIG.API_BASE_URL +
+          '?api=compras' +
+          '&accion=confirmarRespuesta' +
+          '&empresa=' +
+          encodeURIComponent(
+            item.empresa
+          ) +
+          '&oc=' +
+          encodeURIComponent(
+            item.oc
+          ) +
+          '&respuesta=INCOMPLETO' +
+          '&motivo=' +
+          encodeURIComponent(
+            'ENTREGA PARCIAL'
+          ) +
+          '&cantidadesPorLinea=' +
+          encodeURIComponent(
+            JSON.stringify(
+              cantidadesPorLinea
+            )
+          ) +
+          '&confirmar=SI';
+
+        const respuestaApi =
+          await cargarJsonp(
+            url
+          );
+
+        if (
+          !respuestaApi ||
+          respuestaApi.ok !== true
+        ) {
+          throw new Error(
+            respuestaApi &&
+            respuestaApi.error
+              ? respuestaApi.error
+              : 'No fue posible registrar la entrega parcial en MAESTRO.'
+          );
+        }
+
+        cerrarEntregaParcial();
+
+        avisoMVP(
+          item.oc +
+          ' registrada como ENTREGA PARCIAL. Los saldos quedaron disponibles para gestión.'
+        );
+
+        await cargarDatos();
+
+      } catch (
+        error
+      ) {
+        mostrarErrorEntregaParcial(
+          error &&
+          error.message
+            ? error.message
+            : String(
+                error
+              )
+        );
+
+      } finally {
+        CONFIRMACION_RESPUESTA_EN_CURSO.delete(
+          clave
+        );
+
+        actualizarEstadoBotonesRespuesta(
+          clave,
+          false
+        );
+
+        if (boton) {
+          boton.disabled =
+            false;
+
+          boton.textContent =
+            'CONFIRMAR ENTREGA PARCIAL';
+        }
       }
     }
 
